@@ -1,0 +1,89 @@
+main {
+    flex: 1;
+}
+
+main div.row {
+    margin-top: 20px;
+    background-color: rgba(42, 80, 102, 0.158);
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+
+
+div.mostrarCont {
+    cursor: pointer;
+    transition: all 0.5s ease-in-out;
+}
+
+
+#subirServicio {
+    margin-top: 20px;
+}
+
+#ServiciOnline {
+    margin-left: 90%
+}
+
+.card {
+    height: 500px;
+    padding-bottom: 1px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-top: 10px;
+}
+
+a.btn-primary {
+    width: 90px;
+    height: 40px;
+    position: absolute;
+    top: 5px;
+}
+
+.oculto {
+    display: contents;
+}
+
+#contenedorCrear {
+    background-color: #afc8d6ff;
+}
+
+.btones {
+    background-color: azure;
+}
+
+.form-control {
+    border: solid 1px black;
+}
+
+#DescripcionComunidad1 {
+    width: 80%;
+    background-color: #f3f4f6;
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.3);
+     margin: 20px auto; 
+    padding: 20px;     
+    border-radius: 8px;
+
+}
+
+#DescripcionComunidad {
+    width: 80%;
+    background-color: white;
+    margin: 20px auto; 
+    padding: 20px;
+    border-radius: 8px;
+}
+
+
+
+@media (max-width: 991px) and (min-width: 500px) {
+    .mostrarCont {
+        margin-top: 10px;
+    }
+}
+
+@media (max-width: 499px) {
+    .mostrarCont {
+        margin-top: 10px;
+    }
+}

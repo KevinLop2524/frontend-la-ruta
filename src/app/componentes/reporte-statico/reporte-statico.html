@@ -1,0 +1,32 @@
+<app-header></app-header>
+<main class="container mt-5">
+    <div id="reporte">
+        <button type="button" class="btn btn-primary" (click)="reporte()">
+        Generar reporte
+        </button>
+</div>
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered align-middle text-center">
+            <thead class="table-danger">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Correo</th>
+                    <th>Apodo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tablaComunidades">
+                <tr *ngFor="let item of usuarios">
+                    <td>{{item.nombre}}</td>
+                    <td>{{item.correo}}</td>
+                    <td>{{item.apodo}}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary"><i class="bi bi-eye"></i></button>
+                        <button class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+<app-footer></app-footer>

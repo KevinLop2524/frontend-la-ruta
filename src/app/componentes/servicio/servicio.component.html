@@ -1,0 +1,102 @@
+<app-header></app-header>
+<main>
+        <div class="community-info text-center" id="DescripcionComunidad1">
+            <h2 class="fw-bold">{{comunidad.nombre}}</h2>
+            <p class="text-muted">{{comunidad.descripcion}}</p>
+            <div class="row mt-3" id="DescripcionComunidad">
+                <div class="col-md-6">
+                    <h6 class="fw-bold">Temática</h6>
+                    <p>{{comunidad.tematica}}</p>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="fw-bold">Tipo</h6>
+                    <p>{{comunidad.tipo}}</p>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <!--Sección para cambiar entre ver y crear servicios-->
+                <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill"
+                            data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home"
+                            aria-selected="true">SERVICIOS</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill"
+                            data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile"
+                            aria-selected="false">CREAR SERVICIOS</button>
+
+                    </li>
+
+                </ul>
+
+
+                <div class="tab-content" id="pills-tabContent">
+                    <div class="tab-pane fade show active" id="pills-home" role="tabpanel"
+                        aria-labelledby="pills-home-tab" tabindex="0">
+                        <div class="row">
+                            <div *ngFor="let servicio of servicios"
+                                class="mostrarCont col-12 col-sm-12 col-md-6 col-lg-3 col-xl-3">
+                                <div class="card">
+                                    <img src="/imagenes/static/imgGymUno.jpg" class="card-img-top" alt="...">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{servicio.nombre}}</h5>
+                                        <p class="card-text">{{servicio.descripcion}}</p>
+                                        <p class="card-text">{{servicio.categoria}}</p>
+                                        <a routerLink="#" class="btn btn-primary">Ver más</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab"
+                        tabindex="0">
+                        <div class="row" id="contenedorCrear">
+                            <div class="mostrarCont col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                                <div class="mb-3">
+                                    <label for="nuevaPublicacionPersonal" class="form-label">Nombre del servicio</label>
+                                    <input type="text" class="form-control" id="nuevaPublicacionPersonal"
+                                        placeholder="Describe el contenido, por favor"
+                                        [(ngModel)]="ServicioCrear.titulo">
+                                </div>
+                                <div class="mb-3 ">
+                                    <label for="exampleFormControlTextarea1" class="form-label">Descripción del
+                                        contenido de tu servicio</label>
+                                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="5"
+                                        placeholder="Descripción de lo que desees comentarnos. Con todo gusto te escuchamos."
+                                        [(ngModel)]="ServicioCrear.descripcion"></textarea>
+                                </div>
+                                <div class="mb-3 ">
+                                    <label for="exampleFormControlTextarea1" class="form-label">Cetegoria del
+                                        contenido</label>
+                                    <select class="form-control" [(ngModel)]="ServicioCrear.categoria" name="categoria">
+                                        <option value="">Seleccione</option>
+                                        <option value="NUTRICION">Nutrición</option>
+                                        <option value="ENTRENAMIENTO">Entrenamiento</option>
+                                        <option value="SALUD_MENTAL">Salud Mental</option>
+                                        <option value="BIENESTAR">Bienestar General</option>
+                                        <option value="PRODUCTIVIDAD">Productividad</option>
+                                        <option value="DESARROLLO_PERSONAL">Desarrollo Personal</option>
+                                        <option value="MOTIVACION">Motivación</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                                <div class="mb-3">
+                                    <label for="formFileMultiple" class="form-label">Seleccionar varios archivos</label>
+                                    <input class="form-control" type="file" id="formFileMultiple" multiple>
+                                </div>
+                                <button type="button" class="btn btn-primary"
+                                    (click)="crearServicio()">Publicar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <app-footer></app-footer>

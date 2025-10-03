@@ -1,0 +1,275 @@
+
+main {
+  flex: 1;
+}
+main div.row {
+  margin-top: 20px;
+  background-color: rgba(42, 80, 102, 0.158);
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+div.mostrarCont {
+  cursor: pointer;
+  transition: all 0.5s ease-in-out;
+}
+
+main div.container div.card {
+   border-radius: 10px;
+   width: 60%;
+}
+
+main div.container div.card div.text-bg-light {
+   border-radius: 10px;
+   width: 60%;
+}
+
+.card{
+   margin-bottom: 15px;
+   width: 95%
+}
+
+.btn-primary{
+   margin-right: 5px;
+}
+
+.card.border-primary.mb-3 {
+   border-radius: 10px;
+   padding: 20px;
+   width: 100%;
+}
+
+#botonModPrf {
+   margin-left: 0px;
+}
+#DatosPrivados{
+   padding: 10px;
+   width: 100%;
+}
+#DatosPrivados2{
+   padding: 10px;
+   width: 100%;
+}
+#botonDtPv1{
+   margin-left: 15px;
+}
+#botonDtPv2{
+   margin-left: 15px;
+}
+#CardMostrarDatos{
+      border: 0px;
+}
+.list-group-item{
+   border: solid 1px black;
+}
+#list-home-list{
+   border: solid 0px;
+}
+#list-profile-list{
+   border: solid 0px;
+}
+#list-settings-list{
+   border: solid 0px;
+}
+#list-comunidades-list{
+   border: solid 0px;
+}
+input{
+   border: solid 1px black;
+}
+#verMas{
+   margin-top: 25px;
+}
+#foto_perfil{
+   margin-top: 10px;
+   margin-bottom: 10px;
+   border-radius: 20px;
+}
+.form-control{
+   border: solid 1px black;
+}
+
+
+
+
+
+@media (min-width: 992px) {
+
+   #cataComunidades{
+      width: 95%;
+      margin-left: 3%;
+   }
+
+   .btn-primary {
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+   #ultimaPublicación {
+      width: 100%;
+   }
+
+   #IdUsuario {
+      margin-left: 0px;
+      width: 95%;
+   }
+
+   #foto_perfil {
+      width: 25%;
+      margin-left: 300px;
+   }
+
+   #ContenedorCreacion {
+      margin-left: 10px;
+      width: 95%;
+   }
+
+   #CardMostrarDatos {
+      width: 100%;
+   }
+
+   #Tus_publicaciones {
+      width: 95%;
+   }
+
+   #CardMostrarDatos2 {
+      width: 100%;
+   }
+   #Publicaciones{
+      width: 95%;
+   }
+}
+
+@media (max-width: 991px) and (min-width: 500px) {
+   #contenedorDatosUsuario{
+      margin-top: 10px;
+   }
+
+   #ContenedorCreacion {
+      width: 100%;
+      margin-top: 10px;
+   }
+
+   #modalActualizar {
+      margin-left: 15px;
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }
+
+   #botonDtPv {
+      margin-top: 10px;
+      margin-left: 10px;
+   }
+
+   #ultimaPublicación {
+      width: 100%;
+   }
+
+   #IdUsuario {
+      width: 100%;
+   }
+
+   #ContenedorCreacion {
+      margin-left: 10px;
+      width: 95%;
+   }
+
+   #Tus_publicaciones {
+      width: 100%;
+      margin-top: 10px;
+   }
+
+   #CardMostrarDatos {
+      width: 100%;
+   }
+
+   #collapseWidthExample2 {
+      width: 100%;
+   }
+
+   #CardMostrarDatos2 {
+      width: 100%;
+   }
+
+   #Publicaciones {
+      width: 100%;
+   }
+
+   #DatosPrivados {
+      width: 100%;
+   }
+
+}
+
+@media (max-width: 499px) {
+   #list-tab {
+      width: 100%;
+   }
+
+   #fichaUsuario {
+      width: 100%;
+      margin-left: 0px;
+   }
+
+
+   div#ContenedorCreacion {
+      margin-left: 0px;
+      width: 100%;
+      margin-top: 15px;
+   }
+
+
+   #contenedorDatosUsuario {
+      width: 100%;
+      padding: auto;
+   }
+
+   #IdUsuario {
+      margin-left: 0px;
+      width: 100%;
+      margin-top: 15px;
+   }
+
+   .container {
+      padding-left: 0;
+      padding-right: 0;
+   }
+
+   #Publicaciones {
+      width: 90%;
+   }
+
+   #Fila_publicaciones {
+      width: 300px;
+      margin-left: 40px;
+   }
+
+   #ultimaPublicación {
+      width: 100%;
+   }
+
+   #Tus_publicaciones {
+      margin-top: 15px;
+      width: 100%;
+   }
+
+   #CardMostrarDatos {
+      width: 100%;
+   }
+
+   #collapseWidthExample2 {
+      width: 100%;
+   }
+
+   #CardMostrarDatos2 {
+      width: 100%;
+      padding: 10px;
+   }
+
+   #DatosPrivados {
+      width: 100%;
+   }
+
+   .row {
+      width: 100%;
+   }
+}

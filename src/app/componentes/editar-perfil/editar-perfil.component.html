@@ -1,0 +1,67 @@
+<app-header></app-header>
+<main>
+    <div class="container">
+        <br>
+        <h2 class="mb-4">Editar Perfil</h2>
+
+        <form>
+            <!-- FOTO DE PERFIL -->
+            <div class="text-center mb-4">
+                <img id="previewFoto" src="imagenes/static/Fotoperfil.jpg" class="rounded-circle border" width="150"
+                    height="150" alt="Foto de perfil">
+                <div class="mt-2">
+                    <label for="fotoPerfil" class="btn btn-outline-primary btn-sm">
+                        Cambiar foto
+                    </label>
+                    <input class="form-control d-none" type="file" id="fotoPerfil" accept="image/*">
+                </div>
+            </div>
+
+            <!-- DATOS BÁSICOS -->
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="nombre" class="form-label">Apodo</label>
+                    <input type="text" class="form-control" id="nombre" placeholder="Ingresa tu nombre completo">
+                </div>
+
+                <!-- NUEVOS CAMPOS: edad, peso, altura, objetivos -->
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label for="edad" class="form-label">Edad</label>
+                        <input type="number" class="form-control" id="edad" placeholder="25">
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="peso" class="form-label">Peso (kg)</label>
+                        <input type="number" class="form-control" id="peso" placeholder="70">
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="altura" class="form-label">Altura (cm)</label>
+                        <input type="number" class="form-control" id="altura" placeholder="175">
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="objetivos" class="form-label">Objetivos</label>
+                        <select id="objetivos" class="form-select">
+                            <option selected disabled>Selecciona...</option>
+                            <option>Perder peso</option>
+                            <option>Ganar masa muscular</option>
+                            <option>Mantenerme saludable</option>
+                            <option>Rendimiento deportivo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="descripcion" class="form-label">Descripción personal</label>
+                    <textarea class="form-control" id="descripcion" rows="4"
+                        placeholder="Cuéntanos algo sobre ti"></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <button class="btn btn-primary" type="submit">Guardar cambios</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</main>
+
+<app-footer></app-footer>

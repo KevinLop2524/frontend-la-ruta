@@ -1,0 +1,41 @@
+
+main {
+  flex: 1;
+}
+
+main div.row {
+  margin-top: 20px;
+  background-color: rgba(42, 80, 102, 0.158);
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+div.mostrarCont {
+  cursor: pointer;
+  transition: all 0.5s ease-in-out;
+}
+main div.container div.card {
+   border-radius: 10px;
+   width: 60%;
+}
+
+div.mb-3.oculto {
+  display: none;
+}
+
+div.mostrarCont:hover > div.mb-3.oculto {
+  display: flex;
+}
+
+div.mostrarContDos {
+  cursor: pointer;
+  transition: all 0.5s ease-in-out;
+}
+
+div.mb-3.ocultoDos {
+  display: none;
+}
+
+div.mostrarContDos:hover > div.mb-3.ocultoDos {
+  display: flex;
+}
