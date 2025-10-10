@@ -1,3 +1,4 @@
+
 <app-header></app-header>
 <main>
     <div class="container">
@@ -20,45 +21,77 @@
             <!-- DATOS BÁSICOS -->
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label for="nombre" class="form-label">Apodo</label>
-                    <input type="text" class="form-control" id="nombre" placeholder="Ingresa tu nombre completo">
+                    <label for="nombre" class="form-label">Nombre</label>
+                    <input type="text" class="form-control" name="nombre" id="nombre"
+                        placeholder="Ingresa tu primer nombre" [(ngModel)]="perfilEditar.nombre">
                 </div>
+                <div class="col-md-6 mb-3">
+                    <label for="nombre2" class="form-label">Segundo nombre</label>
+                    <input type="text" class="form-control" name="nombreDos" id="nombre2"
+                        placeholder="Ingresa tu segundo nombre" [(ngModel)]="perfilEditar.nombreDos">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="apellido" class="form-label">Apellido</label>
+                    <input type="text" class="form-control" name="apellido" id="apellido"
+                        placeholder="Ingresa tu primer apellido" [(ngModel)]="perfilEditar.apellido">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="apellido2" class="form-label">Segundo apellido</label>
+                    <input type="text" class="form-control" name="apellido2" id="apellido2"
+                        placeholder="Ingresa tu segundo apellido" [(ngModel)]="perfilEditar.apellidoDos">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="apodo" class="form-label">Apodo</label>
+                    <input type="text" class="form-control" name="apodo" id="apodo" placeholder="Ingresa tu apodo" [(ngModel)]="perfilEditar.apodo">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="localidad" class="form-label">Localidad</label>
+                    <select id="localidad" class="form-select"  name="localidad" [(ngModel)]="perfilEditar.localidad">
+                        <option [ngValue]="null">Selecciona tu localidad</option>
+                        <option value="Usaquén">Usaquén</option>
+                        <option value="Chapinero">Chapinero</option>
+                        <option value="Santa Fe">Santa Fe</option>
+                        <option value="San Cristóbal">San Cristóbal</option>
+                        <option value="Usme">Usme</option>
+                        <option value="Tunjuelito">Tunjuelito</option>
+                        <option value="Bosa">Bosa</option>
+                        <option value="Kennedy">Kennedy</option>
+                        <option value="Fontibón">Fontibón</option>
+                        <option value="Engativá">Engativá</option>
+                        <option value="Suba">Suba</option>
+                        <option value="Barrios Unidos">Barrios Unidos</option>
+                        <option value="Teusaquillo">Teusaquillo</option>
+                        <option value="Los Mártires">Los Mártires</option>
+                        <option value="Antonio Nariño">Antonio Nariño</option>
+                        <option value="Puente Aranda">Puente Aranda</option>
+                        <option value="Candelaria">Candelaria</option>
+                        <option value="Rafael Uribe Uribe">Rafael Uribe Uribe</option>
+                        <option value="Ciudad Bolívar">Ciudad Bolívar</option>
+                        <option value="Sumapaz">Sumapaz</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="nacimiento" class="form-label">Fecha de nacimiento</label>
+                    <input type="date" class="form-control" name="nacimiento" id="nacimiento" [(ngModel)]="perfilEditar.nacimiento" [min]="fechaMinima()" 
+  [max]="fechaMaxima()">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="altura" class="form-label">Altura (cm)</label>
+                    <input type="number" class="form-control" name="altura" id="altura" placeholder="Ej: 175" [(ngModel)]="perfilEditar.altura">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="sexo" class="form-label">Sexo</label>
+                    <select id="sexo" class="form-select" name="sexo" [(ngModel)]="perfilEditar.sexo">
+                        <option [ngValue]="null">Selecciona tu sexo</option>
+                        <option value="Hombre">Hombre</option>
+                        <option value="Mujer">Mujer</option>
 
-                <!-- NUEVOS CAMPOS: edad, peso, altura, objetivos -->
-                <div class="row">
-                    <div class="col-md-3 mb-3">
-                        <label for="edad" class="form-label">Edad</label>
-                        <input type="number" class="form-control" id="edad" placeholder="25">
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label for="peso" class="form-label">Peso (kg)</label>
-                        <input type="number" class="form-control" id="peso" placeholder="70">
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label for="altura" class="form-label">Altura (cm)</label>
-                        <input type="number" class="form-control" id="altura" placeholder="175">
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label for="objetivos" class="form-label">Objetivos</label>
-                        <select id="objetivos" class="form-select">
-                            <option selected disabled>Selecciona...</option>
-                            <option>Perder peso</option>
-                            <option>Ganar masa muscular</option>
-                            <option>Mantenerme saludable</option>
-                            <option>Rendimiento deportivo</option>
-                        </select>
-                    </div>
+                    </select>
                 </div>
+            </div>
 
-                <div class="mb-3">
-                    <label for="descripcion" class="form-label">Descripción personal</label>
-                    <textarea class="form-control" id="descripcion" rows="4"
-                        placeholder="Cuéntanos algo sobre ti"></textarea>
-                </div>
-
-                <div class="mb-3">
-                    <button class="btn btn-primary" type="submit">Guardar cambios</button>
-                </div>
+            <div class="mb-3">
+                <button class="btn btn-primary" (click)="actualizarPerfil()">Guardar cambios</button>
             </div>
         </form>
     </div>

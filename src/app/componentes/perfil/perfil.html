@@ -2,44 +2,32 @@
 <main>
     <div class="container">
         <div class="row" id="fichaUsuario">
-            <div class=" col-12 col-md-4 col-lg-4" id="contenedorSecundario">
+            <div class="col-12 col-md-4 col-lg-4" id="contenedorSecundario">
                 <div class="list-group" id="list-tab" role="tablist">
                     <a class="list-group-item list-group-item-action active" id="list-home-list" data-bs-toggle="list"
                         href="#list-home" role="tab" aria-controls="list-home">Perfil</a>
-                    <a class="list-group-item list-group-item-action" id="list-profile-list" data-bs-toggle="list"
-                        href="#list-profile" role="tab" aria-controls="list-profile">Crear publicación</a>
                     <a class="list-group-item list-group-item-action" id="list-settings-list" data-bs-toggle="list"
                         href="#list-settings" role="tab" aria-controls="list-settings">Tus publicaciones</a>
                     <a class="list-group-item list-group-item-action" id="list-comunidades-list" data-bs-toggle="list"
                         href="#list-comunidades" role="tab" aria-controls="list-comunidades">Tus comunidades</a>
                 </div>
             </div>
+
             <div class="col-12 col-md-8 col-lg-8" id="Contenedor principal">
                 <div class="tab-content" id="nav-tabContent">
+                    <!-- PERFIL -->
                     <div class="tab-pane fade show active" id="list-home" role="tabpanel"
                         aria-labelledby="list-home-list">
-                        <div class="mostrarCont col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12"
-                            id="contenedorDatosUsuario">
+                        <div class="mostrarCont col-12" id="contenedorDatosUsuario">
                             <div id="IdUsuario" class="card">
-                                <!-- contenedor de la foto de perfil y sus datos -->
-                                <img src="imagenes/static/Fotoperfil.jpg" class="card-img-top" alt="..."
-                                    id="foto_perfil">
+                                <img src="imagenes/static/Fotoperfil.jpg" class="card-img-top" alt="..." id="foto_perfil">
                                 <div class="card-body">
-                                    <h5 class="card-title" name="nobreUser" id="nombreUser">{{apodo}}</h5><br>
-                                    <h6 class="card-title">Descripción:</h6>
-                                    <p class="card-text">Me gusta el ejercicio porque es algo que me aposiona hacer
-                                        para
-                                        conseguir
-                                        mis metas y por ultimo VLLC</p>
+                                    <h5 class="card-title" name="nombreUser" id="nombreUser">{{apodo}}</h5><br>
+                                    <h6 class="card-title">Nombre:</h6>
+                                    <p class="card-text" name="nombre">{{usuario?.nombre}} {{usuario?.nombre_2}}</p>
                                 </div>
-                                <!--Creación de botones para seleccionar si modificar perfil o visualizar los datos privados-->
-                                <p>
-                                    <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
-                                        data-bs-target="#collapseWidthExample2" aria-expanded="false"
-                                        aria-controls="collapseWidthExample" id="botonDtPv1">
-                                        Modificar perfil
-                                    </button>
 
+                                <p>
                                     <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#collapseWidthExample" aria-expanded="false"
                                         aria-controls="collapseWidthExample" id="botonDtPv2">
@@ -48,181 +36,97 @@
 
                                     <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#collapseWidthExample2" aria-expanded="false"
-                                        aria-controls="collapseWidthExample" id="botonDtPv1" routerLink="/editarPerfil">
+                                        aria-controls="collapseWidthExample2" id="botonDtPv1" routerLink="/editarPerfil">
                                         Editar perfil
                                     </button>
-
                                 </p>
+
+                                <!-- Datos privados y públicos -->
                                 <div class="collapse collapse-horizontal" id="collapseWidthExample">
                                     <div class="card card-body" id="CardMostrarDatos">
-                                        <div id="DatosPrivados" class="card border-primary " style="margin: 0 auto;">
-                                            <!--Contenedor datos del usuario-->
+                                        <div id="DatosPrivados" class="card border-primary" style="margin: 0 auto;">
                                             <div class="card-header">Tus datos 🔒</div>
                                             <div class="card-body">
-                                                <h5 class="card-title">Fisico</h5>
-                                                <p class="card-text">Año de nacimiento:
-                                                <p class="card-text" id="añoEsta">2007</p>
-                                                <p class="card-text">Altura:</p>
-                                                <p class="card-text" id="alturaUser">1.80</p>
-                                                <p class="card-text">Peso: 60</p>
-                                                <!--contenedor datos públicos-->
+                                                <h5 class="card-title">Físico</h5>
+                                                <p class="card-text"><strong>Año de nacimiento:</strong> {{usuario?.nacimiento}}</p>
+                                                <p class="card-text"><strong>Altura:</strong> {{usuario?.altura}} cm</p>
+                                                <p class="card-text"><strong>Sexo:</strong> {{usuario?.sexo}}</p>
                                             </div>
-                                            <div class="card-header"> Datos públicos 🌐</div>
-                                            <div class="card-body">
-                                                <h5 class="card-title">Tus datos públicos</h5>
-                                                <p class="card-text">Metas: Ganar masa muscular y mantener un
-                                                    estilo de vida
-                                                    saludable.
-                                                </p>
-                                                <p class="card-text">Intereses:</p>
-                                                <ul class="list-group">
-                                                    <li class="list-group-item">Fitness</li>
-                                                    <li class="list-group-item">Nutrición</li>
-                                                </ul>
-                                                <p class="card-text">Comunidades:</p>
-                                                <ul class="list-group">
-                                                    <li class="list-group-item">Inicia Force🐺</li>
-                                                    <li class="list-group-item">Alpha Zone🦁</li>
-                                                </ul>
-                                                <p class="card-text">Deportes que practico:</p>
-                                                <ul class="list-group">
-                                                    <li class="list-group-item">Fútbol</li>
-                                                    <li class="list-group-item">Boxeo</li>
-                                                </ul>
-                                                <p class="card-text">Ejercicios:</p>
-                                                <ul class="list-group">
-                                                    <li class="list-group-item">Calistenia</li>
-                                                </ul>
 
-                                                <p class="card-text">Intereses nutricionales:</p>
-                                                <ul class="list-group">
-                                                    <li class="list-group-item">Comida casera y sin
-                                                        ultraprocesados</li>
-                                                </ul>
+                                            <div class="card-header">Datos públicos 🌐</div>
+                                            <div class="card-body">
+                                                <p class="card-text"><strong>Nombre:</strong> {{usuario?.nombre}} {{usuario?.nombre_2}}</p>
+                                                <p class="card-text"><strong>Apellido:</strong> {{usuario?.apellido}} {{usuario?.apellidoDos}}</p>
+                                                <p class="card-text"><strong>Apodo:</strong> {{usuario?.apodo}}</p>
+                                                <p class="card-text"><strong>Correo:</strong> {{usuario?.correo}}</p>
+                                                <p class="card-text"><strong>Localidad:</strong> {{usuario?.localidad}}</p>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
+                                <!-- Formulario editar perfil -->
                                 <div class="collapse collapse-horizontal" id="collapseWidthExample2">
                                     <div class="card card-body" id="CardMostrarDatos2">
-                                        <div id="DatosPrivados2" class="card border-primary " style="margin: 0 auto;">
-                                            <!--Contenedor para modificar datos privados-->
+                                        <div id="DatosPrivados2" class="card border-primary" style="margin: 0 auto;">
                                             <div class="card-header">Modificar perfil 🔒</div>
                                             <form>
                                                 <div class="mb-3">
-                                                    <!--Campo para cambiar nombre del usuario-->
-                                                    <label for="exampleInputEmail1" class="form-label">Actualiza tu
-                                                        nombre de usuario</label>
-                                                    <input type="text" class="form-control" aria-describedby="emailHelp"
-                                                        id="ActualizacionNombre">
-                                                    <div id="emailHelp" class="form-text">Por favor, agrega un
-                                                        nombre
-                                                        respetuoso</div>
-                                                    <!--Campo para cambiar año de nacimiento -->
-                                                    <label for="exampleInputEmail1" class="form-label">Actualiza tu
-                                                        año de nacimiento</label>
-                                                    <input type="text" class="form-control" id="ActualizacionAno"
-                                                        aria-describedby="emailHelp">
-                                                    <!--Campo para cambiar altura -->
-                                                    <label for="exampleInputEmail1" class="form-label">Actualiza tu
-                                                        altura</label>
-                                                    <input type="text" class="form-control" id="ActualizacionAltura"
-                                                        aria-describedby="emailHelp">
+                                                    <label for="ActualizacionNombre" class="form-label">Actualiza tu nombre de usuario</label>
+                                                    <input type="text" class="form-control" id="ActualizacionNombre">
+                                                    <div class="form-text">Por favor, agrega un nombre respetuoso</div>
+
+                                                    <label for="ActualizacionAno" class="form-label">Actualiza tu año de nacimiento</label>
+                                                    <input type="text" class="form-control" id="ActualizacionAno">
+
+                                                    <label for="ActualizacionAltura" class="form-label">Actualiza tu altura</label>
+                                                    <input type="text" class="form-control" id="ActualizacionAltura">
                                                 </div>
+
                                                 <div class="mb-3">
-                                                    <label for="exampleInputPassword1" class="form-label">Confirma
-                                                        tu contraseña</label>
-                                                    <input type="password" class="form-control"
-                                                        id="exampleInputPassword1">
+                                                    <label for="exampleInputPassword1" class="form-label">Confirma tu contraseña</label>
+                                                    <input type="password" class="form-control" id="exampleInputPassword1">
                                                 </div>
+
                                                 <div class="mb-3 form-check">
-                                                    <input type="checkbox" class="form-check-input" id="exampleCheck1"
-                                                        required>
-                                                    <label class="form-check-label" for="exampleCheck1">¿Estás
-                                                        seguro de actualizar los datos?</label>
+                                                    <input type="checkbox" class="form-check-input" id="exampleCheck1" required>
+                                                    <label class="form-check-label" for="exampleCheck1">¿Estás seguro de actualizar los datos?</label>
                                                 </div>
-                                                <button type="button" class="btn btn-primary"
-                                                    onclick="Actdatos()">Actualizar</button>
+
+                                                <button type="button" class="btn btn-primary" onclick="Actdatos()">Actualizar</button>
                                             </form>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tab-pane fade" id="list-profile" role="tabpanel" aria-labelledby="list-profile-list">
-
-                        <div class="card mb-12 col-12 col-sm-12 col-md-6 col-lg-8 col-xl-8" id="ContenedorCreacion">
-                            <!--Creación del contenedor de la derecha que contiene form para subir nueva publicación y ultima públicación-->
-                            <div class="card-body mostrarCont">
-                                <!--Creación del contenedor pra crear nueva publicación-->
-                                <h5 class="card-title">¿Algo nuevo para compartir?</h5>
-                                <div class="form-floating">
-                                    <textarea class="form-control" placeholder="Leave a comment here"
-                                        id="floatingTextarea2" style="height: 100px"></textarea>
-                                    <label for="floatingTextarea2">Cuéntanos cómo te mantienes enfocado 🎯</label>
-                                    <div class="mb-3">
-                                        <label for="formFileMultiple" class="form-label">Añade archivos a tu
-                                            publicación</label>
-                                        <input class="form-control" type="file" id="formFileMultiple" multiple><br>
-                                        <button type="button" class="btn btn-primary">Publicar</button>
-                                    </div>
-                                </div>
-                                <!--Contener de ultima publicación-->
-
 
                             </div>
                         </div>
                     </div>
 
+                    <!-- TUS PUBLICACIONES -->
                     <div class="tab-pane fade" id="list-settings" role="tabpanel" aria-labelledby="list-settings-list">
-                        <!--contenedor para publicaciones-->
-
                         <div class="card card-body" id="Tus_publicaciones">
-                            <div class="card mb-12 col-12 col-sm-12 col-md-6 col-lg-6 col-8 col-xl-4"
-                                style="margin: 0 auto;" id="Publicaciones">
+                            <div class="card mb-12 col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4" style="margin: 0 auto;" id="Publicaciones">
                                 <img src="imagenes/static/imgGymTres.jpg" class="card-img-top" alt="...">
                                 <div class="card-body">
                                     <h5 class="card-title">💪 ¡Hoy es un buen día para entrenar! 🔥</h5>
-
                                     <div class="collapse" id="collapseExample">
-                                        <p class="card-text">No importa si estás empezando o si llevas años en el
-                                            camino, cada gota
-                                            de sudor
-                                            cuenta.
-                                            Recuerda: no se trata de ser el mejor, se trata de ser mejor que ayer.
-
-                                            🏋️‍♂️ ¿Ya hiciste tu rutina de hoy?
-                                            🎯 Enfócate. Respira. Empuja. ¡Tú puedes!
-
-                                            ✅ Si necesitas ayuda con tu plan de entrenamiento o nutrición,
-                                            ¡escríbenos!
-                                            Estamos aquí para acompañarte en cada paso del camino.
-
-                                            #GymLife #EntrenaConNosotros #FitnessMotivation #SaludYFuerza
-                                            #TransformaTuCuerpo
-
-                                        </p>
-                                        <p class="card-text"><small class="text-body-secondary">Actualizado hace 3
-                                                minutos</small>
-                                        </p>
+                                        <p class="card-text">No importa si estás empezando o si llevas años en el camino, cada gota de sudor cuenta...
+                                            🏋️‍♂️ ¿Ya hiciste tu rutina de hoy? 🎯 Enfócate. Respira. Empuja. ¡Tú puedes!</p>
+                                        <p class="card-text"><small class="text-body-secondary">Actualizado hace 3 minutos</small></p>
                                     </div>
                                     <button class="btn btn-primary" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#collapseExample" aria-expanded="false"
-                                        aria-controls="collapseExample" id="verMas" onclick="actButon()">
-                                        Ver más </button>
-
+                                        aria-controls="collapseExample" id="verMas" onclick="actButon()">Ver más</button>
                                 </div>
                             </div>
-
                         </div>
                     </div>
-                    <div class="tab-pane fade" id="list-comunidades" role="tabpanel"
-                        aria-labelledby="list-comunidades-list">
+
+                    <!-- TUS COMUNIDADES -->
+                    <div class="tab-pane fade" id="list-comunidades" role="tabpanel" aria-labelledby="list-comunidades-list">
                         <div class="card card-body" id="Tus_publicaciones">
-                            <div *ngFor="let comunidad of comunidades"
-                                class="mostrarCont col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                            <div *ngFor="let comunidad of comunidades" class="mostrarCont col-12">
                                 <div class="card" id="cataComunidades">
                                     <img src="/imagenes/static/imgGymUno.jpg" class="card-img-top" alt="...">
                                     <div class="card-body">
@@ -230,92 +134,86 @@
                                         <p class="card-text">{{comunidad.descripcion}}</p>
                                         <h6>Tematica:</h6>
                                         <p class="card-text">{{comunidad.tematica}}</p>
-                                        <a [routerLink]="['/servicios', comunidad.id]" class="btn btn-primary">Ver
-                                            más</a>
-                                        <a type="button" class="btn btn-primary"
-                                        data-bs-target="#modalEliminar" id="botonEliminar" data-bs-toggle="modal"
-                                            (click)=abrirModal(comunidad)>Eliminar</a>
+                                        <a [routerLink]="['/servicios', comunidad.id]" class="btn btn-primary">Ver más</a>
+                                        <a type="button" class="btn btn-primary" data-bs-target="#modalEliminar"
+                                            id="botonEliminar" data-bs-toggle="modal" (click)="abrirModal(comunidad)">Eliminar</a>
                                         <a class="btn btn-primary" data-bs-toggle="modal" id="modal"
-                                            data-bs-target="#modalActualizar" (click)="abrirModal(comunidad)">
-                                            Actualiza</a>
+                                            data-bs-target="#modalActualizar" (click)="abrirModal(comunidad)">Actualiza</a>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
+
+        <!-- MODALES -->
         <div class="modal fade" id="modalEliminar" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
-
                     <div class="modal-header">
                         <h5 class="modal-title">¿Estas seguro de eliminar la comunidad?</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                     </div>
-
                     <div class="modal-body">
-                        <p>Vas a eliminar <strong>{{comunidadseleccionada.nombre}}, esta acción no tiene marcha atras y no se podran recuperar los datos</strong>
+                        <p>Vas a eliminar <strong>{{comunidadseleccionada?.nombre}}, esta acción no tiene marcha atrás y no se podrán recuperar los datos</strong></p>
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-primary" data-bs-dismiss="modal">Cancelar, desisto de mi acción</button>
-                        <button class="btn btn-danger" (click)="eliminarComunidad()" data-bs-dismiss="modal">Estoy seguro,
-                            eliminar</button>
+                        <button class="btn btn-danger" (click)="eliminarComunidad()" data-bs-dismiss="modal">Estoy seguro, eliminar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="modalActualizar" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Actualizar comunidad</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="mb-3">
+                                <label id="nombreModal">Nombre</label>
+                                <input [(ngModel)]="comunidadEditar.nombre" name="nombre" class="form-control" />
+                            </div>
+                            <div class="mb-3">
+                                <label id="descripcionModal">Descripción</label>
+                                <input [(ngModel)]="comunidadEditar.descripcion" name="descripcion" class="form-control" />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Temática</label>
+                                <select class="form-control" [(ngModel)]="comunidadEditar.tematica" name="tematica">
+                                    <option value="">Seleccione</option>
+                                    <option value="ACTIVIDAD_FÍSICA">Actividad física</option>
+                                    <option value="COACH_DEPORTIVO">Coach deportivo</option>
+                                    <option value="NUTRICIÓN">Nutrición</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Tipo</label>
+                                <select class="form-control" [(ngModel)]="comunidadEditar.tipo" name="tipo">
+                                    <option value="">Seleccione</option>
+                                    <option value="CHAT_GRUPAL">Chat Grupal</option>
+                                    <option value="GRUPO">Grupo</option>
+                                    <option value="COMUNIDAD">Comunidad</option>
+                                    <option value="GRAN_COMUNIDAD">Gran Comunidad</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button class="btn btn-primary" (click)="actualizarComunidad(comunidadEditar)">Guardar cambios</button>
                     </div>
                 </div>
             </div>
         </div>
 
     </div>
-    <div class="modal fade" id="modalActualizar" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-
-                <div class="modal-header">
-                    <h5 class="modal-title">Actualizar comunidad</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
-
-                <div class="modal-body">
-                    <form>
-                        <div class="mb-3">
-                            <label id="nombreModal">Nombre</label>
-                            <input [(ngModel)]="comunidadEditar.nombre" name="nombre" class="form-control" />
-                        </div>
-                        <div class="mb-3">
-                            <label id="descripcionModal">Descripción</label>
-                            <input [(ngModel)]="comunidadEditar.descripcion" name="descripcion" class="form-control" />
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Temática</label>
-                            <select class="form-control" [(ngModel)]="comunidadEditar.tematica" name="tematica">
-                                <option value="">Seleccione</option>
-                                <option value="ACTIVIDAD_FÍSICA">Actividad física</option>
-                                <option value="COACH_DEPORTIVO">Coach deportivo</option>
-                                <option value="NUTRICIÓN">Nutrición</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Tipo</label>
-                            <select class="form-control" [(ngModel)]="comunidadEditar.tipo" name="tipo">
-                                <option value="">Seleccione</option>
-                                <option value="CHAT_GRUPAL">Chat Grupal</option>
-                                <option value="GRUPO">Grupo</option>
-                                <option value="COMUNIDAD">Comunidad</option>
-                                <option value="GRAN_COMUNIDAD">Gran Comunidad</option>
-                            </select>
-
-                        </div>
-                    </form>
-                </div>
-
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button class="btn btn-primary" (click)="actualizarComunidad(comunidadEditar)">Guardar
-                        cambios</button>
-                </div>
-            </div>
-        </div>
-    </div>
 </main>
+<app-footer></app-footer>

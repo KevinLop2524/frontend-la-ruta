@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-
 import { Peticion } from '../../servicios/peticion';
 import { Router, RouterLink } from '@angular/router';
 

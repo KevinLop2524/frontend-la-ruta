@@ -6,60 +6,65 @@ import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { Footer } from "../footer/footer";
 
 
 @Component({
   selector: 'app-perfil',
   standalone: true,
-  imports: [Header, FormsModule, RouterModule, CommonModule ],
+  imports: [Header, FormsModule, RouterModule, CommonModule, Footer],
   templateUrl: './perfil.html',
   styleUrl: './perfil.css'
 })
 export class Perfil {
 
-  tema: 'light' | 'dark'= 'light'
-  datosNoPermitidos: (string | null | undefined)[] = ["", null, undefined]
+  constructor(private peticion: Peticion, private cdr: ChangeDetectorRef, private route: ActivatedRoute) { }
 
-  comunidadseleccionada: any= null
+  datosNoPermitidos: (string | null | undefined)[] = ["", null, undefined, "Seleccionar", " "]
+
+  comunidadseleccionada: any = {nombre:" "}
   comunidades: any[] = []
   usuario: any = {}
   apodo: String| null= null
 
   ngOnInit(): void {
-    const temaGuardado= localStorage.getItem('tema');
-    this.apodo=localStorage.getItem('apodo')
+    this.comunidadseleccionada.nombre = " "
+
+    this.apodo = localStorage.getItem('apodo')
     this.buscarUsuario();
 
   }
 
   comunidadEditar: any = {
-    tematica: '',
-    nombre: '',
-    descripcion: '',
-    tipo: '',
+    tematica: 'Seleccionar',
+    nombre: ' ',
+    descripcion: ' ',
+    tipo: ' ',
     id_creador: this.usuario.id,
   };
 
-  constructor(private peticion: Peticion, private cdr: ChangeDetectorRef, private route: ActivatedRoute) { }
   abrirModal(comunidad: any) {
-    this.comunidadseleccionada= comunidad;
+    this.comunidadseleccionada = comunidad;
     this.comunidadEditar = { ...comunidad };
   }
 
   buscarUsuario() {
     let apodo = localStorage.getItem('apodo') || undefined;
+    let token = localStorage.getItem('token') || undefined;
     let get = {
       host: this.peticion.urlReal,
-      path: "/usuario/apodo/" + apodo,
+      path: "/usuarios/apodo/" + apodo,
       payload: {
       }
     }
-    this.peticion.get(get.host + get.path).then((res: any) => {
-      this.usuario = res.usuario;
+    this.peticion.get(get.host + get.path, token).then((res: any) => {
+      this.usuario = res;
+      console.log("usuario obj", this.usuario)
+      console.log("Usuario logueado:", this.usuario.apodo);
       this.cargarComunidades()
-      this.cdr.detectChanges()
-    }).catch(() => {
-      console.log("Usuario logueado:", this.usuario.usuario);
+      this.cdr.detectChanges();
+    }).catch((err) => {
+      console.log(err)
       console.log("Error al encontrar usuario")
     })
   }
@@ -186,5 +191,3 @@ export class Perfil {
       });
     }
 }
-
-
