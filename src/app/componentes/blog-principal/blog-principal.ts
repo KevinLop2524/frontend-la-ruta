@@ -6,6 +6,16 @@ import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { Footer } from '../footer/footer';
 import { RouterModule } from '@angular/router';
+import { z } from "zod";
+
+    const publicacionSchema = z.object({
+    contenido: z.string().min(1, "Contenido requerido").regex(/[a-zA-Z]/, "El contenido no puede ser numeros"),
+    nombre: z.string().min(1, "Nombre requerido").regex(/[a-zA-Z]/, "El nombre no puede ser numeros"),
+    descripcion: z.string().min(1, "descripción requerida").regex(/[a-zA-Z]/, "La descripción no puede ser numeros"),
+    categoria: z.string().min(1, "descripción requerida").regex(/[a-zA-Z]/, "La categoria no puede ser numeros"),
+    estado: z.string().default("activo"),
+    usuario_id: z.number()
+  })
 
 @Component({
   selector: 'app-publicacion',
@@ -13,6 +23,8 @@ import { RouterModule } from '@angular/router';
   templateUrl: './blog-principal.html',
   styleUrls: ['./blog-principal.css']  
 })
+
+
 export class BlogPrincipal implements OnInit {
 
   usuario: any = {};
@@ -27,7 +39,7 @@ export class BlogPrincipal implements OnInit {
     categoria: '',
     estado: 'activo',
     fecha: new Date().toISOString().split('T')[0],
-    usuario_id: null  // ⚠ Inicializamos como null
+    usuario_id: this.usuario.id 
   };
 
   publicacionEditar: any = { ...this.nuevaPublicacion };
@@ -65,17 +77,17 @@ export class BlogPrincipal implements OnInit {
   }
 
   crearPublicacion() {
-    // ✅ Validación básica
-    const campos = ['contenido', 'nombre', 'descripcion', 'categoria'];
-    for (let campo of campos) {
-      if (this.datosNoPermitidos.includes(this.nuevaPublicacion[campo])) {
-        Swal.fire({
-          title: 'Error',
-          text: `El campo ${campo} no es válido`,
-          icon: 'error'
-        });
-        return;
-      }
+
+    const resultado= publicacionSchema.safeParse(this.nuevaPublicacion)
+
+    if (!resultado.success){
+      const error= resultado.error.errors[0];
+      Swal.fire({
+        title: 'Error de validación',
+        text: error.message,
+        icon: 'warning'
+      });
+      return;
     }
 
     // ⚠ Revisamos que el usuario esté cargado
@@ -150,6 +162,18 @@ export class BlogPrincipal implements OnInit {
   }
 
   actualizarPublicacion(publicacion: any) {
+
+    const resultado= publicacionSchema.safeParse(this.publicacionEditar)
+
+    if (!resultado.success){
+      const error= resultado.error.errors[0];
+      Swal.fire({
+        title: 'Error de validación',
+        text: error.message,
+        icon: 'warning'
+      });
+      return;
+    }
     const token = localStorage.getItem('token') || undefined;
     const url = this.peticion.urlReal + '/api/publicaciones/' + publicacion.id;
 

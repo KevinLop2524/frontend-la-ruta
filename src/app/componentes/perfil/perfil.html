@@ -25,6 +25,9 @@
                                     <h5 class="card-title" name="nombreUser" id="nombreUser">{{apodo}}</h5><br>
                                     <h6 class="card-title">Nombre:</h6>
                                     <p class="card-text" name="nombre">{{usuario?.nombre}} {{usuario?.nombre_2}}</p>
+                                    <h6 class="card-title">Frase:</h6>
+                                    <p class="card-text" name="frase">{{fraseMoti.q}}</p>
+                                    <h6 class="card-title" name="autor">{{fraseMoti.a}}</h6>
                                 </div>
 
                                 <p>
@@ -134,6 +137,8 @@
                                         <p class="card-text">{{comunidad.descripcion}}</p>
                                         <h6>Tematica:</h6>
                                         <p class="card-text">{{comunidad.tematica}}</p>
+                                        <h6>Tipo:</h6>
+                                        <p class="card-text">{{comunidad.tipo}}</p>
                                         <a [routerLink]="['/servicios', comunidad.id]" class="btn btn-primary">Ver más</a>
                                         <a type="button" class="btn btn-primary" data-bs-target="#modalEliminar"
                                             id="botonEliminar" data-bs-toggle="modal" (click)="abrirModal(comunidad)">Eliminar</a>
