@@ -6,8 +6,21 @@ import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { Footer } from '../footer/footer';
 import { RouterModule } from '@angular/router';
+import { z } from "zod";//Se importamos zod
 
 
+//Creamos el esquema para comunidad:
+
+
+
+const comunidadSchema= z.object({
+  tematica: z.string().min(1, "Tematica requerida").regex(/[a-zA-Z]/, "El campo tematica es invalido"),
+  nombre: z.string().min(1, "nombre requerido").regex(/[a-zA-Z]/, "El campo nombre no es valido"),
+  descripcion: z.string().min(1, "descripción requerida").regex(/[a-zA-Z]/, "El campo descripción no es valido"),
+  tipo: z.string().min(1, "campo tipo requerido").regex(/[a-zA-Z]/, "El campo tipo no es valido"),
+  idCreador: z.number(),
+  estado: z.string().default("activo")
+})
 @Component({
   selector: 'app-comunidad',
   imports: [Header, CommonModule, FormsModule, Footer, RouterModule],
@@ -39,7 +52,8 @@ export class ComunidadComponent implements OnInit {
     nombre: '',
     descripcion: '',
     tipo: '',
-    idCreador: null
+    idCreador: null,
+    estado: 'activo'
   };
 
   abrirModal(comunidad: any) {
@@ -95,53 +109,24 @@ export class ComunidadComponent implements OnInit {
 
   crearComunidad() {
 
+        let token = localStorage.getItem('token') || undefined;
 
-    const newNombre = this.datosNoPermitidos.findIndex((dato) => dato === this.nuevaComunidad.nombre);
-    const newDescripcion = this.datosNoPermitidos.findIndex((dato) => dato === this.nuevaComunidad.descripcion);
-    const newTipo = this.datosNoPermitidos.findIndex((dato) => dato === this.nuevaComunidad.tipo);
-    const newTematica = this.datosNoPermitidos.findIndex((dato) => dato === this.nuevaComunidad.tematica);
-    let token = localStorage.getItem('token') || undefined;
 
-    if (newNombre !== -1) {
-      console.log(this.nuevaComunidad.nombre)
-      Swal.fire({
-        title: 'Error',
-        text: 'Nombre de comunidad no valida',
-        icon: 'warning'
-      });
-      return;
-    } else if (newDescripcion !== -1) {
-      Swal.fire({
-        title: 'Error',
-        text: 'Descripción no valida',
-        icon: 'warning'
-      });
-      return;
-    } else if (newTipo !== -1) {
-      Swal.fire({
-        title: 'Error',
-        text: 'Campo tipo no valido',
-        icon: 'warning'
-      });
-      return;
-    }
-    else if (newTematica !== -1) {
-      Swal.fire({
-        title: 'Error',
-        text: 'Campo tematica no valida',
-        icon: 'warning'
-      });
-      return;
-    }
 
-    if (!this.usuario || !this.usuario.id) {
-      Swal.fire({
-        title: 'Error',
-        text: 'No se ha cargado el usuario aún. Intente de nuevo.',
-        icon: 'warning'
-      });
-      return;
-    }
+      //A esto:
+    const resultado= comunidadSchema.safeParse(this.nuevaComunidad)
+      if(!resultado.success){
+        const error= resultado.error.errors[0];
+        Swal.fire({
+          title: 'Algo salio mal',
+          text: error.message,
+          icon: 'warning',
+          confirmButtonText: 'Ok'
+        });
+        return;
+      }
+
+//Es una maravilla esta dependencia
 
     let post = {
       host: this.peticion.urlReal,
@@ -214,50 +199,21 @@ export class ComunidadComponent implements OnInit {
 
   actualizarComunidad(comunidad: any) {
 
-    const newNombreE = this.datosNoPermitidos.findIndex((dato) => dato === this.comunidadEditar.nombre);
-    const newDescripcionE = this.datosNoPermitidos.findIndex((dato) => dato === this.comunidadEditar.descripcion);
-    const newtipoE = this.datosNoPermitidos.findIndex((dato) => dato === this.comunidadEditar.tipo);
-    const newTematicaE = this.datosNoPermitidos.findIndex((dato) => dato === this.comunidadEditar.tematica);
 
-    if (this.datosNoPermitidos.includes(this.comunidadEditar.nombre) &&
-      this.datosNoPermitidos.includes(this.comunidadEditar.descripcion) &&
-      this.datosNoPermitidos.includes(this.comunidadEditar.tipo) &&
-      this.datosNoPermitidos.includes(this.comunidadEditar.tematica)) {
-      Swal.fire({
-        title: 'Error',
-        text: 'Tiene que ingresar al menos un campo para actualizar',
-        icon: 'warning'
-      });
-      return;
-    } if (this.datosNoPermitidos.includes(this.comunidadEditar.nombre)) {
-      Swal.fire({
-        title: 'Error',
-        text: 'No puedes dejar el campo nombre vacio',
-        icon: 'warning'
-      });
-      return;
-    } if (this.datosNoPermitidos.includes(this.comunidadEditar.descripcion)) {
-      Swal.fire({
-        title: 'Error',
-        text: 'No puedes dejar el campo descripción vacio',
-        icon: 'warning'
-      });
-      return;
-    } if (this.datosNoPermitidos.includes(this.comunidadEditar.tipo)) {
-      Swal.fire({
-        title: 'Error',
-        text: 'No puedes dejar el campo tipo vacio',
-        icon: 'warning'
-      });
-      return;
-    } if (this.datosNoPermitidos.includes(this.comunidadEditar.tematica)) {
-      Swal.fire({
-        title: 'Error',
-        text: 'No puedes dejar el campo tematica vacio',
-        icon: 'warning'
-      });
-      return;
+    const resultado= comunidadSchema.safeParse(this.comunidadEditar)
+
+    if (!resultado.success){
+      const error= resultado.error.errors[0];
+    Swal.fire({
+      title: 'Algo salio mal',
+      text: error.message,
+      icon: 'warning',
+      confirmButtonText: 'Ok'
+    })
+    console.log(error)
+    return;
     }
+
     let token = localStorage.getItem('token') || undefined;
 
 
@@ -270,7 +226,9 @@ export class ComunidadComponent implements OnInit {
         nombre: this.datosNoPermitidos.includes(this.comunidadEditar.nombre) ? comunidad.nombre : this.comunidadEditar.nombre,
         descripcion: this.datosNoPermitidos.includes(this.comunidadEditar.descripcion) ? comunidad.descripcion : this.comunidadEditar.descripcion,
         tipo: this.datosNoPermitidos.includes(this.comunidadEditar.tipo) ? comunidad.tipo : this.comunidadEditar.tipo,
-        idCreador: comunidad.idCreador
+        idCreador: comunidad.idCreador,
+        estado: comunidad.estado,
+        fecha: '2025-09-24'
       }
     };
     this.peticion.put(act.host + act.path, act.payload, token).then((res: any) => {

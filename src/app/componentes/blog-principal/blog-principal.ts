@@ -6,13 +6,15 @@ import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { Footer } from '../footer/footer';
 import { RouterModule } from '@angular/router';
-import { z } from "zod";
+import { z } from "zod";//Se importa la dependencia zod
 
+
+//aqui se crea el esquema que queremos para nuestra publicación
     const publicacionSchema = z.object({
-    contenido: z.string().min(1, "Contenido requerido").regex(/[a-zA-Z]/, "El contenido no puede ser numeros"),
-    nombre: z.string().min(1, "Nombre requerido").regex(/[a-zA-Z]/, "El nombre no puede ser numeros"),
-    descripcion: z.string().min(1, "descripción requerida").regex(/[a-zA-Z]/, "La descripción no puede ser numeros"),
-    categoria: z.string().min(1, "descripción requerida").regex(/[a-zA-Z]/, "La categoria no puede ser numeros"),
+    contenido: z.string().min(1, "Contenido requerido").regex(/[a-zA-Z]/, "El contenido es invalido"),
+    nombre: z.string().min(1, "Nombre requerido").regex(/[a-zA-Z]/, "El nombre es invalido"),
+    descripcion: z.string().min(1, "descripción requerida").regex(/[a-zA-Z]/, "La descripción es invalida"),
+    categoria: z.string().min(1, "categoria requerida").regex(/[a-zA-Z]/, "La categoria es invalida"),
     estado: z.string().default("activo"),
     usuario_id: z.number()
   })
@@ -78,8 +80,14 @@ export class BlogPrincipal implements OnInit {
 
   crearPublicacion() {
 
+    /*aqui se hace una comprobación sobre el objeto nueva publicación con el esquema que creamos anteriormente
+    para asignarle a la variable resultado
+    */
+
     const resultado= publicacionSchema.safeParse(this.nuevaPublicacion)
 
+
+    //Aqui estamos verificando que si la validación fallo entonces muestre en una alerta el resultado con el mensaje de error
     if (!resultado.success){
       const error= resultado.error.errors[0];
       Swal.fire({
