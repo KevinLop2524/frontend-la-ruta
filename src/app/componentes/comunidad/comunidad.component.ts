@@ -7,25 +7,14 @@ import Swal from 'sweetalert2';
 import { Footer } from '../footer/footer';
 import { RouterModule } from '@angular/router';
 import { z } from "zod";//Se importamos zod
+import { comunidadZodValidator } from '../../validators/comunidad-zod.validator';
 
-
-//Creamos el esquema para comunidad:
-
-
-
-const comunidadSchema= z.object({
-  tematica: z.string().min(1, "Tematica requerida").regex(/[a-zA-Z]/, "El campo tematica es invalido"),
-  nombre: z.string().min(1, "nombre requerido").regex(/[a-zA-Z]/, "El campo nombre no es valido"),
-  descripcion: z.string().min(1, "descripción requerida").regex(/[a-zA-Z]/, "El campo descripción no es valido"),
-  tipo: z.string().min(1, "campo tipo requerido").regex(/[a-zA-Z]/, "El campo tipo no es valido"),
-  idCreador: z.number(),
-  estado: z.string().default("activo")
-})
 @Component({
   selector: 'app-comunidad',
   imports: [Header, CommonModule, FormsModule, Footer, RouterModule],
   templateUrl: './comunidad.component.html',
-  styleUrl: './comunidad.component.css'
+  styleUrl: './comunidad.component.css',
+  providers: [comunidadZodValidator]
 })
 export class ComunidadComponent implements OnInit {
   rol: string[] = [];
@@ -61,7 +50,7 @@ export class ComunidadComponent implements OnInit {
     this.comunidadEditar = { ...comunidad };
   }
 
-  constructor(private peticion: Peticion, private cdr: ChangeDetectorRef) { }
+  constructor(private peticion: Peticion, private cdr: ChangeDetectorRef, private validar: comunidadZodValidator) { }
 
   ngOnInit(): void {
     this.rol = JSON.parse(localStorage.getItem('roles') || '[]')
@@ -109,22 +98,20 @@ export class ComunidadComponent implements OnInit {
 
   crearComunidad() {
 
-        let token = localStorage.getItem('token') || undefined;
+    let token = localStorage.getItem('token') || undefined;
 
 
+    const resultado= this.validar.validar(this.nuevaComunidad);
 
-      //A esto:
-    const resultado= comunidadSchema.safeParse(this.nuevaComunidad)
-      if(!resultado.success){
-        const error= resultado.error.errors[0];
-        Swal.fire({
-          title: 'Algo salio mal',
-          text: error.message,
-          icon: 'warning',
-          confirmButtonText: 'Ok'
-        });
-        return;
-      }
+    if (!resultado.ok){
+      Swal.fire({
+        title: 'Algo salio mal',
+        text: resultado.error,
+        icon: 'warning',
+        confirmButtonText: 'Ok'
+      });
+      return;
+    }
 
 //Es una maravilla esta dependencia
 
@@ -200,13 +187,13 @@ export class ComunidadComponent implements OnInit {
   actualizarComunidad(comunidad: any) {
 
 
-    const resultado= comunidadSchema.safeParse(this.comunidadEditar)
+    const resultado= this.validar.validar(this.comunidadEditar);
 
-    if (!resultado.success){
-      const error= resultado.error.errors[0];
+    if (!resultado.ok){
+      const error= resultado.error;
     Swal.fire({
       title: 'Algo salio mal',
-      text: error.message,
+      text: error,
       icon: 'warning',
       confirmButtonText: 'Ok'
     })
