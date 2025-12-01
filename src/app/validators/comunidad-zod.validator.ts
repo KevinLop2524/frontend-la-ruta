@@ -1,8 +1,8 @@
 import {comunidadSchema} from "../schemas/comunidad.schema"
-import { ValidadorComunidad } from "../interfaces/validador-comunidad"
+import { Validador } from "../interfaces/validador"
 
 
-export class comunidadZodValidator implements ValidadorComunidad{
+export class comunidadZodValidator implements Validador{
     
     validar(data: any) { 
         const r= comunidadSchema.safeParse(data);

@@ -1,4 +1,4 @@
-main {
+/*main {
     flex: 1;
 }
 
@@ -86,4 +86,30 @@ a.btn-primary {
     .mostrarCont {
         margin-top: 10px;
     }
+}*/
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: Poppins, system-ui;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+
+    /* Para que el footer se mantenga abajo */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Contenedor principal */
+main {
+    flex: 1; /* Empuja el footer hacia abajo */
+}
+
+/* Cards */
+.card-svc {
+    background: var(--card);
+    padding: 14px;
+    border-radius: var(--radius);
+    box-shadow: 0 8px 22px rgba(0,0,0,.06);
 }

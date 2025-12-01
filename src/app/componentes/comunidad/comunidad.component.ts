@@ -18,12 +18,9 @@ import { comunidadZodValidator } from '../../validators/comunidad-zod.validator'
 })
 export class ComunidadComponent implements OnInit {
   rol: string[] = [];
-
   apodo: String | null = null
   comunidadseleccionada: any = null
   datosNoPermitidos: (string | null | undefined)[] = ["", null, undefined];
-
-
   comunidades: any[] = []
   usuario: any = {}
 

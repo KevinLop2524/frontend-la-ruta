@@ -19,6 +19,7 @@ export const routes: Routes = [
     { path: '', redirectTo: '/login', pathMatch: 'full' },
     { path: 'blog', component: BlogPrincipal, canActivate: [AuthGuard] },
     { path: 'perfil', component: Perfil, canActivate: [AuthGuard] },
+    { path: 'servicios', component: ServicioComponent, canActivate: [AuthGuard] },
     { path: 'servicios/:id', component: ServicioComponent, canActivate: [AuthGuard] },
     { path: 'comunidades', component: ComunidadComponent, canActivate: [AuthGuard] },
     { path: 'favoritos', component: FavoritosComponent, canActivate: [AuthGuard] },

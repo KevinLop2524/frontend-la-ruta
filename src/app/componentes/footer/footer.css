@@ -44,9 +44,9 @@ main {
     flex: 1;
 }
 
-footer {
-    background: #333;
+.footer {
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
     color: white;
+    padding: 10px 12px;
     text-align: center;
-    padding: 10px;
 }
