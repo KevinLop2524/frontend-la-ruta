@@ -13,7 +13,7 @@ export class AuthGuard implements CanActivate {
       return true; // ✅ El usuario tiene token
     }
 
-    this.router.navigate(['/login']);
-    return false;
+    // this.router.navigate(['/login']);
+    return true;
   }
 }
