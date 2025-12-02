@@ -59,7 +59,7 @@ export class ComunidadComponent implements OnInit {
   cargarComunidades() {
     let get = {
       host: this.peticion.urlReal,
-      path: "/api/communities/all",
+      path: "/api/communities/active",
       payload: {
       }
     }
@@ -78,13 +78,13 @@ export class ComunidadComponent implements OnInit {
     let token = localStorage.getItem('token') || undefined;
     let get = {
       host: this.peticion.urlReal,
-      path: "/api/users/get/" + 1,
+      path: "/api/users/get/" + 4,
       payload: {
       }
     }
     this.peticion.get(get.host + get.path, token).then((res: any) => {
       this.usuario = res;
-      this.nuevaComunidad.idCreador = this.usuario.id
+      this.nuevaComunidad.creatorId = this.usuario.id
       this.cdr.detectChanges()
       console.log("Usuario logueado:", this.usuario.usuario);
 
@@ -126,7 +126,7 @@ export class ComunidadComponent implements OnInit {
 
     this.peticion.post(post.host + post.path, post.payload).then((res: any) => {
       console.log("Comunidad creada:", res);
-      if (res.estado) {
+      if (res.active) {
         Swal.fire({
           title: '¡Éxito!',
           text: res.mensaje,

@@ -20,7 +20,6 @@
             <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab"
                 tabindex="0">
                 <div class="row">
-                    <ng-component>
                     <div *ngFor="let comunidad of comunidades"
                         class="mostrarCont col-12 col-sm-12 col-md-6 col-lg-3 col-xl-3">
                         <div class="card">
@@ -28,7 +27,7 @@
                             <div class="card-body">
                                 <h5 class="card-title">{{comunidad.name}}</h5>
                                 <p class="card-text">{{comunidad.description}}</p>
-                                <h6>Tematica:</h6>
+                                <h6>Categoria:</h6>
                                 <p class="card-text">{{comunidad.category}}</p>
                                 <a [routerLink]="['/servicios', comunidad.id]" class="btn btn-primary">Ver más</a>
                                 <a type="button" class="btn btn-primary" data-bs-target="#modalActualizar"
@@ -37,7 +36,6 @@
                             </div>
                         </div>
                     </div>
-                    </ng-component>
                 </div>
             </div>
             <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab"

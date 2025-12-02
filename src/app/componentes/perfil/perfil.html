@@ -133,12 +133,11 @@
                                 <div class="card" id="cataComunidades">
                                     <img src="/imagenes/static/imgGymUno.jpg" class="card-img-top" alt="...">
                                     <div class="card-body">
-                                        <h5 class="card-title">{{comunidad.nombre}}</h5>
-                                        <p class="card-text">{{comunidad.descripcion}}</p>
-                                        <h6>Tematica:</h6>
-                                        <p class="card-text">{{comunidad.tematica}}</p>
+                                        <h5 class="card-title">{{comunidad.name}}</h5>
+                                        <p class="card-text">{{comunidad.description}}</p>
+                                        <h6>Categoria:</h6>
+                                        <p class="card-text">{{comunidad.category}}</p>
                                         <h6>Tipo:</h6>
-                                        <p class="card-text">{{comunidad.tipo}}</p>
                                         <a [routerLink]="['/servicios', comunidad.id]" class="btn btn-primary">Ver más</a>
                                         <a type="button" class="btn btn-primary" data-bs-target="#modalEliminar"
                                             id="botonEliminar" data-bs-toggle="modal" (click)="abrirModal(comunidad)">Eliminar</a>
@@ -184,29 +183,19 @@
                         <form>
                             <div class="mb-3">
                                 <label id="nombreModal">Nombre</label>
-                                <input [(ngModel)]="comunidadEditar.nombre" name="nombre" class="form-control" />
+                                <input [(ngModel)]="comunidadEditar.name" name="nombre" class="form-control" />
                             </div>
                             <div class="mb-3">
                                 <label id="descripcionModal">Descripción</label>
-                                <input [(ngModel)]="comunidadEditar.descripcion" name="descripcion" class="form-control" />
+                                <input [(ngModel)]="comunidadEditar.description" name="descripcion" class="form-control" />
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Temática</label>
-                                <select class="form-control" [(ngModel)]="comunidadEditar.tematica" name="tematica">
+                                <select class="form-control" [(ngModel)]="comunidadEditar.category" name="tematica">
                                     <option value="">Seleccione</option>
-                                    <option value="ACTIVIDAD_FÍSICA">Actividad física</option>
-                                    <option value="COACH_DEPORTIVO">Coach deportivo</option>
-                                    <option value="NUTRICIÓN">Nutrición</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Tipo</label>
-                                <select class="form-control" [(ngModel)]="comunidadEditar.tipo" name="tipo">
-                                    <option value="">Seleccione</option>
-                                    <option value="CHAT_GRUPAL">Chat Grupal</option>
-                                    <option value="GRUPO">Grupo</option>
-                                    <option value="COMUNIDAD">Comunidad</option>
-                                    <option value="GRAN_COMUNIDAD">Gran Comunidad</option>
+                                    <option value="FITNESS">Fitness</option>
+                                    <option value="NUTRITION">Nutricion</option>
+                                    <option value="PERSONAL_DEVELOPMENT">Desarrollo personal</option>
                                 </select>
                             </div>
                         </form>

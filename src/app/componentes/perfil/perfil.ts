@@ -43,11 +43,10 @@ export class Perfil {
   }
 
   comunidadEditar: any = {
-    tematica: 'Seleccionar',
-    nombre: ' ',
-    descripcion: ' ',
-    tipo: ' ',
-    id_creador: this.usuario.id,
+    categoty: 'Seleccionar',
+    name: ' ',
+    description: ' ',
+    creatorId: this.usuario.id,
   };
 
   abrirModal(comunidad: any) {
@@ -77,11 +76,11 @@ export class Perfil {
     let token = localStorage.getItem('token') || undefined;
     let get = {
       host: this.peticion.urlReal,
-      path: "/usuarios/apodo/" + apodo,
+      path: "/api/users/get/" + 4,
       payload: {
       }
     }
-    this.peticion.get(get.host + get.path, token).then((res: any) => {
+    this.peticion.get(get.host + get.path).then((res: any) => {
       this.usuario = res;
       console.log("usuario obj", this.usuario)
       console.log("Usuario logueado:", this.usuario.apodo);
@@ -96,16 +95,15 @@ export class Perfil {
   cargarComunidades() {
     let get = {
       host: this.peticion.urlReal,
-      path: "/comunidad/creador/" + this.usuario.id,
+      path: "/api/communities/creator/"+ this.usuario.id +"/active" ,
       payload: {
       }
     }
     this.peticion.get(get.host + get.path).then((res: any) => {
       this.comunidades = res
       this.cdr.detectChanges()
-    }).catch(() => {
-      console.log("Error al obtener comunidades")
-    })
+    }).catch((err: any) => {
+      console.error("error al obtener las comunidades", err);})
   }
 
   eliminarComunidad() {
@@ -142,41 +140,33 @@ export class Perfil {
     const newtipoE = this.datosNoPermitidos.findIndex((dato) => dato === this.comunidadEditar.tipo);
     const newTematicaE = this.datosNoPermitidos.findIndex((dato) => dato === this.comunidadEditar.tematica);
 
-    if (this.datosNoPermitidos.includes(this.comunidadEditar.nombre) &&
-      this.datosNoPermitidos.includes(this.comunidadEditar.descripcion) &&
-      this.datosNoPermitidos.includes(this.comunidadEditar.tipo) &&
-      this.datosNoPermitidos.includes(this.comunidadEditar.tematica)) {
+    if (this.datosNoPermitidos.includes(this.comunidadEditar.name) &&
+      this.datosNoPermitidos.includes(this.comunidadEditar.description) &&
+      this.datosNoPermitidos.includes(this.comunidadEditar.category)) {
       Swal.fire({
         title: 'Error',
         text: 'Tiene que ingresar al menos un campo para actualizar',
         icon: 'warning'
       });
       return;
-    } if (this.datosNoPermitidos.includes(this.comunidadEditar.nombre)) {
+    } if (this.datosNoPermitidos.includes(this.comunidadEditar.name)) {
       Swal.fire({
         title: 'Error',
         text: 'No puedes dejar el campo nombre vacio',
         icon: 'warning'
       });
       return;
-    } if (this.datosNoPermitidos.includes(this.comunidadEditar.descripcion)) {
+    } if (this.datosNoPermitidos.includes(this.comunidadEditar.description)) {
       Swal.fire({
         title: 'Error',
         text: 'No puedes dejar el campo descripción vacio',
         icon: 'warning'
       });
       return;
-    } if (this.datosNoPermitidos.includes(this.comunidadEditar.tipo)) {
+    } if (this.datosNoPermitidos.includes(this.comunidadEditar.category)) {
       Swal.fire({
         title: 'Error',
-        text: 'No puedes dejar el campo tipo vacio',
-        icon: 'warning'
-      });
-      return;
-    } if (this.datosNoPermitidos.includes(this.comunidadEditar.tematica)) {
-      Swal.fire({
-        title: 'Error',
-        text: 'No puedes dejar el campo tematica vacio',
+        text: 'No puedes dejar el campo categoria vacio',
         icon: 'warning'
       });
       return;
@@ -187,13 +177,12 @@ export class Perfil {
 
     let act = {
       host: this.peticion.urlReal,
-      path: '/comunidad/actualizar/' + comunidad.id,
+      path: '/api/communities/update/' + comunidad.id,
       payload: {
-        tematica: this.datosNoPermitidos.includes(this.comunidadEditar.tematica) ? comunidad.tematica : this.comunidadEditar.tematica,
-        nombre: this.datosNoPermitidos.includes(this.comunidadEditar.nombre) ? comunidad.nombre : this.comunidadEditar.nombre,
-        descripcion: this.datosNoPermitidos.includes(this.comunidadEditar.descripcion) ? comunidad.descripcion : this.comunidadEditar.descripcion,
-        tipo: this.datosNoPermitidos.includes(this.comunidadEditar.tipo) ? comunidad.tipo : this.comunidadEditar.tipo,
-        idCreador: this.usuario.id
+        category: this.datosNoPermitidos.includes(this.comunidadEditar.category) ? comunidad.category : this.comunidadEditar.category,
+        name: this.datosNoPermitidos.includes(this.comunidadEditar.name) ? comunidad.name : this.comunidadEditar.name,
+        description: this.datosNoPermitidos.includes(this.comunidadEditar.description) ? comunidad.description : this.comunidadEditar.description,
+        creatorId: this.usuario.id
       }
     };
     this.peticion.put(act.host + act.path, act.payload, token).then((res: any) => {
@@ -206,9 +195,10 @@ export class Perfil {
       this.cargarComunidades();
     }).catch((err: any) => {
       console.error("error al actualizar la comunidad", err);
+      console.log(this.comunidadEditar)
       Swal.fire({
         title: 'Error',
-        text: 'Error al actualizar la comunidad',
+        text: 'Error al actualizar la comunidad'+ err,
         icon: 'error',
         confirmButtonText: 'Cerrar'
       });
