@@ -25,12 +25,11 @@ export class ComunidadComponent implements OnInit {
   usuario: any = {}
 
   nuevaComunidad: any = {
-    tematica: '',
-    nombre: '',
+    category: '',
+    name: '',
     descripcion: '',
-    tipo: '',
-    idCreador: null,
-    estado: 'activo'
+    creatorId: null,
+    active: true
   };
 
   comunidadEditar: any = {
@@ -60,16 +59,17 @@ export class ComunidadComponent implements OnInit {
   cargarComunidades() {
     let get = {
       host: this.peticion.urlReal,
-      path: "/api/comunidades",
+      path: "/api/communities/all",
       payload: {
       }
     }
     this.peticion.get(get.host + get.path).then((res: any) => {
+      console.log(res)
       this.comunidades = res
       this.cdr.detectChanges()
-    }).catch(() => {
-      console.log("Error al obtener comunidades")
-    })
+    }).catch((err: any) => {
+                   console.log("Error al encontrar comunidades Error: ", err);
+                 })
   }
 
   buscarUsuario() {
@@ -114,19 +114,17 @@ export class ComunidadComponent implements OnInit {
 
     let post = {
       host: this.peticion.urlReal,
-      path: "/comunidad/crear",
+      path: "/api/communities/create",
       payload: {
-        tematica: this.nuevaComunidad.tematica,
-        nombre: this.nuevaComunidad.nombre,
-        descripcion: this.nuevaComunidad.descripcion,
-        tipo: this.nuevaComunidad.tipo,
-        idCreador: this.usuario.id,
-        estado: 'activo',
-        fecha: '2025-09-24'
+        category: this.nuevaComunidad.category,
+        name: this.nuevaComunidad.name,
+        description: this.nuevaComunidad.description,
+        creatorId: this.usuario.id,
+        active: true,
       }
     }
 
-    this.peticion.post(post.host + post.path, post.payload, token).then((res: any) => {
+    this.peticion.post(post.host + post.path, post.payload).then((res: any) => {
       console.log("Comunidad creada:", res);
       if (res.estado) {
         Swal.fire({
@@ -139,7 +137,7 @@ export class ComunidadComponent implements OnInit {
         this.cargarComunidades();
         this.cdr.detectChanges()
 
-        this.nuevaComunidad = { tematica: '', nombre: '', descripcion: '', tipo: '', idCreador: this.usuario.id || null, estado: 'activo' }
+        this.nuevaComunidad = { category: '', name: '', description: '', creatorId: this.usuario.id || null, active: true }
       }
     })
 

@@ -26,10 +26,10 @@
                         <div class="card">
                             <img src="/imagenes/static/imgGymUno.jpg" class="card-img-top" alt="...">
                             <div class="card-body">
-                                <h5 class="card-title">{{comunidad.nombre}}</h5>
-                                <p class="card-text">{{comunidad.descripcion}}</p>
+                                <h5 class="card-title">{{comunidad.name}}</h5>
+                                <p class="card-text">{{comunidad.description}}</p>
                                 <h6>Tematica:</h6>
-                                <p class="card-text">{{comunidad.tematica}}</p>
+                                <p class="card-text">{{comunidad.category}}</p>
                                 <a [routerLink]="['/servicios', comunidad.id]" class="btn btn-primary">Ver más</a>
                                 <a type="button" class="btn btn-primary" data-bs-target="#modalActualizar"
                                     id="botonconfiguracion" data-bs-toggle="modal" *ngIf="rol.includes('ROLE_ADMIN')"
@@ -46,34 +46,24 @@
                     <div class="mostrarCont col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
                         <div class="mb-3">
                             <label for="nuevaPublicacionPersonal" class="form-label">Nombre de la comunidad</label>
-                            <input type="text" class="form-control" [(ngModel)]="nuevaComunidad.nombre"
+                            <input type="text" class="form-control" [(ngModel)]="nuevaComunidad.name"
                                 name="nombreNueva" placeholder="Describe el contenido, por favor">
                         </div>
                         <div class="mostrarCont col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 ">
                             <label for="exampleFormControlTextarea1" class="form-label">Descripción del
                                 contenido</label>
-                            <textarea class="form-control" [(ngModel)]="nuevaComunidad.descripcion"
+                            <textarea class="form-control" [(ngModel)]="nuevaComunidad.description"
                                 id="exampleFormControlTextarea1" rows="5" name="descripcionNueva"
                                 placeholder="Descripción de lo que desees comentarnos. Con todo gusto te escuchamos."></textarea>
                         </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Temática</label>
-                        <select class="form-control" name="tematicaNueva" [(ngModel)]="nuevaComunidad.tematica">
+                        <select class="form-control" name="tematicaNueva" [(ngModel)]="nuevaComunidad.category">
                             <option value="">Seleccione</option>
-                            <option value="ACTIVIDAD_FÍSICA">Actividad física</option>
-                            <option value="COACH_DEPORTIVO">Coach deportivo</option>
-                            <option value="NUTRICIÓN">Nutrición</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Tipo</label>
-                        <select class="form-control" name="comunidadNueva" [(ngModel)]="nuevaComunidad.tipo">
-                            <option value="">Seleccione</option>
-                            <option value="CHAT_GRUPAL">Chat Grupal</option>
-                            <option value="GRUPO">Grupo</option>
-                            <option value="COMUNIDAD">Comunidad</option>
-                            <option value="GRAN_COMUNIDAD">Gran Comunidad</option>
+                            <option value="FITNESS">Fitness</option>
+                            <option value="NUTRITION">Nutrición</option>
+                            <option value="PERSONAL_DEVELOPMENT">Desarrollo personal</option>
                         </select>
                     </div>
 
