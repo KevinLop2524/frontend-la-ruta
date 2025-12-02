@@ -1,115 +1,123 @@
-/*main {
-    flex: 1;
+.contenedor-servicios {
+  max-width: 900px;
+  margin: 40px auto;
+  text-align: center;
 }
 
-main div.row {
-    margin-top: 20px;
-    background-color: rgba(42, 80, 102, 0.158);
-    padding-top: 20px;
-    padding-bottom: 20px;
+.titulo {
+  margin-bottom: 25px;
 }
 
-
-
-div.mostrarCont {
-    cursor: pointer;
-    transition: all 0.5s ease-in-out;
+.cards-servicios {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
 }
 
-
-#subirServicio {
-    margin-top: 20px;
+.card-servicio {
+  background: white;
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+  text-align: left;
 }
 
-#ServiciOnline {
-    margin-left: 90%
+.card-servicio h3 {
+  margin-bottom: 5px;
 }
 
-.card {
-    height: 500px;
-    padding-bottom: 1px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    margin-top: 10px;
+.coach {
+  color: gray;
+  font-size: 14px;
 }
 
-a.btn-primary {
-    width: 90px;
-    height: 40px;
-    position: absolute;
-    top: 5px;
+.desc {
+  font-size: 15px;
+  margin: 10px 0;
 }
 
-.oculto {
-    display: contents;
+.btn-ver {
+  background: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
-#contenedorCrear {
-    background-color: #afc8d6ff;
+.btn-ver:hover {
+  opacity: .85;
 }
 
-.btones {
-    background-color: azure;
+.vista-detalle {
+  max-width: 1000px;
+  margin: 20px auto;
 }
 
-.form-control {
-    border: solid 1px black;
+.btn-volver {
+  margin-bottom: 15px;
+  background: #444;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
-#DescripcionComunidad1 {
-    width: 80%;
-    background-color: #f3f4f6;
-    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.3);
-     margin: 20px auto; 
-    padding: 20px;     
-    border-radius: 8px;
-
+.grid-detalle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
 }
 
-#DescripcionComunidad {
-    width: 80%;
-    background-color: white;
-    margin: 20px auto; 
-    padding: 20px;
-    border-radius: 8px;
+.card-detalle {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.1);
 }
 
-
-
-@media (max-width: 991px) and (min-width: 500px) {
-    .mostrarCont {
-        margin-top: 10px;
-    }
+.lista-notas {
+  max-height: 220px;
+  overflow-y: auto;
+  margin-bottom: 10px;
 }
 
-@media (max-width: 499px) {
-    .mostrarCont {
-        margin-top: 10px;
-    }
-}*/
-
-body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: Poppins, system-ui;
-    margin: 0;
-    padding: 0;
-    min-height: 100vh;
-
-    /* Para que el footer se mantenga abajo */
-    display: flex;
-    flex-direction: column;
+.nota {
+  background: #f6f6f6;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 10px;
 }
 
-/* Contenedor principal */
-main {
-    flex: 1; /* Empuja el footer hacia abajo */
+.grafica-placeholder {
+  background: #f2f2f2;
+  height: 260px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
 }
 
-/* Cards */
-.card-svc {
-    background: var(--card);
-    padding: 14px;
-    border-radius: var(--radius);
-    box-shadow: 0 8px 22px rgba(0,0,0,.06);
+.agregar-nota {
+  display: flex;
+  gap: 10px;
+}
+
+.agregar-nota input {
+  flex: 1;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.agregar-nota button {
+  background: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
 }

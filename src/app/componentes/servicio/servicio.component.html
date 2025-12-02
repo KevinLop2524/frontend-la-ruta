@@ -1,63 +1,64 @@
 <app-header></app-header>
 
-    <nav class="navbar navbar-expand-lg mb-4"
-        style="background:linear-gradient(90deg,var(--primary),var(--secondary));">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center text-white" href="./index.html">
-                <img src="../../resources/New_Logo_Modo_Claro.png" alt="logo">
-                <span class="ms-2 fs-5 fw-bold">La Ruta</span>
-            </a>
-            <div class="d-flex gap-2 align-items-center">
-                <input id="globalSearch" class="form-control form-control-sm search-input"
-                    placeholder="Buscar publicaciones..." style="width:220px">
-                <button id="themeToggle" class="btn btn-light btn-sm btn-theme">Modo oscuro</button>
-            </div>
-        </div>
-    </nav>
+   <div class="contenedor-servicios" *ngIf="!viendoServicio">
 
-    <main class="container feed">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h3 class="m-0">Inicio</h3>
-            <div>
-                <button class="btn btn-outline-primary me-2"
-                    onclick="location.href='comunidades.html'">Comunidades</button>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newPostModal"><i
-                        class="bi bi-plus-lg"></i> Nueva</button>
-            </div>
-        </div>
+  <h2 class="titulo">Tus servicios</h2>
 
-        <div id="postsList" class="mb-5"></div>
-    </main>
+  <div class="cards-servicios">
 
-    <div class="modal fade" id="newPostModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Crear publicación</h5>
-                    <button class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <input id="postTitle" class="form-control mb-2" placeholder="Título (opcional)">
-                    <textarea id="postText" class="form-control mb-2" rows="3"
-                        placeholder="¿Qué quieres compartir?"></textarea>
-                    <input id="postImg" class="form-control" placeholder="URL imagen (opcional)">
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button class="btn btn-primary" onclick="createPost()">Publicar</button>
-                </div>
-            </div>
-        </div>
-        <div class="card-svc">
-            <div class="d-flex justify-content-between">
-                <h5>Kevin</h5><small class="text-muted">Kevin</small>
-            </div>
-            <p class="small text-muted">Hola a todos VLLC</p>
-            <div class="d-flex gap-2">
-                <button class="btn btn-sm btn-outline-primary" onclick='openSvc("${s.id}")'>Abrir</button>
-                <button class="btn btn-sm btn-danger" onclick='delSvc("${s.id}")'>Eliminar</button>
-            </div>
-        </div>
+    <div class="card-servicio" *ngFor="let s of servicios">
+      <h3>{{ s.nombre }}</h3>
+      <p class="coach">Asesor: {{ s.coach }}</p>
+      <p class="desc">{{ s.descripcion }}</p>
+      <button class="btn-ver" (click)="verServicio(s)">Ver</button>
     </div>
+
+  </div>
+
+</div>
+
+
+
+
+
+<div class="vista-detalle" *ngIf="viendoServicio">
+
+  <button class="btn-volver" (click)="volver()">↩ Volver</button>
+
+  <h2>{{ servicioActual.nombre }}</h2>
+  <p class="coach">Asesor: {{ servicioActual.coach }}</p>
+
+  <div class="grid-detalle">
+
+    <div class="card-detalle">
+      <h3>Notas de progreso</h3>
+
+      <div class="lista-notas">
+        <div class="nota" *ngFor="let n of servicioActual.notas">
+          <p>{{ n.texto }}</p>
+          <small>{{ n.fecha | date:'short' }}</small>
+        </div>
+      </div>
+
+      <div class="agregar-nota">
+        <input type="text" [(ngModel)]="nuevaNota" placeholder="Nueva nota...">
+        <button (click)="agregarNota()">Añadir</button>
+      </div>
+    </div>
+
+    <div class="card-detalle">
+      <h3>Gráficas de progreso</h3>
+
+      <div class="grafica-placeholder">
+        📈 Gráfica de ejemplo  
+        <br><small>(Aquí pondrás tus gráficas reales)</small>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
 
     <app-footer></app-footer>

@@ -1,275 +1,194 @@
+.perfil-container {
+  display: flex;
+  gap: 25px;
+  padding: 30px;
+  max-width: 1400px;
+  margin: auto;
+}
 
-main {
+.perfil-sidebar {
+  width: 260px;
+}
+
+.sidebar-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.sidebar-item {
+  display: block;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  font-weight: 600;
+  color: #444;
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.sidebar-item:hover {
+  background: #eaeaea;
+}
+
+.sidebar-item.active {
+  background: #ff4646;
+  color: white;
+}
+
+/* PERFIL */
+.perfil-main {
   flex: 1;
 }
-main div.row {
+
+.perfil-card {
+  background: #fff;
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.perfil-foto {
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 100%;
+  margin-bottom: 15px;
+}
+
+.perfil-nombre {
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.perfil-info h4 {
+  margin-top: 15px;
+  font-weight: 600;
+}
+
+.perfil-botones {
   margin-top: 20px;
-  background-color: rgba(42, 80, 102, 0.158);
-  padding-top: 20px;
-  padding-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
 }
-div.mostrarCont {
+
+.btn-normal {
+  background: #ff4646;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 10px;
+  color: white;
   cursor: pointer;
-  transition: all 0.5s ease-in-out;
+  transition: 0.2s;
 }
 
-main div.container div.card {
-   border-radius: 10px;
-   width: 60%;
+.btn-normal:hover {
+  background: #ff4646;
 }
 
-main div.container div.card div.text-bg-light {
-   border-radius: 10px;
-   width: 60%;
+.perfil-datos-card {
+  background: #f8f8f8;
+  padding: 20px;
+  border-radius: 15px;
+  margin-top: 20px;
 }
 
-.card{
-   margin-bottom: 15px;
-   width: 95%
+.titulo-section {
+  font-weight: 700;
+  margin-top: 15px;
 }
 
-.btn-primary{
-   margin-right: 5px;
+/* SERVICIOS */
+.servicios-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 25px;
 }
 
-.card.border-primary.mb-3 {
-   border-radius: 10px;
-   padding: 20px;
-   width: 100%;
+.servicio-card {
+  background: #fff;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  transition: 0.25s;
 }
 
-#botonModPrf {
-   margin-left: 0px;
-}
-#DatosPrivados{
-   padding: 10px;
-   width: 100%;
-}
-#DatosPrivados2{
-   padding: 10px;
-   width: 100%;
-}
-#botonDtPv1{
-   margin-left: 15px;
-}
-#botonDtPv2{
-   margin-left: 15px;
-}
-#CardMostrarDatos{
-      border: 0px;
-}
-.list-group-item{
-   border: solid 1px black;
-}
-#list-home-list{
-   border: solid 0px;
-}
-#list-profile-list{
-   border: solid 0px;
-}
-#list-settings-list{
-   border: solid 0px;
-}
-#list-comunidades-list{
-   border: solid 0px;
-}
-input{
-   border: solid 1px black;
-}
-#verMas{
-   margin-top: 25px;
-}
-#foto_perfil{
-   margin-top: 10px;
-   margin-bottom: 10px;
-   border-radius: 20px;
-}
-.form-control{
-   border: solid 1px black;
+.servicio-card:hover {
+  transform: translateY(-5px);
 }
 
-
-
-
-
-@media (min-width: 992px) {
-
-   #cataComunidades{
-      width: 95%;
-      margin-left: 3%;
-   }
-
-   .btn-primary {
-        margin-top: 5px;
-        margin-bottom: 5px;
-    }
-
-   #ultimaPublicación {
-      width: 100%;
-   }
-
-   #IdUsuario {
-      margin-left: 0px;
-      width: 95%;
-   }
-
-   #foto_perfil {
-      width: 25%;
-      margin-left: 300px;
-   }
-
-   #ContenedorCreacion {
-      margin-left: 10px;
-      width: 95%;
-   }
-
-   #CardMostrarDatos {
-      width: 100%;
-   }
-
-   #Tus_publicaciones {
-      width: 95%;
-   }
-
-   #CardMostrarDatos2 {
-      width: 100%;
-   }
-   #Publicaciones{
-      width: 95%;
-   }
+.servicio-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
 }
 
-@media (max-width: 991px) and (min-width: 500px) {
-   #contenedorDatosUsuario{
-      margin-top: 10px;
-   }
-
-   #ContenedorCreacion {
-      width: 100%;
-      margin-top: 10px;
-   }
-
-   #modalActualizar {
-      margin-left: 15px;
-        margin-top: 15px;
-        margin-bottom: 15px;
-    }
-
-   #botonDtPv {
-      margin-top: 10px;
-      margin-left: 10px;
-   }
-
-   #ultimaPublicación {
-      width: 100%;
-   }
-
-   #IdUsuario {
-      width: 100%;
-   }
-
-   #ContenedorCreacion {
-      margin-left: 10px;
-      width: 95%;
-   }
-
-   #Tus_publicaciones {
-      width: 100%;
-      margin-top: 10px;
-   }
-
-   #CardMostrarDatos {
-      width: 100%;
-   }
-
-   #collapseWidthExample2 {
-      width: 100%;
-   }
-
-   #CardMostrarDatos2 {
-      width: 100%;
-   }
-
-   #Publicaciones {
-      width: 100%;
-   }
-
-   #DatosPrivados {
-      width: 100%;
-   }
-
+.servicio-info {
+  padding: 18px;
 }
 
-@media (max-width: 499px) {
-   #list-tab {
-      width: 100%;
-   }
+.btn-vermas {
+  margin-top: 8px;
+  background: #f53730;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 10px;
+}
 
-   #fichaUsuario {
-      width: 100%;
-      margin-left: 0px;
-   }
+.fecha {
+  font-size: 12px;
+  color: #777;
+}
 
+/* COMUNIDADES */
+.comunidades-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+}
 
-   div#ContenedorCreacion {
-      margin-left: 0px;
-      width: 100%;
-      margin-top: 15px;
-   }
+.comunidad-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
 
+.comunidad-card img {
+  width: 100%;
+  border-radius: 12px;
+  height: 160px;
+  object-fit: cover;
+}
 
-   #contenedorDatosUsuario {
-      width: 100%;
-      padding: auto;
-   }
+.tag {
+  display: block;
+  margin-top: 8px;
+  background: #eef2ff;
+  padding: 3px 8px;
+  border-radius: 8px;
+  font-size: 13px;
+  width: fit-content;
+}
 
-   #IdUsuario {
-      margin-left: 0px;
-      width: 100%;
-      margin-top: 15px;
-   }
+.comunidad-botones {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+}
 
-   .container {
-      padding-left: 0;
-      padding-right: 0;
-   }
+.btn-eliminar {
+  background: #dc3545;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 10px;
+  color: white;
+}
 
-   #Publicaciones {
-      width: 90%;
-   }
-
-   #Fila_publicaciones {
-      width: 300px;
-      margin-left: 40px;
-   }
-
-   #ultimaPublicación {
-      width: 100%;
-   }
-
-   #Tus_publicaciones {
-      margin-top: 15px;
-      width: 100%;
-   }
-
-   #CardMostrarDatos {
-      width: 100%;
-   }
-
-   #collapseWidthExample2 {
-      width: 100%;
-   }
-
-   #CardMostrarDatos2 {
-      width: 100%;
-      padding: 10px;
-   }
-
-   #DatosPrivados {
-      width: 100%;
-   }
-
-   .row {
-      width: 100%;
-   }
+.btn-eliminar:hover {
+  background: #b52a37;
 }
