@@ -91,32 +91,21 @@
                         <form>
                             <div class="mb-3">
                                 <label id="nombreModal">Nombre</label>
-                                <input [(ngModel)]="comunidadEditar.nombre" name="nombre" class="form-control" />
+                                <input [(ngModel)]="comunidadEditar.name" name="nombre" class="form-control" />
                             </div>
                             <div class="mb-3">
                                 <label id="descripcionModal">Descripción</label>
-                                <input [(ngModel)]="comunidadEditar.descripcion" name="descripcion"
+                                <input [(ngModel)]="comunidadEditar.description" name="descripcion"
                                     class="form-control" />
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Temática</label>
-                                <select class="form-control" [(ngModel)]="comunidadEditar.tematica" name="tematica">
+                                <select class="form-control" [(ngModel)]="comunidadEditar.category" name="category">
                                     <option value="">Seleccione</option>
-                                    <option value="ACTIVIDAD_FÍSICA">Actividad física</option>
-                                    <option value="COACH_DEPORTIVO">Coach deportivo</option>
-                                    <option value="NUTRICIÓN">Nutrición</option>
+                                    <option value="FITNESS">Fitness</option>
+                                    <option value="NUTRITION">Nutrición</option>
+                                    <option value="PERSONAL_DEVELOPMENT">Desarrollo personal</option>
                                 </select>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Tipo</label>
-                                <select class="form-control" [(ngModel)]="comunidadEditar.tipo" name="tipo">
-                                    <option value="">Seleccione</option>
-                                    <option value="CHAT_GRUPAL">Chat Grupal</option>
-                                    <option value="GRUPO">Grupo</option>
-                                    <option value="COMUNIDAD">Comunidad</option>
-                                    <option value="GRAN_COMUNIDAD">Gran Comunidad</option>
-                                </select>
-
                             </div>
                         </form>
                     </div>
@@ -143,7 +132,7 @@
                     </div>
 
                     <div class="modal-body">
-                        <p>Vas a eliminar <strong>{{comunidadseleccionada?.nombre}}, esta acción no tiene marcha atras y
+                        <p>Vas a eliminar <strong>{{comunidadseleccionada?.name}}, esta acción no tiene marcha atras y
                                 no se podran recuperar los datos</strong>
                     </div>
                     <div class="modal-footer">

@@ -33,12 +33,9 @@ export class ComunidadComponent implements OnInit {
   };
 
   comunidadEditar: any = {
-    tematica: '',
-    nombre: '',
-    descripcion: '',
-    tipo: '',
-    idCreador: null,
-    estado: 'activo'
+    category: '',
+    name: '',
+    description: ''
   };
 
   abrirModal(comunidad: any) {
@@ -145,7 +142,7 @@ export class ComunidadComponent implements OnInit {
         console.error("Error al crear la comunidad", err);
         Swal.fire({
           title: 'Error',
-          text: err.error?.mensaje || 'Error al crear la comunidad, terrible',
+          text: 'Error al crear la comunidad: ' + err.error.message,
           icon: 'error',
           confirmButtonText: 'Cerrar'
         });
@@ -155,7 +152,7 @@ export class ComunidadComponent implements OnInit {
   eliminarComunidad() {
     let del = {
       host: this.peticion.urlReal,
-      path: "/comunidad/eliminar/" + this.comunidadseleccionada.id
+      path: "/api/communities/delete/" + this.comunidadseleccionada.id
     };
 
     this.peticion.delete(del.host + del.path, {}).then((res: any) => {
@@ -202,18 +199,14 @@ export class ComunidadComponent implements OnInit {
 
     let act = {
       host: this.peticion.urlReal,
-      path: '/comunidad/actualizar/' + comunidad.id,
+      path: '/api/communities/update/' + comunidad.id,
       payload: {
-        tematica: this.datosNoPermitidos.includes(this.comunidadEditar.tematica) ? comunidad.tematica : this.comunidadEditar.tematica,
-        nombre: this.datosNoPermitidos.includes(this.comunidadEditar.nombre) ? comunidad.nombre : this.comunidadEditar.nombre,
-        descripcion: this.datosNoPermitidos.includes(this.comunidadEditar.descripcion) ? comunidad.descripcion : this.comunidadEditar.descripcion,
-        tipo: this.datosNoPermitidos.includes(this.comunidadEditar.tipo) ? comunidad.tipo : this.comunidadEditar.tipo,
-        idCreador: comunidad.idCreador,
-        estado: comunidad.estado,
-        fecha: '2025-09-24'
+        category: this.comunidadEditar.category,
+        name: this.comunidadEditar.name,
+        description: this.comunidadEditar.description,
       }
     };
-    this.peticion.put(act.host + act.path, act.payload, token).then((res: any) => {
+    this.peticion.patch(act.host + act.path, act.payload, token).then((res: any) => {
       console.log("id_creador de la actualización", comunidad)
       Swal.fire({
         title: 'Actualizada',
@@ -226,7 +219,7 @@ export class ComunidadComponent implements OnInit {
       console.error("error al actualizar la comunidad", err);
       Swal.fire({
         title: 'Error',
-        text: 'Error al actualizar la comunidad',
+        text: 'Error al actualizar la comunidad: '+ err.error.message,
         icon: 'error',
         confirmButtonText: 'Cerrar'
       });

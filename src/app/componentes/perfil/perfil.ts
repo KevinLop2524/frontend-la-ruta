@@ -108,7 +108,7 @@ export class Perfil {
   eliminarComunidad() {
     let del = {
       host: this.peticion.urlReal,
-      path: "/comunidad/eliminar/" + this.comunidadseleccionada.id
+      path: "/api/communities/delete/" + this.comunidadseleccionada.id
     };
 
     this.peticion.delete(del.host + del.path, {}).then((res: any) => {
