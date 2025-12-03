@@ -43,10 +43,9 @@ export class Perfil {
   }
 
   comunidadEditar: any = {
-    categoty: 'Seleccionar',
-    name: ' ',
-    description: ' ',
-    creatorId: this.usuario.id,
+    category: '',
+    name: '',
+    description: '',
   };
 
   abrirModal(comunidad: any) {
@@ -179,13 +178,12 @@ export class Perfil {
       host: this.peticion.urlReal,
       path: '/api/communities/update/' + comunidad.id,
       payload: {
-        category: this.datosNoPermitidos.includes(this.comunidadEditar.category) ? comunidad.category : this.comunidadEditar.category,
-        name: this.datosNoPermitidos.includes(this.comunidadEditar.name) ? comunidad.name : this.comunidadEditar.name,
-        description: this.datosNoPermitidos.includes(this.comunidadEditar.description) ? comunidad.description : this.comunidadEditar.description,
-        creatorId: this.usuario.id
+        name: this.comunidadEditar.name,
+        description: this.comunidadEditar.description,
+        category: this.comunidadEditar.category
       }
     };
-    this.peticion.put(act.host + act.path, act.payload, token).then((res: any) => {
+    this.peticion.patch(act.host + act.path, act.payload).then((res: any) => {
       Swal.fire({
         title: 'Actualizada',
         text: 'La comunidad fue actualizada',

@@ -137,7 +137,6 @@
                                         <p class="card-text">{{comunidad.description}}</p>
                                         <h6>Categoria:</h6>
                                         <p class="card-text">{{comunidad.category}}</p>
-                                        <h6>Tipo:</h6>
                                         <a [routerLink]="['/servicios', comunidad.id]" class="btn btn-primary">Ver más</a>
                                         <a type="button" class="btn btn-primary" data-bs-target="#modalEliminar"
                                             id="botonEliminar" data-bs-toggle="modal" (click)="abrirModal(comunidad)">Eliminar</a>
@@ -162,7 +161,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                     </div>
                     <div class="modal-body">
-                        <p>Vas a eliminar <strong>{{comunidadseleccionada?.nombre}}, esta acción no tiene marcha atrás y no se podrán recuperar los datos</strong></p>
+                        <p>Vas a eliminar <strong>{{comunidadseleccionada?.name}}, esta acción no tiene marcha atrás y no se podrán recuperar los datos</strong></p>
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-primary" data-bs-dismiss="modal">Cancelar, desisto de mi acción</button>

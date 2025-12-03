@@ -69,6 +69,30 @@ export class Peticion {
     return promesa
   }
 
+  patch = (url: string, payload: {}, token?: string) => {
+
+  let promesa = new Promise((resolve, reject) => {
+
+    this.requestOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+      }),
+      withCredentials: true
+    }
+
+    this.http.patch(url, payload, this.requestOptions).toPromise()
+      .then((res: any) => {
+        resolve(res)
+      }).catch((error: any) => {
+        reject(error)
+      })
+  })
+
+  return promesa
+}
+
+
   delete = (url: string, payload: {}) => {
 
     let promesa = new Promise((resolve, reject) => {
