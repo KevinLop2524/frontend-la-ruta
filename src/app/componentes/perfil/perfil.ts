@@ -8,6 +8,8 @@ import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Footer } from "../footer/footer";
 import { HttpClientModule, HttpClient } from '@angular/common/http';
+import { comunidadZodValidator } from '../../validators/comunidad-zod.validator';
+
 
 
 
@@ -17,11 +19,12 @@ import { HttpClientModule, HttpClient } from '@angular/common/http';
   standalone: true,
   imports: [Header, FormsModule, RouterModule, CommonModule, Footer, HttpClientModule],
   templateUrl: './perfil.html',
-  styleUrl: './perfil.css'
+  styleUrl: './perfil.css',
+  providers: [comunidadZodValidator]
 })
 export class Perfil {
 
-  constructor(private peticion: Peticion, private cdr: ChangeDetectorRef, private route: ActivatedRoute, private http: HttpClient) { }
+  constructor(private peticion: Peticion, private cdr: ChangeDetectorRef, private route: ActivatedRoute, private http: HttpClient, private validar: comunidadZodValidator) { }
 
   datosNoPermitidos: (string | null | undefined)[] = ["", null, undefined, "Seleccionar", " "]
 
@@ -134,42 +137,20 @@ export class Perfil {
 
   actualizarComunidad(comunidad: any) {
 
-    const newNombreE = this.datosNoPermitidos.findIndex((dato) => dato === this.comunidadEditar.nombre);
-    const newDescripcionE = this.datosNoPermitidos.findIndex((dato) => dato === this.comunidadEditar.descripcion);
-    const newtipoE = this.datosNoPermitidos.findIndex((dato) => dato === this.comunidadEditar.tipo);
-    const newTematicaE = this.datosNoPermitidos.findIndex((dato) => dato === this.comunidadEditar.tematica);
+    const resultado= this.validar.validar(this.comunidadEditar);
 
-    if (this.datosNoPermitidos.includes(this.comunidadEditar.name) &&
-      this.datosNoPermitidos.includes(this.comunidadEditar.description) &&
-      this.datosNoPermitidos.includes(this.comunidadEditar.category)) {
-      Swal.fire({
-        title: 'Error',
-        text: 'Tiene que ingresar al menos un campo para actualizar',
-        icon: 'warning'
-      });
-      return;
-    } if (this.datosNoPermitidos.includes(this.comunidadEditar.name)) {
-      Swal.fire({
-        title: 'Error',
-        text: 'No puedes dejar el campo nombre vacio',
-        icon: 'warning'
-      });
-      return;
-    } if (this.datosNoPermitidos.includes(this.comunidadEditar.description)) {
-      Swal.fire({
-        title: 'Error',
-        text: 'No puedes dejar el campo descripción vacio',
-        icon: 'warning'
-      });
-      return;
-    } if (this.datosNoPermitidos.includes(this.comunidadEditar.category)) {
-      Swal.fire({
-        title: 'Error',
-        text: 'No puedes dejar el campo categoria vacio',
-        icon: 'warning'
-      });
-      return;
+    if (!resultado.ok){
+      const error= resultado.error;
+    Swal.fire({
+      title: 'Algo salio mal',
+      text: error,
+      icon: 'warning',
+      confirmButtonText: 'Ok'
+    })
+    console.log(error)
+    return;
     }
+
     let token = localStorage.getItem('token') || undefined;
 
 

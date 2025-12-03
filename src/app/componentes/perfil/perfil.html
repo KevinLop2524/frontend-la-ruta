@@ -22,9 +22,9 @@
                             <div id="IdUsuario" class="card">
                                 <img src="imagenes/static/Fotoperfil.jpg" class="card-img-top" alt="..." id="foto_perfil">
                                 <div class="card-body">
-                                    <h5 class="card-title" name="nombreUser" id="nombreUser">{{apodo}}</h5><br>
+                                    <h5 class="card-title" name="nombreUser" id="nombreUser">{{usuario?.username}}</h5><br>
                                     <h6 class="card-title">Nombre:</h6>
-                                    <p class="card-text" name="nombre">{{usuario?.nombre}} {{usuario?.nombre_2}}</p>
+                                    <p class="card-text" name="nombre">{{usuario?.firstName}} {{usuario?.secondName}}</p>
                                     <h6 class="card-title">Recuerda:</h6>
                                     <p class="card-text" name="frase"><i>{{fraseMoti.q}}</i></p>
                                     <h6 class="card-title" name="autor">{{fraseMoti.a}}</h6>
@@ -50,19 +50,19 @@
                                         <div id="DatosPrivados" class="card border-primary" style="margin: 0 auto;">
                                             <div class="card-header">Tus datos 🔒</div>
                                             <div class="card-body">
-                                                <h5 class="card-title">Físico</h5>
-                                                <p class="card-text"><strong>Año de nacimiento:</strong> {{usuario?.nacimiento}}</p>
-                                                <p class="card-text"><strong>Altura:</strong> {{usuario?.altura}} cm</p>
-                                                <p class="card-text"><strong>Sexo:</strong> {{usuario?.sexo}}</p>
+                                                <h5 class="card-title">Físico</h5><br>
+                                                <p class="card-text"><strong>Altura:</strong> {{usuario?.height}} cm</p>
+                                                <p class="card-text"><strong>Peso:</strong> {{usuario?.weight}}</p>
+                                                <p class="card-text"><strong>Sexo:</strong> {{usuario?.gender}}</p>
                                             </div>
 
                                             <div class="card-header">Datos públicos 🌐</div>
                                             <div class="card-body">
-                                                <p class="card-text"><strong>Nombre:</strong> {{usuario?.nombre}} {{usuario?.nombre_2}}</p>
-                                                <p class="card-text"><strong>Apellido:</strong> {{usuario?.apellido}} {{usuario?.apellido_2}}</p>
-                                                <p class="card-text"><strong>Apodo:</strong> {{usuario?.apodo}}</p>
-                                                <p class="card-text"><strong>Correo:</strong> {{usuario?.correo}}</p>
-                                                <p class="card-text"><strong>Localidad:</strong> {{usuario?.localidad}}</p>
+                                                <p class="card-text"><strong>Nombre:</strong> {{usuario?.firstName}} {{usuario?.secondName}}</p>
+                                                <p class="card-text"><strong>Apellido:</strong> {{usuario?.LastName}} {{usuario?.secondLastName}}</p>
+                                                <p class="card-text"><strong>Apodo:</strong> {{usuario?.username}}</p>
+                                                <p class="card-text"><strong>Correo:</strong> {{usuario?.email}}</p>
+                                                <p class="card-text"><strong>Año de nacimiento:</strong> {{usuario?.dateOfBirth}}</p>
                                             </div>
                                         </div>
                                     </div>
