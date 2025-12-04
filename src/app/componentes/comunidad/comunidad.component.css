@@ -1,88 +1,112 @@
-main {
-  flex: 1;
+:root {
+    --primary: #f53730;
+    --secondary: #ff6f61;
+    --bg: #f4f4f4;
+    --card: #fff;
+    --text: #222;
+
+    --grey-btn: #d9d9d9;
+    --grey-btn-hover: #bfbfbf;
+    --grey-btn-border: #909090;
 }
 
-main div.row {
-  margin-top: 20px;
-  background-color: rgba(42, 80, 102, 0.158);
-  padding-top: 20px;
-  padding-bottom: 20px;
+[data-theme="dark"] {
+    --bg: #0f0f0f;
+    --card: #111;
+    --text: #eaeaea;
 }
 
-main div.container div.card {
-   border-radius: 10px;
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: Poppins, system-ui;
 }
 
-#subirServicio {
-    margin-top: 20px;
+
+
+.container-main {
+    max-width: 1100px;
+    margin: 0 auto;
 }
 
-#ServiciOnline {
-    margin-left: 90%
+.search-input {
+    width: 240px;
 }
 
-.card {
-    height: 500px;
-    width: 100%;
-    padding-bottom: 1px;
-    overflow-y: auto;
-    overflow-x: hidden;
+#btnCrear {
+    width: 200px;
     margin-top: 10px;
+    margin-bottom: 25px;
+}
+
+.card-comm {
+    background: var(--card);
+    border-radius: 12px;
+    height: 450px;
+    padding: 14px;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.14);
+    overflow: hidden;
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
+.comm-img {
+    height: 140px;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.footer {
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    color: white;
+    padding: 18px 12px;
+    margin-top: 36px;
+    border-radius: 12px 12px 0 0;
+}
+
+.btn-grey,
+.btn-grey-sm {
+    background: var(--grey-btn);
+    color: #000;
+    border: 1px solid var(--grey-btn-border);
+    transition: 0.2s ease;
+}
+
+.btn-grey:hover,
+.btn-grey-sm:hover {
+    background: var(--grey-btn-hover);
+}
+
+.btn-grey {
+    padding: 60px 140;
+    font-size: 0.9rem;
+}
+
+.card-comm {
+    background: var(--card);
+    border-radius: 12px;
+    height: 480px;
+    padding: 14px;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.14);
+
     display: flex;
-}
-#botonconfiguracion{
-    margin-top: 50px;
-}
-#botonEliminar{
-    margin-top: 50px;
-    background-color: red;
-    border-color: red;
-}
-#modal{
-    margin-top: 100px;
-    }
-a.btn-primary {
-    width: 90px;
-    height: 40px;
-    position: absolute;
-    top: 5px;
+    flex-direction: column;
+    justify-content: space-between; /* ✨ Magia: empuja los botones al fondo */
 }
 
 
-#contenedorCrear{
-    background-color: rgba(60, 140, 186, 0.5);
-    border: solid 1px black;
-    border-radius: 10px;
-    color: black;
-    padding: 15px;
-}
-.btones {
-    background-color: azure;
-}
-.form-control{
-    border: solid 1px black;
-}
-.footer-bottom {
-  border-top: 1px solid var(--border);
-  text-align: center;   
-  padding: 1rem;
-  font-size: 0.875rem;
-  color: var(--muted);
-}
-label{
-color: white;
+
+#botones {
+    margin-top: auto;  /* ✨ Esto garantiza que SIEMPRE se vaya al fondo */
+    padding-top: 12px;
 }
 
-
-@media (max-width: 991px) and (min-width: 500px) {
-    .mostrarCont {
-        margin-top: 10px;
-    }
-    
+#botonAjustes{
+    border: solid 1px gray;
 }
 
-@media (max-width: 499px) {
-    .mostrarCont {
-        margin-top: 10px;
-    }
+.btn-grey-sm {
+    padding: 4px 10px;
+    font-size: 0.8rem;
 }

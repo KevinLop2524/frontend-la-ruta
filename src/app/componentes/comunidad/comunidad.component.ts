@@ -226,4 +226,33 @@ export class ComunidadComponent implements OnInit {
     });
   }
 
+  UnirmeComunidad(comunidadId: any){
+        let post = {
+      host: this.peticion.urlReal,
+      path: "/api/communities/"+ comunidadId + "/join",
+      payload: {
+        userId: this.usuario.id
+      }
+    }
+
+    this.peticion.patch(post.host + post.path, post.payload).then((res: any) => {
+      console.log("id_creador de la actualización", comunidadId)
+      Swal.fire({
+        title: 'Actualizada',
+        text: 'Se unio a la comunidad',
+        icon: 'success',
+        confirmButtonText: 'Correcto'
+        })
+      this.cargarComunidades();
+    }).catch((err: any) => {
+      console.error("error al unirse a la comunidad", err);
+      Swal.fire({
+        title: 'Error',
+        text: 'Error al unirse a la comunidad: '+ err.error.message,
+        icon: 'error',
+        confirmButtonText: 'Cerrar'
+      });
+    });
+  }
+
 }

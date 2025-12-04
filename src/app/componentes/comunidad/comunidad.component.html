@@ -1,149 +1,214 @@
 <app-header></app-header>
+<main class="container-main px-3">
+    <div class="container">
+        <div class="row">
+            <!-- Botón Crear comunidad -->
+            <button type="button" class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#modalCrearComunidad"
+                id="btnCrear">
+                Crear comunidad
+            </button>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="m-0">COMUNIDADES</h4>
+            </div>
 
-<div class="container">
-    <br>
-    <div class="row">
-        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home"
-                    type="button" role="tab" aria-controls="pills-home" aria-selected="true">Comunidades</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile"
-                    type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Crear
-                    Comunidades</button>
-            </li>
-        </ul>
+            <div class="row g-3">
+                <div *ngFor="let comunidad of comunidades" class="col-12 col-md-6 col-lg-4">
+                    <div class="card-comm">
+                        <img src="/imagenes/static/imgGymUno.jpg" class="comm-img mb-2" />
 
+                        <h5 class="fs-5">{{comunidad.name}}</h5><br>
 
-        <div class="tab-content" id="pills-tabContent">
-            <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab"
-                tabindex="0">
-                <div class="row">
-                    <div *ngFor="let comunidad of comunidades"
-                        class="mostrarCont col-12 col-sm-12 col-md-6 col-lg-3 col-xl-3">
-                        <div class="card">
-                            <img src="/imagenes/static/imgGymUno.jpg" class="card-img-top" alt="...">
-                            <div class="card-body">
-                                <h5 class="card-title">{{comunidad.name}}</h5>
-                                <p class="card-text">{{comunidad.description}}</p>
-                                <h6>Categoria:</h6>
-                                <p class="card-text">{{comunidad.category}}</p>
-                                <a [routerLink]="['/servicios', comunidad.id]" class="btn btn-primary">Ver más</a>
-                                <a type="button" class="btn btn-primary" data-bs-target="#modalActualizar"
-                                    id="botonconfiguracion" data-bs-toggle="modal" *ngIf="rol.includes('ROLE_ADMIN')"
-                                    (click)=abrirModal(comunidad)>⚙️</a>
+                        <p class="fs-6"> {{comunidad.description}} </p>
+                        
+                        <div id="botones">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge bg-secondary">{{comunidad.category}}</span>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-grey-sm" data-bs-toggle="modal"
+                                        data-bs-target="#modalUnirse" (click)="abrirModal(comunidad)"
+                                        >Unirse</button>
+                                    <button class="btn btn-grey-sm" id="botonAjustes" data-bs-toggle="modal"
+                                        data-bs-target="#modalActualizar" *ngIf="rol.includes('ROLE_ADMIN')"
+                                        (click)="abrirModal(comunidad)">
+                                        Ajustes
+                                    </button>
+
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab"
-                tabindex="0">
-                <div class="row" id="contenedorCrear">
-                    <div class="mostrarCont col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
-                        <div class="mb-3">
-                            <label for="nuevaPublicacionPersonal" class="form-label">Nombre de la comunidad</label>
-                            <input type="text" class="form-control" [(ngModel)]="nuevaComunidad.name"
-                                name="nombreNueva" placeholder="Describe el contenido, por favor">
-                        </div>
-                        <div class="mostrarCont col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 ">
-                            <label for="exampleFormControlTextarea1" class="form-label">Descripción del
-                                contenido</label>
-                            <textarea class="form-control" [(ngModel)]="nuevaComunidad.description"
-                                id="exampleFormControlTextarea1" rows="5" name="descripcionNueva"
-                                placeholder="Descripción de lo que desees comentarnos. Con todo gusto te escuchamos."></textarea>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Temática</label>
-                        <select class="form-control" name="tematicaNueva" [(ngModel)]="nuevaComunidad.category">
-                            <option value="">Seleccione</option>
-                            <option value="FITNESS">Fitness</option>
-                            <option value="NUTRITION">Nutrición</option>
-                            <option value="PERSONAL_DEVELOPMENT">Desarrollo personal</option>
-                        </select>
-                    </div>
 
-                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
-                        <div class="mb-3">
-                            <label for="formFileMultiple" class="form-label">Seleccionar varios archivos</label>
-                            <input class="form-control" type="file" id="formFileMultiple" multiple>
+            <div class="modal fade" id="modalActualizar" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+
+
+                        <div class="modal-header">
+                            <h5 class="modal-title">Actualizar comunidad</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Cerrar"></button>
                         </div>
 
-                        <button type="button" class="btn btn-primary" (click)="crearComunidad()">Crear</button>
+
+                        <div class="modal-body">
+                            <form>
+                                <div class="mb-3">
+                                    <label id="nombreModal">Nombre</label>
+                                    <input [(ngModel)]="comunidadEditar.name" name="nombre" class="form-control" />
+                                </div>
+                                <div class="mb-3">
+                                    <label id="descripcionModal">Descripción</label>
+                                    <input [(ngModel)]="comunidadEditar.description" name="descripcion"
+                                        class="form-control" />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Temática</label>
+                                    <select class="form-control" [(ngModel)]="comunidadEditar.category" name="category">
+                                        <option value="">Seleccione</option>
+                                        <option value="FITNESS">Fitness</option>
+                                        <option value="NUTRITION">Nutrición</option>
+                                        <option value="PERSONAL_DEVELOPMENT">Desarrollo personal</option>
+                                    </select>
+                                </div>
+                            </form>
+                        </div>
+
+
+                        <div class="modal-footer">
+
+
+                            <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button class="btn btn-primary" data-bs-target="#modalEliminar"
+                                data-bs-toggle="modal">Eliminar
+                                comunidad</button>
+                            <button class="btn btn-primary" (click)="actualizarComunidad(comunidadEditar)">Guardar
+                                cambios</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="modalEliminar" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+
+
+                        <div class="modal-header">
+                            <h5 class="modal-title">¿Estas seguro de eliminar la comunidad?</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Cerrar"></button>
+                        </div>
+
+
+                        <div class="modal-body">
+                            <p>Vas a eliminar <strong>{{comunidadseleccionada?.name}}, esta acción no tiene marcha atras
+                                    y
+                                    no se podran recuperar los datos</strong>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" data-bs-dismiss="modal">Cancelar, desisto de mi
+                                acción</button>
+                            <button class="btn btn-danger" (click)="eliminarComunidad()" data-bs-dismiss="modal">Estoy
+                                seguro, eliminar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <!--Modal unirse a una comunidad-->
+                    <div class="modal fade" id="modalUnirse" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+
+
+                        <div class="modal-header">
+                            <h5 class="modal-title">¿Estas seguro de unirte a la comunidad?</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Cerrar"></button>
+                        </div>
+
+
+                        <div class="modal-body">
+                            <p>Vas a unirte a la comunidad <strong>{{comunidadseleccionada?.name}}, estas seguro de realizar esta acción</strong>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" data-bs-dismiss="modal">Cancelar, desisto de mi
+                                acción</button>
+                            <button class="btn btn-danger" (click)="UnirmeComunidad(comunidadseleccionada?.id)" data-bs-dismiss="modal">Estoy
+                                seguro, unirme</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!--Modal crear comunidad-->
+
+            <div class="modal fade" id="modalCrearComunidad" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-lg"> <!-- modal grande para que el contenido quepa bien -->
+                    <div class="modal-content">
+
+                        <div class="modal-header">
+                            <h5 class="modal-title">Crear comunidad</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Cerrar"></button>
+                        </div>
+
+                        <div class="modal-body">
+
+                            <div class="row" id="contenedorCrear">
+
+                                <div class="mostrarCont col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                                    <div class="mb-3">
+                                        <label for="nuevaPublicacionPersonal" class="form-label">Nombre de la
+                                            comunidad</label>
+                                        <input type="text" class="form-control" [(ngModel)]="nuevaComunidad.name"
+                                            name="nombreNueva" placeholder="Describe el contenido, por favor">
+                                    </div>
+
+                                    <div class="mostrarCont col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 ">
+                                        <label for="exampleFormControlTextarea1" class="form-label">Descripción del
+                                            contenido</label>
+                                        <textarea class="form-control" [(ngModel)]="nuevaComunidad.description"
+                                            id="exampleFormControlTextarea1" rows="5" name="descripcionNueva"
+                                            placeholder="Descripción de lo que desees comentarnos. Con todo gusto te escuchamos."></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3 col-12 col-md-6">
+                                    <label class="form-label">Temática</label>
+                                    <select class="form-control" name="tematicaNueva"
+                                        [(ngModel)]="nuevaComunidad.category">
+                                        <option value="">Seleccione</option>
+                                        <option value="FITNESS">Fitness</option>
+                                        <option value="NUTRITION">Nutrición</option>
+                                        <option value="PERSONAL_DEVELOPMENT">Desarrollo personal</option>
+                                    </select>
+
+                                    <div class="mb-3 mt-3">
+                                        <label for="formFileMultiple" class="form-label">Seleccionar varios
+                                            archivos</label>
+                                        <input class="form-control" type="file" id="formFileMultiple" multiple>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-primary" (click)="crearComunidad()">Crear</button>
+                        </div>
 
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="modal fade" id="modalActualizar" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
 
-                    <div class="modal-header">
-                        <h5 class="modal-title">Actualizar comunidad</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                    </div>
-
-                    <div class="modal-body">
-                        <form>
-                            <div class="mb-3">
-                                <label id="nombreModal">Nombre</label>
-                                <input [(ngModel)]="comunidadEditar.name" name="nombre" class="form-control" />
-                            </div>
-                            <div class="mb-3">
-                                <label id="descripcionModal">Descripción</label>
-                                <input [(ngModel)]="comunidadEditar.description" name="descripcion"
-                                    class="form-control" />
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Temática</label>
-                                <select class="form-control" [(ngModel)]="comunidadEditar.category" name="category">
-                                    <option value="">Seleccione</option>
-                                    <option value="FITNESS">Fitness</option>
-                                    <option value="NUTRITION">Nutrición</option>
-                                    <option value="PERSONAL_DEVELOPMENT">Desarrollo personal</option>
-                                </select>
-                            </div>
-                        </form>
-                    </div>
-
-                    <div class="modal-footer">
-
-                        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button class="btn btn-primary" data-bs-target="#modalEliminar" data-bs-toggle="modal">Eliminar
-                            comunidad</button>
-                        <button class="btn btn-primary" (click)="actualizarComunidad(comunidadEditar)">Guardar
-                            cambios</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal fade" id="modalEliminar" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-
-                    <div class="modal-header">
-                        <h5 class="modal-title">¿Estas seguro de eliminar la comunidad?</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                    </div>
-
-                    <div class="modal-body">
-                        <p>Vas a eliminar <strong>{{comunidadseleccionada?.name}}, esta acción no tiene marcha atras y
-                                no se podran recuperar los datos</strong>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-primary" data-bs-dismiss="modal">Cancelar, desisto de mi acción</button>
-                        <button class="btn btn-danger" (click)="eliminarComunidad()" data-bs-dismiss="modal">Estoy
-                            seguro, eliminar</button>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
-
-</div>
+</main>
 <app-footer></app-footer>
