@@ -4,6 +4,7 @@ import { Peticion } from '../../servicios/peticion';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { Router, RouterLink } from '@angular/router';
 import { Footer } from '../footer/footer';
 import { RouterModule } from '@angular/router';
 import { z } from "zod";//Se importamos zod
@@ -43,7 +44,7 @@ export class ComunidadComponent implements OnInit {
     this.comunidadEditar = { ...comunidad };
   }
 
-  constructor(private peticion: Peticion, private cdr: ChangeDetectorRef, private validar: comunidadZodValidator) { }
+  constructor(private peticion: Peticion, private cdr: ChangeDetectorRef, private validar: comunidadZodValidator, private router: Router) { }
 
   ngOnInit(): void {
     this.rol = JSON.parse(localStorage.getItem('roles') || '[]')
@@ -65,8 +66,17 @@ export class ComunidadComponent implements OnInit {
       this.comunidades = res
       this.cdr.detectChanges()
     }).catch((err: any) => {
-                   console.log("Error al encontrar comunidades Error: ", err);
-                 })
+      console.log("Error al encontrar comunidades Error: ", err);
+    })
+  }
+
+  traductiCategoria(categoria: string) {
+    switch (categoria) {
+      case 'NUTRITION': return 'NUTRICION';
+      case 'FITNESS': return 'FITNESS';
+      case 'PERSONAL_DEVELOPMENT': return 'DESARROLLO PERSONAL';
+      default: return categoria;
+    }
   }
 
   buscarUsuario() {
@@ -75,7 +85,7 @@ export class ComunidadComponent implements OnInit {
     let token = localStorage.getItem('token') || undefined;
     let get = {
       host: this.peticion.urlReal,
-      path: "/api/users/get/" + 4,
+      path: "/api/users/get/" + 6,
       payload: {
       }
     }
@@ -85,7 +95,7 @@ export class ComunidadComponent implements OnInit {
       this.cdr.detectChanges()
       console.log("Usuario logueado:", this.usuario.usuario);
 
-    }) .catch((err: any) => {
+    }).catch((err: any) => {
       console.log("Error al encontrar usuario", apodo, "Error: ", err);
     })
   }
@@ -95,9 +105,9 @@ export class ComunidadComponent implements OnInit {
     let token = localStorage.getItem('token') || undefined;
 
 
-    const resultado= this.validar.validar(this.nuevaComunidad);
+    const resultado = this.validar.validar(this.nuevaComunidad);
 
-    if (!resultado.ok){
+    if (!resultado.ok) {
       Swal.fire({
         title: 'Algo salio mal',
         text: resultado.error,
@@ -107,7 +117,7 @@ export class ComunidadComponent implements OnInit {
       return;
     }
 
-//Es una maravilla esta dependencia
+    //Es una maravilla esta dependencia
 
     let post = {
       host: this.peticion.urlReal,
@@ -179,18 +189,18 @@ export class ComunidadComponent implements OnInit {
   actualizarComunidad(comunidad: any) {
 
 
-    const resultado= this.validar.validar(this.comunidadEditar);
+    const resultado = this.validar.validar(this.comunidadEditar);
 
-    if (!resultado.ok){
-      const error= resultado.error;
-    Swal.fire({
-      title: 'Algo salio mal',
-      text: error,
-      icon: 'warning',
-      confirmButtonText: 'Ok'
-    })
-    console.log(error)
-    return;
+    if (!resultado.ok) {
+      const error = resultado.error;
+      Swal.fire({
+        title: 'Algo salio mal',
+        text: error,
+        icon: 'warning',
+        confirmButtonText: 'Ok'
+      })
+      console.log(error)
+      return;
     }
 
     let token = localStorage.getItem('token') || undefined;
@@ -213,42 +223,62 @@ export class ComunidadComponent implements OnInit {
         text: 'La comunidad fue actualizada',
         icon: 'success',
         confirmButtonText: 'Correcto'
-        })
+      })
       this.cargarComunidades();
     }).catch((err: any) => {
       console.error("error al actualizar la comunidad", err);
       Swal.fire({
         title: 'Error',
-        text: 'Error al actualizar la comunidad: '+ err.error.message,
+        text: 'Error al actualizar la comunidad: ' + err.error.message,
         icon: 'error',
         confirmButtonText: 'Cerrar'
       });
     });
   }
 
-  UnirmeComunidad(comunidadId: any){
-        let post = {
+  verificarMembresia(comunidad: any) {
+    let get = {
       host: this.peticion.urlReal,
-      path: "/api/communities/"+ comunidadId + "/join",
+      path: "/api/communities/" + comunidad.id + "/is-member/" + this.usuario.id
+    }
+    this.peticion.get(get.host + get.path).then((res: any) => {
+      console.log("Es miembro?:" + res.isMember);
+      if (comunidad.creatorId == this.usuario.id) {
+        this.router.navigate(['servicios/', comunidad.id])
+      }
+      else if (res.isMember) {
+        this.router.navigate(['servicios/', comunidad.id]);
+        return;
+      } else {
+        this.comunidadseleccionada = comunidad;
+        document.getElementById("abrirUnirse")?.click();
+      }
+    })
+  }
+
+  UnirmeComunidad(comunidadId: any) {
+    let post = {
+      host: this.peticion.urlReal,
+      path: "/api/communities/" + comunidadId + "/join",
       payload: {
         userId: this.usuario.id
       }
     }
 
-    this.peticion.patch(post.host + post.path, post.payload).then((res: any) => {
-      console.log("id_creador de la actualización", comunidadId)
+    this.peticion.post(post.host + post.path, post.payload).then((res: any) => {
+      console.log("comunidad a la que se unio", comunidadId)
       Swal.fire({
-        title: 'Actualizada',
+        title: 'Se a unido',
         text: 'Se unio a la comunidad',
         icon: 'success',
         confirmButtonText: 'Correcto'
-        })
+      })
       this.cargarComunidades();
     }).catch((err: any) => {
       console.error("error al unirse a la comunidad", err);
       Swal.fire({
         title: 'Error',
-        text: 'Error al unirse a la comunidad: '+ err.error.message,
+        text: 'Error al unirse a la comunidad: ' + err.error.message,
         icon: 'error',
         confirmButtonText: 'Cerrar'
       });

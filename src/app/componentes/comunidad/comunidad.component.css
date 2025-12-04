@@ -110,3 +110,14 @@ body {
     padding: 4px 10px;
     font-size: 0.8rem;
 }
+.badge-nutrition {
+  background-color: rgb(94, 219, 94) !important;
+}
+
+.badge-fitness {
+  background-color: rgb(91, 93, 93) !important;
+}
+
+.badge-development {
+  background-color: orange !important;
+}

@@ -3,8 +3,8 @@
     <div class="container">
         <div class="row">
             <!-- Botón Crear comunidad -->
-            <button type="button" class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#modalCrearComunidad"
-                id="btnCrear">
+            <button type="button" class="btn btn-outline-primary me-2" data-bs-toggle="modal"
+                data-bs-target="#modalCrearComunidad" id="btnCrear">
                 Crear comunidad
             </button>
             <div class="d-flex justify-content-between align-items-center mb-3">
@@ -19,14 +19,17 @@
                         <h5 class="fs-5">{{comunidad.name}}</h5><br>
 
                         <p class="fs-6"> {{comunidad.description}} </p>
-                        
+
                         <div id="botones">
                             <div class="d-flex justify-content-between align-items-center">
-                                <span class="badge bg-secondary">{{comunidad.category}}</span>
+                                <span class="badge"
+                                    [ngClass]="{'badge-nutrition' : comunidad.category === 'NUTRITION',
+                                'badge-fitness': comunidad.category=== 'FITNESS', 'badge-development': comunidad.category=== 'PERSONAL_DEVELOPMENT'}">
+                                    {{traductiCategoria(comunidad.category)}}</span>
+
                                 <div class="d-flex gap-2">
-                                    <button class="btn btn-grey-sm" data-bs-toggle="modal"
-                                        data-bs-target="#modalUnirse" (click)="abrirModal(comunidad)"
-                                        >Unirse</button>
+                                    <button class="btn btn-grey-sm"
+                                        (click)="verificarMembresia(comunidad)">Unirse</button>
                                     <button class="btn btn-grey-sm" id="botonAjustes" data-bs-toggle="modal"
                                         data-bs-target="#modalActualizar" *ngIf="rol.includes('ROLE_ADMIN')"
                                         (click)="abrirModal(comunidad)">
@@ -116,8 +119,9 @@
                     </div>
                 </div>
             </div>
-        <!--Modal unirse a una comunidad-->
-                    <div class="modal fade" id="modalUnirse" tabindex="-1" aria-hidden="true">
+            <!--Modal unirse a una comunidad-->
+            <button id="abrirUnirse" data-bs-toggle="modal" data-bs-target="#modalUnirse" hidden></button>
+            <div class="modal fade" id="modalUnirse" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
 
@@ -130,12 +134,14 @@
 
 
                         <div class="modal-body">
-                            <p>Vas a unirte a la comunidad <strong>{{comunidadseleccionada?.name}}, estas seguro de realizar esta acción</strong>
+                            <p>Vas a unirte a la comunidad <strong>{{comunidadseleccionada?.name}}, estas seguro de
+                                    realizar esta acción</strong>
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-primary" data-bs-dismiss="modal">Cancelar, desisto de mi
                                 acción</button>
-                            <button class="btn btn-danger" (click)="UnirmeComunidad(comunidadseleccionada?.id)" data-bs-dismiss="modal">Estoy
+                            <button class="btn btn-danger" (click)="UnirmeComunidad(comunidadseleccionada?.id)"
+                                data-bs-dismiss="modal">Estoy
                                 seguro, unirme</button>
                         </div>
                     </div>
