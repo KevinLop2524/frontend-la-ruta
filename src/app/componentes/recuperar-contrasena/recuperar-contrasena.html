@@ -1,0 +1,72 @@
+<div class="container-fluid py-5 bg-light">
+    <div class="row justify-content-center align-items-center">
+        <div class="col-12 col-lg-10">
+            <div class="card shadow-sm flex-row overflow-hidden auth-card">
+
+                <!-- Izquierda -->
+                <div class="auth-left d-none d-md-flex align-items-center justify-content-center">
+                    <img src="/imagenes/logos/New_Logo_Modo_Claro.png" alt="Logo" class="logo-large" />
+                </div>
+
+                <!-- Derecha -->
+                <div class="card-body p-4 auth-right">
+                    <h4 class="card-title mb-3 text-center">Recuperar contraseña</h4>
+                    <p class="text-muted text-center">
+                        Introduce el código de verificación y escribe tu nueva contraseña.
+                    </p>
+
+                    <form #recuperarForm="ngForm" (ngSubmit)="onSubmit(recuperarForm)">
+
+                        <!-- Código -->
+                        <div class="mb-3">
+                            <label class="form-label">Código de verificación</label>
+                            <input type="text" class="form-control" name="codigo" [(ngModel)]="model.codigo" required
+                                pattern="[0-9]{6}" maxlength="6" #codigo="ngModel" />
+                            <div class="invalid-feedback d-block" *ngIf="codigo.invalid && codigo.touched">
+                                Introduce el código de verificación de 6 dígitos.
+                            </div>
+                        </div>
+
+                        <!-- Nueva contraseña -->
+                        <div class="mb-3">
+                            <label class="form-label">Nueva contraseña</label>
+                            <input type="password" class="form-control" name="nueva" [(ngModel)]="model.nueva" required
+                                minlength="8" #nueva="ngModel" />
+                            <div class="form-text">Mínimo 6 caracteres y máximo 10.</div>
+                            <div class="invalid-feedback d-block" *ngIf="nueva.invalid && nueva.touched">
+                                Introduce una contraseña válida (mínimo 8 caracteres).
+                            </div>
+                        </div>
+
+                        <!-- Confirmar contraseña -->
+                        <div class="mb-3">
+                            <label class="form-label">Confirmar contraseña</label>
+                            <input type="password" class="form-control" name="confirmar" [(ngModel)]="model.confirmar"
+                                required #confirmar="ngModel" />
+                            <div class="invalid-feedback d-block"
+                                *ngIf="model.confirmar !== model.nueva && confirmar.touched">
+                                Las contraseñas deben coincidir.
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                Restablecer contraseña
+                            </button>
+                        </div>
+                    </form>
+
+                    <div id="mensaje" class="mt-3" aria-live="polite">
+                        <div *ngIf="mensaje" class="alert" [ngClass]="'alert-' + mensajeTipo">
+                            {{ mensaje }}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <p class="text-center text-muted small mt-3">
+                ¿No recibiste el código? Revisa tu correo o solicita uno nuevo.
+            </p>
+        </div>
+    </div>
+</div>

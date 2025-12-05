@@ -13,6 +13,8 @@ import { ReporteStatico } from './componentes/reporte-statico/reporte-statico';
 import { ReporteMulti } from './componentes/reporte-multi/reporte-multi';
 import { AuthGuard } from './guards/auth-guard';
 import { EditarPerfilComponent } from './componentes/editar-perfil/editar-perfil.component'
+import { PublicacionesComponent } from './componentes/publicaciones/publicaciones';
+import { RecuperarContrasenaComponent } from './componentes/recuperar-contrasena/recuperar-contrasena';
 
 export const routes: Routes = [
     { path: 'login', loadComponent: () => import('./componentes/inicio-sesion/inicio-sesion').then(m => m.InicioSesion) },
@@ -25,7 +27,11 @@ export const routes: Routes = [
     { path: 'registro', component: Registro },
     { path: 'BlogAdmin', component: BlogAdmin },
     { path: 'ReporteMulti', component: ReporteMulti },
-    { path: 'editarPerfil', component: EditarPerfilComponent, canActivate: [AuthGuard] }
+    { path: 'editarPerfil', component: EditarPerfilComponent, canActivate: [AuthGuard] },
+    //{ path: 'publicaciones', component: PublicacionesComponent, canActivate: [AuthGuard] },
+    { path: 'publicaciones', component: PublicacionesComponent },
+    { path: 'recuperar-contrasena', component: RecuperarContrasenaComponent },
+
 
 ];
 
