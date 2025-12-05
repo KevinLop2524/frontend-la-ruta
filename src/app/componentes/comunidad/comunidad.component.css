@@ -89,16 +89,15 @@ body {
     height: 480px;
     padding: 14px;
     box-shadow: 0 8px 22px rgba(0, 0, 0, 0.14);
-
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* ✨ Magia: empuja los botones al fondo */
+    justify-content: space-between;
 }
 
 
 
 #botones {
-    margin-top: auto;  /* ✨ Esto garantiza que SIEMPRE se vaya al fondo */
+    margin-top: auto;
     padding-top: 12px;
 }
 

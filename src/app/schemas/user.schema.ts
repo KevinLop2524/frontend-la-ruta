@@ -55,8 +55,8 @@ export const userSchema = z.object({
     .optional(),
 
   // Opcional, valida número en caso de existir
-  weight: z.number()
-    .positive("El peso debe ser un número positivo")
+  weight: z.string()
+    .regex(/^\d+$/, "El peso debe ser un número").max(3, "El peso debe tener maximo tres caracteres")
     .optional(),
 
   height: z.number()

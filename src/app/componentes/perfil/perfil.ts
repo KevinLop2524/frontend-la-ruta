@@ -56,6 +56,9 @@ export class Perfil {
     this.comunidadEditar = { ...comunidad };
   }
 
+
+
+
   obtenerFraseMotivacional(): void {
     let get = {
       host: this.peticion.urlReal,
@@ -106,6 +109,15 @@ export class Perfil {
       this.cdr.detectChanges()
     }).catch((err: any) => {
       console.error("error al obtener las comunidades", err);})
+  }
+
+  traductiCategoria(categoria: string) {
+    switch (categoria) {
+      case 'NUTRITION': return 'NUTRICION';
+      case 'FITNESS': return 'FITNESS';
+      case 'PERSONAL_DEVELOPMENT': return 'DESARROLLO PERSONAL';
+      default: return categoria;
+    }
   }
 
   eliminarComunidad() {

@@ -7,16 +7,20 @@ import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { Footer } from '../footer/footer';
 import { Router, RouterModule } from '@angular/router';
+import { userZodValidator } from '../../validators/user-zod.validator';
+
 
 @Component({
   selector: 'app-editar-perfil',
   imports: [Header, CommonModule, FormsModule, Footer, RouterModule],
   templateUrl: './editar-perfil.component.html',
-  styleUrl: './editar-perfil.component.css'
+  styleUrl: './editar-perfil.component.css',
+  providers: [userZodValidator]
+  
 })
 export class EditarPerfilComponent implements OnInit {
 
-  constructor(private peticion: Peticion, private cdr: ChangeDetectorRef, private router: Router) { }
+  constructor(private peticion: Peticion, private cdr: ChangeDetectorRef, private router: Router, private validar: userZodValidator) { }
 
   perfilEditar: any = {
     firstName: '',
@@ -81,7 +85,7 @@ export class EditarPerfilComponent implements OnInit {
         secondLastName: this.usuario.secondLastName || '',
         dateOfBirth: this.usuario.dateOfBirth ? this.usuario.dateOfBirth.split('T')[0] : '',
         height: this.usuario.height || '',
-        sex: this.usuario.gender || '',
+        gender: this.usuario.gender || '',
         weight: this.usuario.weight|| ''
       };
       this.cdr.detectChanges();
@@ -107,6 +111,22 @@ export class EditarPerfilComponent implements OnInit {
       return;
     }
 
+    /*
+        const resultado= this.validar.validar(this.perfilEditar);
+    
+        if (!resultado.ok){
+          const error= resultado.error;
+        Swal.fire({
+          title: 'Algo salio mal',
+          text: error,
+          icon: 'warning',
+          confirmButtonText: 'Ok'
+        })
+        console.log(error)
+        console.log(resultado)
+        return;
+        }*/
+
     let act = {
       host: this.peticion.urlReal,
       path: '/api/users/update/' + this.usuario.id,
@@ -115,7 +135,7 @@ export class EditarPerfilComponent implements OnInit {
         secondName: this.perfilEditar.secondName/* || this.usuario.secondName*/,
         lastName: this.perfilEditar.lastName/* || this.usuario.lastName*/,
         secondLastName: this.perfilEditar.secondLastName/* || this.usuario.secondLastName*/,
-        gender: this.perfilEditar.sex /*|| this.usuario.gender*/,
+        gender: this.perfilEditar.gender /*|| this.usuario.gender*/,
         dateOfBirth: this.perfilEditar.dateOfBirth /*|| this.usuario.dateOfBirth*/,
         height: this.perfilEditar.height/* ?? this.usuario.heigth*/,
         weight: this.perfilEditar.weight
