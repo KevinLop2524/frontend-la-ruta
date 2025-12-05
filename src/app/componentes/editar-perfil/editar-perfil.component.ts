@@ -85,7 +85,7 @@ export class EditarPerfilComponent implements OnInit {
         secondLastName: this.usuario.secondLastName || '',
         dateOfBirth: this.usuario.dateOfBirth ? this.usuario.dateOfBirth.split('T')[0] : '',
         height: this.usuario.height || '',
-        gender: this.usuario.gender || '',
+        sex: this.usuario.gender || '',
         weight: this.usuario.weight|| ''
       };
       this.cdr.detectChanges();
@@ -135,7 +135,7 @@ export class EditarPerfilComponent implements OnInit {
         secondName: this.perfilEditar.secondName/* || this.usuario.secondName*/,
         lastName: this.perfilEditar.lastName/* || this.usuario.lastName*/,
         secondLastName: this.perfilEditar.secondLastName/* || this.usuario.secondLastName*/,
-        gender: this.perfilEditar.gender /*|| this.usuario.gender*/,
+        sex: this.perfilEditar.gender /*|| this.usuario.gender*/,
         dateOfBirth: this.perfilEditar.dateOfBirth /*|| this.usuario.dateOfBirth*/,
         height: this.perfilEditar.height/* ?? this.usuario.heigth*/,
         weight: this.perfilEditar.weight
