@@ -46,18 +46,18 @@
                         [(ngModel)]="perfilEditar.dateOfBirth" [min]="fechaMinima()" [max]="fechaMaxima()">
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label for="altura" class="form-label">Altura (m)</label>
-                    <input type="number" class="form-control" name="height" id="altura" placeholder="Ej: 175"
+                    <label for="altura" class="form-label">Altura (cm)</label>
+                    <input type="text" class="form-control" name="height" id="altura" placeholder="Ej: 175"
                         [(ngModel)]="perfilEditar.height">
                 </div>
                 <div class="col-md-6 mb-3">
                     <label for="peso" class="form-label">Peso (kg)</label>
-                    <input type="number" class="form-control" name="weight" id="peso" placeholder="Ej: 64"
+                    <input type="text" class="form-control" name="weight" id="peso" placeholder="Ej: 64"
                         [(ngModel)]="perfilEditar.weight">
                 </div>
                 <div class="col-md-6 mb-3">
                     <label for="sexo" class="form-label">Sexo</label>
-                    <select id="sexo" class="form-select" name="sex" [(ngModel)]="perfilEditar.sex">
+                    <select id="sexo" class="form-select" name="gender" [(ngModel)]="perfilEditar.gender">
                         <option [ngValue]="null">Selecciona tu sexo</option>
                         <option value="M">Hombre</option>
                         <option value="F">Mujer</option>
