@@ -21,7 +21,7 @@ export const routes: Routes = [
     { path: 'perfil', component: Perfil, canActivate: [AuthGuard] },
     { path: 'servicios', component: ServicioComponent, canActivate: [AuthGuard] },
     { path: 'servicios/:id', component: ServicioComponent, canActivate: [AuthGuard] },
-    { path: 'comunidades', component: ComunidadComponent/*, canActivate: [AuthGuard]*/ },
+    { path: 'comunidades', component: ComunidadComponent, canActivate: [AuthGuard] },
     { path: 'favoritos', component: FavoritosComponent, canActivate: [AuthGuard] },
     { path: 'registro', component: Registro },
     { path: 'BlogAdmin', component: BlogAdmin },
