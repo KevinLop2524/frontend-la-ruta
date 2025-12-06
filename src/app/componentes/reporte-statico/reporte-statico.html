@@ -1,10 +1,82 @@
+
 <app-header></app-header>
 <main class="container mt-5">
+
+    <!-- Botón de reporte -->
     <div id="reporte">
         <button type="button" class="btn btn-primary" (click)="reporte()">
-        Generar reporte
+            Generar reporte
         </button>
-</div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card shadow p-4 mb-4">
+        <h5 class="mb-3">Filtros de búsqueda</h5>
+
+        <div class="row g-3">
+
+            <!-- Nombre -->
+            <div class="col-md-3">
+                <label class="form-label">Nombre</label>
+                <input type="text" class="form-control"
+                       [(ngModel)]="filtros.fullName" placeholder="Buscar por nombre">
+            </div>
+
+            <!-- Correo -->
+            <div class="col-md-3">
+                <label class="form-label">Correo</label>
+                <input type="text" class="form-control"
+                       [(ngModel)]="filtros.email" placeholder="Buscar por correo">
+            </div>
+
+            <!-- Rol -->
+            <div class="col-md-2">
+                <label class="form-label">Rol</label>
+                <select class="form-select" [(ngModel)]="filtros.role">
+                    <option value="">Todos</option>
+                    <option value="ADMIN">Admin</option>
+                    <option value="ASESOR">Asesor</option>
+                    <option value="CLIENTE">Cliente</option>
+                </select>
+            </div>
+
+           <div class="col-md-2">
+                <label class="form-label">Activo</label>
+                <select class="form-select" [(ngModel)]="filtros.active">
+                    <option value="">Todos</option>
+                    <option value="true">Activo</option>
+                    <option value="false">Inactivo</option>
+                </select>
+            </div>
+
+            <!-- Fecha inicio -->
+            <div class="col-md-2">
+                <label class="form-label">Fecha inicio</label>
+                <input type="date" class="form-control"
+                       [(ngModel)]="filtros.fechaInicio">
+            </div>
+
+            <!-- Fecha fin -->
+            <div class="col-md-2">
+                <label class="form-label">Fecha fin</label>
+                <input type="date" class="form-control"
+                       [(ngModel)]="filtros.fechaFin">
+            </div>
+
+        </div>
+
+        <div class="mt-3 d-flex justify-content-end">
+            <button class="btn btn-danger me-2" (click)="limpiarFiltros()">
+                Limpiar
+            </button>
+            <button class="btn btn-primary" (click)="aplicarFiltros()">
+                Aplicar filtros
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Tabla -->
     <div class="table-responsive">
         <table class="table table-hover table-bordered align-middle text-center">
             <thead class="table-danger">
@@ -15,18 +87,26 @@
                     <th>Acciones</th>
                 </tr>
             </thead>
+
             <tbody id="tablaComunidades">
                 <tr *ngFor="let item of usuarios">
-                    <td>{{item.nombre}}</td>
-                    <td>{{item.correo}}</td>
-                    <td>{{item.apodo}}</td>
+                    <td>{{item.fullName}}</td>
+                    <td>{{item.email}}</td>
+                    <td>{{item.username}}</td>
                     <td>
-                        <button class="btn btn-sm btn-primary"><i class="bi bi-eye"></i></button>
-                        <button class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
+                        <button class="btn btn-sm btn-primary">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger">
+                            <i class="bi bi-trash"></i>
+                        </button>
                     </td>
                 </tr>
             </tbody>
+
         </table>
     </div>
+
 </main>
+
 <app-footer></app-footer>

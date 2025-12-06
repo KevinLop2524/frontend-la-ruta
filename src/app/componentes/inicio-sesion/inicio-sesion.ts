@@ -37,12 +37,11 @@ export class InicioSesion {
         console.log(res)
         console.log(post.payload)
         localStorage.setItem("token", res.token);
-        localStorage.setItem("apodo", res.apodo);
-        localStorage.setItem("roles", JSON.stringify(res.roles));
+        localStorage.setItem("apodo", res.username);
+        localStorage.setItem("role", res.role);
         this.router.navigate(["comunidades"])
       }
     }).catch((err: any) => {
-      console.log(err)
       console.log(post.payload)
       if (err.status==400) {
         Swal.fire({
