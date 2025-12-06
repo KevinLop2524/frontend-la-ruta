@@ -23,6 +23,5 @@ export const routes: Routes = [
     { path: 'registro', component: Registro },
     { path: 'BlogAdmin', component: ReporteStatico },
     { path: 'editarPerfil', component: EditarPerfilComponent, canActivate: [AuthGuard] }
-
 ];
 
