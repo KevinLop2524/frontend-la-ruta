@@ -1,0 +1,39 @@
+body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background: #fff6f6; }
+
+:root {
+  --rojo-1: #ffecec;
+  --rojo-2: #ffd6d6;
+  --rojo-3: #ff9b9b;
+  --texto-oscuro: #4a2a2a;
+}
+
+.card { border-radius: 12px; overflow: hidden; border: none; }
+.auth-card { display: flex; min-height: 420px; }
+.auth-left { background: linear-gradient(180deg, var(--rojo-1), var(--rojo-2)); width: 48%; padding: 2.5rem; }
+.auth-right { width: 52%; background: white; }
+
+.logo-large { max-width: 260px; width: 80%; height: auto; filter: drop-shadow(0 6px 12px rgba(74,42,42,0.12)); }
+
+#mensaje { min-height: 40px; }
+.form-text { font-size: 0.85rem; }
+
+.btn-primary {
+  background-color: #ff5d5d; /**/
+  border-color: #ff5d5d;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+  background-color: #ff4545;
+  border-color: #ff4545;
+}
+
+.form-control:focus {
+  box-shadow: 0 0 0 0.15rem rgba(255,155,155,0.25);
+  border-color: #ff9b9b;
+}
+
+@media (max-width: 767.98px) {
+  .auth-card { flex-direction: column; }
+  .auth-left { display: none !important; }
+  .auth-right { width: 100%; }
+}
