@@ -81,7 +81,7 @@ export class Perfil {
     let token = localStorage.getItem('token') || undefined;
     let get = {
       host: this.peticion.urlReal,
-      path: "/api/users/get/" + 6,
+      path: "/api/users/get/" + 7,
       payload: {
       }
     }

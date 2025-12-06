@@ -7,7 +7,7 @@ import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { Footer } from '../footer/footer';
 import { Router, RouterModule } from '@angular/router';
-import { userZodValidator } from '../../validators/user-zod.validator';
+import { userZodValidator } from '../../validators/userUpdate'
 
 
 @Component({
@@ -16,7 +16,6 @@ import { userZodValidator } from '../../validators/user-zod.validator';
   templateUrl: './editar-perfil.component.html',
   styleUrl: './editar-perfil.component.css',
   providers: [userZodValidator]
-  
 })
 export class EditarPerfilComponent implements OnInit {
 
@@ -29,7 +28,7 @@ export class EditarPerfilComponent implements OnInit {
     secondLastName: '',
     dateOfBirth: '',
     height: '',
-    sex: '',
+    gender: '',
     weight: ''
   };
 
@@ -71,7 +70,7 @@ export class EditarPerfilComponent implements OnInit {
     let token = localStorage.getItem('token') || undefined;
     let get = {
       host: this.peticion.urlReal,
-      path: "/api/users/get/" + 6,
+      path: "/api/users/get/" + 7,
       payload: {
       }
     }
@@ -83,10 +82,10 @@ export class EditarPerfilComponent implements OnInit {
         secondName: this.usuario.secondName || '',
         lastName: this.usuario.lastName || '',
         secondLastName: this.usuario.secondLastName || '',
+        gender: this.usuario.gender || '',
         dateOfBirth: this.usuario.dateOfBirth ? this.usuario.dateOfBirth.split('T')[0] : '',
-        height: this.usuario.height || '',
-        sex: this.usuario.gender || '',
-        weight: this.usuario.weight|| ''
+        height: this.usuario.height ? String(this.usuario.height) : '',
+        weight: this.usuario.weight ? String(this.usuario.weight) : '',
       };
       this.cdr.detectChanges();
     }).catch((err) => {
@@ -97,35 +96,35 @@ export class EditarPerfilComponent implements OnInit {
   }
 
   actualizarPerfil() {
-    // Validación básica
-    if (
-      this.datosNoPermitidos.includes(this.perfilEditar.firstName) &&
-      this.datosNoPermitidos.includes(this.perfilEditar.lastName) &&
-      this.datosNoPermitidos.includes(this.perfilEditar.username)
-    ) {
+    /*
+        if (
+          this.datosNoPermitidos.includes(this.perfilEditar.firstName) &&
+          this.datosNoPermitidos.includes(this.perfilEditar.lastName) &&
+          this.datosNoPermitidos.includes(this.perfilEditar.username)
+        ) {
+          Swal.fire({
+            title: 'Error',
+            text: 'Tiene que ingresar al menos un campo obligatorio',
+            icon: 'warning'
+          });
+          return;
+        }
+    */
+
+    const resultado = this.validar.validar(this.perfilEditar);
+
+    if (!resultado.ok) {
       Swal.fire({
-        title: 'Error',
-        text: 'Tiene que ingresar al menos un campo obligatorio',
-        icon: 'warning'
+        title: 'Algo salio mal',
+        text: resultado.error,
+        icon: 'warning',
+        confirmButtonText: 'Ok'
       });
       return;
     }
 
-    /*
-        const resultado= this.validar.validar(this.perfilEditar);
-    
-        if (!resultado.ok){
-          const error= resultado.error;
-        Swal.fire({
-          title: 'Algo salio mal',
-          text: error,
-          icon: 'warning',
-          confirmButtonText: 'Ok'
-        })
-        console.log(error)
-        console.log(resultado)
-        return;
-        }*/
+
+
 
     let act = {
       host: this.peticion.urlReal,
@@ -135,10 +134,10 @@ export class EditarPerfilComponent implements OnInit {
         secondName: this.perfilEditar.secondName/* || this.usuario.secondName*/,
         lastName: this.perfilEditar.lastName/* || this.usuario.lastName*/,
         secondLastName: this.perfilEditar.secondLastName/* || this.usuario.secondLastName*/,
-        sex: this.perfilEditar.gender /*|| this.usuario.gender*/,
+        gender: this.perfilEditar.gender /*|| this.usuario.gender*/,
         dateOfBirth: this.perfilEditar.dateOfBirth /*|| this.usuario.dateOfBirth*/,
-        height: this.perfilEditar.height/* ?? this.usuario.heigth*/,
-        weight: this.perfilEditar.weight
+        height: Number(this.perfilEditar.height),
+        weight: Number(this.perfilEditar.weight)
       }
     };
 
@@ -146,6 +145,7 @@ export class EditarPerfilComponent implements OnInit {
 
     this.peticion.patch(act.host + act.path, act.payload).then((res: any) => {
       localStorage.setItem('apodo', this.perfilEditar.username);
+
       Swal.fire({
         title: 'Actualizado',
         text: 'El usuario fue actualizado',
@@ -158,7 +158,7 @@ export class EditarPerfilComponent implements OnInit {
       console.error("Error al actualizar el usuario: ", err);
       Swal.fire({
         title: 'Error',
-        text: 'Error al actualizar el usuario'+ err.error.message,
+        text: 'Error al actualizar el usuario' + err.error.message,
         icon: 'error',
         confirmButtonText: 'Cerrar'
       });
