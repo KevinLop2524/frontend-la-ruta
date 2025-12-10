@@ -1,94 +1,53 @@
 <app-header></app-header>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-    <button class="btn btn-primary" data-bs-toggle="modal" id="botonCrear" data-bs-target="#modalCrearPublicacion">
-        Crear publicación
-    </button>
-
-</nav>
-
 <main class="container my-4">
-    <section id="feed" class="row gy-3">
 
-        <!-- Tarjeta de publicación (diseño estático) -->
-        <div class="col-12">
-            <div class="post-card">
+    <div class="bulk-card p-4">
 
-                <!-- HEADER -->
-                <div class="post-header">
-                    <img class="avatar" src="/imagenes/static/Fotoperfil.jpg" alt="avatar">
+        <h2 class="title mb-3">Carga Masiva de Datos</h2>
+        <p class="subtitle mb-4">
+            Seleccione el archivo y el tipo de entidad que desea cargar masivamente.
+        </p>
 
-                    <div>
-                        <div class="username">Nombre de usuario</div>
-                        <div class="post-date">Hace 2 horas</div>
-                    </div>
+        <!-- FORMULARIO -->
+        <form>
 
-                    <!-- MENÚ 3 PUNTOS QUITADO -->
-                    <!-- Si en el futuro quieres agregarlo, se puede volver a poner -->
-                </div>
-
-                <!-- CONTENIDO -->
-                <div class="post-content mt-3">
-                    Este es el contenido de ejemplo de la publicación.
-                </div>
-
-                <!-- IMAGEN -->
-                <img class="post-image" src="/imagenes/static/Fotoperfil.jpg" alt="post image">
-
-                <!-- ACCIONES -->
-                <div class="post-actions">
-                    <button class="action-btn">❤ 10</button>
-                    <button class="action-btn">💬 Comentar</button>
-                    <button class="action-btn">↗ Compartir</button>
-                </div>
-
-            </div>
-        </div>
-
-        <!-- Si deseas más posts, puedes duplicar este bloque -->
-
-    </section>
-</main>
-
-
-<div class="modal fade" id="modalCrearPublicacion" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-
-            <div class="modal-header">
-                <h5 class="modal-title">Crear publicación</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            <!-- SELECCIÓN DEL TIPO -->
+            <div class="form-group mb-3">
+                <label class="form-label">Tipo de entidad</label>
+                <select class="form-select">
+                    <option value="" disabled selected>Seleccione un tipo...</option>
+                    <option value="USER">Usuarios</option>
+                    <option value="POST">Publicaciones</option>
+                    <option value="COMMUNITY">Comunidades</option>
+                    <option value="SERVICE">Servicios</option>
+                </select>
             </div>
 
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label class="form-label">Título</label>
-                    <input type="text" class="form-control" [(ngModel)]="nuevaPublicacion.title" name="tituloNueva">
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Contenido</label>
-                    <textarea class="form-control" rows="4" [(ngModel)]="nuevaPublicacion.content"
-                        name="contenidoNueva"></textarea>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Archivos</label>
-                    <input class="form-control" type="file" multiple>
-                </div>
+            <!-- INPUT ARCHIVO -->
+            <div class="form-group mb-3">
+                <label class="form-label">Archivo (Excel, CSV)</label>
+                <input type="file" class="form-control">
             </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-
-                <button type="button" class="btn btn-primary" (click)="crearPublicacion()">
-                    Publicar
-                </button>
+            <!-- OPCION EXTRA -->
+            <div class="form-check mb-4">
+                <input class="form-check-input" type="checkbox" id="keepFile">
+                <label class="form-check-label" for="keepFile">
+                    Conservar archivo si hay errores
+                </label>
             </div>
 
-        </div>
+            <!-- BOTÓN -->
+            <button class="btn-primary w-100 mt-2" type="button">
+                Cargar archivo
+            </button>
+
+        </form>
+
     </div>
-</div>
+
+</main>
 
 
 <app-footer></app-footer>

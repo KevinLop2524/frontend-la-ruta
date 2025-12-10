@@ -85,7 +85,7 @@ export class ComunidadComponent implements OnInit {
     let token = localStorage.getItem('token') || undefined;
     let get = {
       host: this.peticion.urlReal,
-      path: "/api/users/get/" + 7,
+      path: "/api/users/get/" + 6,
       payload: {
       }
     }
@@ -93,7 +93,7 @@ export class ComunidadComponent implements OnInit {
       this.usuario = res;
       this.nuevaComunidad.creatorId = this.usuario.id
       this.cdr.detectChanges()
-      console.log("Usuario logueado:", this.usuario.usuario);
+      console.log("Usuario logueado:", this.usuario.id);
 
     }).catch((err: any) => {
       console.log("Error al encontrar usuario", apodo, "Error: ", err);

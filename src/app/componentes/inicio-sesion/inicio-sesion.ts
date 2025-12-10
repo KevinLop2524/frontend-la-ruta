@@ -12,7 +12,7 @@ import Swal from 'sweetalert2';
   styleUrl: './inicio-sesion.css'
 })
 export class InicioSesion {
-  apodo: string = ""
+  identifier: string = ""
   contrasena: string = ""
   constructor(private peticion: Peticion, private router: Router) { }
 
@@ -20,36 +20,36 @@ export class InicioSesion {
     let post = {
       host: this.peticion.urlReal,
       path: "/api/auth/login",
-      payload: {
-        apodo: this.apodo,
-        contrasena: this.contrasena
+      payload: {  
+        identifier: this.identifier,
+        password: this.contrasena
       }
     }
     this.peticion.post(post.host + post.path, post.payload).then((res: any) => {
 
       console.log(res)
-      if (res.success==false) {
+      if (res.username.toLowerCase() == this.identifier.toLowerCase() || res.email.toLowerCase() == this.identifier.toLowerCase()) {
         Swal.fire({
-          title: "Error ",
-          text: res.message,
-          icon: "error"
-        });
-      } else if (res.roles[0] != null) {
-        Swal.fire({
-          title: "Bienvenido " + res.apodo,
+          title: "Bienvenido " + res.username,
           text: "",
           icon: "success"
         });
         console.log(res)
         console.log(post.payload)
         localStorage.setItem("token", res.token);
-        localStorage.setItem("apodo", res.apodo);
-        localStorage.setItem("roles", JSON.stringify(res.roles));
+        localStorage.setItem("apodo", res.username);
+        localStorage.setItem("role", res.role);
         this.router.navigate(["comunidades"])
       }
     }).catch((err: any) => {
-      console.log(err)
       console.log(post.payload)
+      if (err.status==400) {
+        Swal.fire({
+          title: "Error",
+          text: err.error.message,
+          icon: "error"
+        });
+      }
     })
   }
 }

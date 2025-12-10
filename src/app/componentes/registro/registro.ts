@@ -18,35 +18,40 @@ export class Registro {
   contrasena2: string = ""
   apodo: string = ""
 
-  constructor(private peticion: Peticion, private router:Router) {
+  constructor(private peticion: Peticion, private router: Router) {
+  }
+
+  validarPassword(password: string): boolean {
+    const regex = /^(?=(?:.*[a-z]){2,})(?=.*[A-Z])(?=(?:.*\d){2,}).{10,15}$/;
+    return password != null && regex.test(password);
   }
 
   registrar() {
-    if (this.contrasena != this.contrasena2 ) {
-      
+    if (this.contrasena != this.contrasena2) {
+
     } else {
       let post = {
-      host: this.peticion.urlReal,
-      path: "/api/auth/register",
-      payload: {
-        nombre: this.nombre,
-        apellido: this.apellido,
-        correo: this.correo,
-        contrasena: this.contrasena,
-        apodo: this.apodo
+        host: this.peticion.urlReal,
+        path: "/api/auth/register",
+        payload: {
+          nombre: this.nombre,
+          apellido: this.apellido,
+          correo: this.correo,
+          contrasena: this.contrasena,
+          apodo: this.apodo
+        }
       }
+      this.peticion.post(post.host + post.path, post.payload).then((res: any) => {
+        console.log(res)
+        console.log(post.payload)
+        if (res.success == true && res.message == "Usuario registado") {
+          this.router.navigate(["/"])
+        }
+      }).catch((err: any) => {
+        console.log(err)
+        console.log(post.payload)
+      })
     }
-    this.peticion.post(post.host+post.path,post.payload).then((res:any)=>{
-      console.log(res)
-      console.log(post.payload)
-      if(res.success==true && res.message=="Usuario registado"){
-        this.router.navigate(["/"])
-      }
-    }).catch((err: any)=>{
-      console.log(err)
-      console.log(post.payload)
-    })
-    }
-    
+
   }
 }

@@ -1,0 +1,65 @@
+<app-header></app-header>
+
+
+<div class="container mt-5">
+  <h2>Carga Masiva</h2>
+
+  <form>
+
+    <!-- ARCHIVO -->
+    <div class="mb-3">
+      <label class="form-label">Seleccione el archivo</label>
+      <input 
+        type="file" 
+        class="form-control"
+        name="file"
+        (change)="onFileSelected($event)"
+      />
+    </div>
+
+    <!-- TIPO DE ENTIDAD -->
+    <div class="mb-3">
+      <label class="form-label">Tipo de entidad</label>
+      <select 
+        class="form-select"
+        [(ngModel)]="entityType"
+        name="entityType"
+        required
+      >
+        <option value="" disabled>Seleccione un tipo...</option>
+        <option value="USERS">Usuarios</option>
+        <option value="COMMUNITIES">Comunidades</option>
+      </select>
+    </div>
+
+    <!-- CHECKBOX -->
+    <div class="form-check mb-3">
+      <input 
+        class="form-check-input" 
+        type="checkbox"
+        [(ngModel)]="keepFileOnErrors"
+        name="keepFileOnErrors"
+        id="keepFileOnErrors"
+      />
+      <label class="form-check-label" for="keepFileOnErrors">
+        Conservar archivo si hay errores
+      </label>
+    </div>
+
+    <!-- BOTÓN -->
+    <button 
+      class="btn btn-primary" 
+      type="button"
+      (click)="subirArchivo()"
+    >
+      Subir archivo
+    </button>
+
+  </form>
+
+  <!-- MENSAJES -->
+  <p class="mt-3 text-danger" *ngIf="errorMessage">{{ errorMessage }}</p>
+  <p class="mt-3 text-success" *ngIf="successMessage">{{ successMessage }}</p>
+</div>
+
+<app-footer></app-footer>
