@@ -1,53 +1,99 @@
 <app-header></app-header>
 
-<main class="container my-4">
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <div class="container">
+        <a class="navbar-brand fw-bold">{{comunidad.name}}</a><br>
+        <h5 class="navbar-brand fw-bold">{{comunidad.description}}</h5>
 
-    <div class="bulk-card p-4">
-
-        <h2 class="title mb-3">Carga Masiva de Datos</h2>
-        <p class="subtitle mb-4">
-            Seleccione el archivo y el tipo de entidad que desea cargar masivamente.
-        </p>
-
-        <!-- FORMULARIO -->
-        <form>
-
-            <!-- SELECCIÓN DEL TIPO -->
-            <div class="form-group mb-3">
-                <label class="form-label">Tipo de entidad</label>
-                <select class="form-select">
-                    <option value="" disabled selected>Seleccione un tipo...</option>
-                    <option value="USER">Usuarios</option>
-                    <option value="POST">Publicaciones</option>
-                    <option value="COMMUNITY">Comunidades</option>
-                    <option value="SERVICE">Servicios</option>
-                </select>
-            </div>
-
-            <!-- INPUT ARCHIVO -->
-            <div class="form-group mb-3">
-                <label class="form-label">Archivo (Excel, CSV)</label>
-                <input type="file" class="form-control">
-            </div>
-
-            <!-- OPCION EXTRA -->
-            <div class="form-check mb-4">
-                <input class="form-check-input" type="checkbox" id="keepFile">
-                <label class="form-check-label" for="keepFile">
-                    Conservar archivo si hay errores
-                </label>
-            </div>
-
-            <!-- BOTÓN -->
-            <button class="btn-primary w-100 mt-2" type="button">
-                Cargar archivo
-            </button>
-
-        </form>
-
+        <div>
+            <button class="btn btn-primary" (click)="abrirModal()">Crear publicación</button>
+        </div>
     </div>
+</nav>
 
+<main class="container my-4">
+    <section id="feed" class="row gy-3">
+
+        <!-- PUBLICACIÓN DE EJEMPLO -->
+        <div class="col-12">
+            <div *ngFor="let publicacion of publicaciones" class="post-card">
+
+                <div class="post-header">
+                    <img class="avatar" src="imagenes/static/Fotoperfil.jpg">
+
+                    <div>
+                        <div class="username">{{publicacion.username}}</div>
+                        <div class="post-date">Hace 2 horas</div>
+                    </div>
+
+                    <div class="post-menu-wrapper">
+                        <button class="post-menu-btn">⋮</button>
+
+                        <div class="custom-menu">
+                            <button class="dropdown-item btn-edit">✏️ Editar</button>
+                            <button class="dropdown-item btn-delete">🗑️ Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="post-content mt-3" name="contenido">
+                    {{publicacion.contenido}}
+                </div>
+
+                <img class="post-image" src="/imagenes/static/imgGymUno.jpg">
+
+                <div class="post-actions">
+                    <button class="action-btn">❤ {{publicacion.like}}</button>
+                    <button class="action-btn">💬 Comentar</button>
+                    <button class="action-btn">↗ Compartir</button>
+                </div>
+
+            </div>
+        </div>
+
+    </section>
 </main>
 
+<!-- ✅ MODAL CREAR PUBLICACIÓN (CONTROLADO DESDE TS) -->
+<div class="modal fade show" *ngIf="modalAbierto" style="display: block;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 shadow border-0">
+
+            <div class="modal-header border-0">
+                <h5 class="modal-title">Crear publicación</h5>
+                <button type="button" class="btn-close" (click)="cerrarModal()"></button>
+            </div>
+
+            <div class="modal-body">
+                <form>
+
+                    <div class="mb-3">
+                        <label class="form-label">Contenido</label>
+                        <textarea class="form-control form-control-lg" rows="4" placeholder="Comparte algo..."
+                            [(ngModel)]="nuevaPublicacion.contenido" name="contenido"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Imagen</label>
+
+                        <div class="drop-zone">
+                            <div class="drop-zone-content">
+                                <p>Haz clic para subir una imagen</p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </form>
+            </div>
+
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-link text-muted" (click)="cerrarModal()">Cancelar</button>
+                <button type="button" class="btn btn-primary" (click)="crearPublicacion()">Publicar</button>
+            </div>
+
+        </div>
+    </div>
+</div>
 
 <app-footer></app-footer>

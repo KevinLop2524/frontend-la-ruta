@@ -244,10 +244,10 @@ export class ComunidadComponent implements OnInit {
     this.peticion.get(get.host + get.path).then((res: any) => {
       console.log("Es miembro?:" + res.isMember);
       if (comunidad.creatorId == this.usuario.id) {
-        this.router.navigate(['servicios/', comunidad.id])
+        this.router.navigate(['publicaciones/', comunidad.id])
       }
       else if (res.isMember) {
-        this.router.navigate(['servicios/', comunidad.id]);
+        this.router.navigate(['publicaciones/', comunidad.id]);
         return;
       } else {
         this.comunidadseleccionada = comunidad;
