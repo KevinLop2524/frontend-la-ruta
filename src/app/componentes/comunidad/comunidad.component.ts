@@ -24,6 +24,7 @@ export class ComunidadComponent implements OnInit {
   datosNoPermitidos: (string | null | undefined)[] = ["", null, undefined];
   comunidades: any[] = []
   usuario: any = {}
+  idUsuario?: String | null;
 
   nuevaComunidad: any = {
     category: '',
@@ -51,6 +52,7 @@ export class ComunidadComponent implements OnInit {
     this.cargarComunidades();
     this.buscarUsuario();
     console.log("rol:", this.rol)
+    this.idUsuario = localStorage.getItem("id") 
   }
 
 
@@ -85,7 +87,7 @@ export class ComunidadComponent implements OnInit {
     let token = localStorage.getItem('token') || undefined;
     let get = {
       host: this.peticion.urlReal,
-      path: "/api/users/get/" + 7,
+      path: "/api/users/get/" + 1,
       payload: {
       }
     }
@@ -237,6 +239,7 @@ export class ComunidadComponent implements OnInit {
   }
 
   verificarMembresia(comunidad: any) {
+    this.usuario.id = this.idUsuario;
     let get = {
       host: this.peticion.urlReal,
       path: "/api/communities/" + comunidad.id + "/is-member/" + this.usuario.id

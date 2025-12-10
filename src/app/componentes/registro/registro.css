@@ -1,58 +1,109 @@
-body {
-  font-family: Arial, sans-serif;
-  background-size: cover;
-  background-position: center;
-  min-height: 100vh;
-  margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+/* ======== WRAPPER Y CARD ======== */
+.register-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    background: #fafafa;
 }
 
-#container {
-  width: 400px;
-  min-height: 400px;
-  background-color: rgba(234, 233, 233, 0.721);
-  backdrop-filter: blur(6px);
-  border-radius: 200x;
-  box-shadow: 0 0 60px rgba(8, 8, 8, 0.3);
-  padding: 30px;
-  margin: 40px auto;
-   border-radius: 30px;
-  padding: 30px;
-  box-shadow: 10px 10px 60px #F53730;
-  border:solid 1px black ;
-}
-.formulario-angosto label,
-
-.formulario-angosto h2 {
-  color: #000000; /* Totalmente negro */
-  font-weight: bold;
-}
-body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 1vh;
+.register-card {
+    width: 100%;
+    max-width: 420px;
+    padding: 40px 35px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 18px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    border: 1.5px solid rgba(0, 0, 0, 0.1);
 }
 
-/* input.form-control {
-  border-radius: 20px;
-  padding: 10px 15px;
-  border: 1.8px solid #040404;
-  transition: border-color 0.3s ease;
-} */
-
-#button{
-color: #f2f4f5;
-border:solid 1px black ;
-font-weight: bold;
-padding: 7px;
-background-color: #F53730;
-
+/* ======== LOGO ======== */
+.logo {
+    width: 140px;
+    display: block;
+    margin: 0 auto 20px auto;
 }
-#logo{
-width: 150px;
-margin-left: calc(50% - 75px);
 
-}   
+/* ======== TITLES ======== */
+.title {
+    text-align: center;
+    font-weight: 800;
+    margin-bottom: 5px;
+    color: #111;
+}
+
+.subtitle {
+    text-align: center;
+    color: #555;
+    margin-bottom: 25px;
+    font-size: 14px;
+}
+
+/* ======== FORM ======== */
+.form-group {
+    margin-bottom: 18px;
+}
+
+label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1.8px solid #d1d1d1;
+    transition: .3s ease;
+    font-size: 15px;
+}
+
+.input:focus {
+    border-color: #F53730;
+    outline: none;
+    box-shadow: 0 0 5px rgba(245, 55, 48, 0.4);
+}
+
+.hint {
+    font-size: 12px;
+    color: #666;
+}
+
+/* ======== BOTÓN PRINCIPAL ======== */
+.btn-register {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    background: #F53730;
+    color: white;
+    border: none;
+    font-weight: 700;
+    font-size: 16px;
+    margin-top: 10px;
+    transition: .3s;
+    cursor: pointer;
+}
+
+.btn-register:hover {
+    background: #d92f29;
+}
+
+/* ======== LINK A LOGIN ======== */
+.login-link {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.login-link a {
+    font-weight: bold;
+    color: #F53730;
+    text-decoration: none;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}

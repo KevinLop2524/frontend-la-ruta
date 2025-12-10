@@ -39,7 +39,10 @@ export class InicioSesion {
         localStorage.setItem("token", res.token);
         localStorage.setItem("apodo", res.username);
         localStorage.setItem("role", res.role);
-        this.router.navigate(["comunidades"])
+        localStorage.setItem("id", res.userId)
+        if (localStorage.getItem("role")=="ADMIN") {
+          this.router.navigate(["BlogAdmin"])
+        } else this.router.navigate(["comunidades"])
       }
     }).catch((err: any) => {
       console.log(post.payload)

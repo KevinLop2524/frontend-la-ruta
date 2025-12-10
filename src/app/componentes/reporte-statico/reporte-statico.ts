@@ -39,10 +39,11 @@ export class ReporteStatico implements OnInit {
     let post = {
       host: this.peticion.urlReal,
       path: "/api/reportes/usuarios/lista",
-      payload: {},
+      payload:this.filtros,
       token: this.tokenLog
     }
     this.peticion.post(post.host + post.path, post.payload).then((res: any) => {
+      console.log(post.payload)
       console.log(res)
       this.usuarios = res
       this.cdr.detectChanges()

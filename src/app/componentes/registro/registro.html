@@ -1,63 +1,68 @@
-<main>
-    <div class="container formulario-angosto" id="container">
-        <div>
-            <img src="/imagenes/logos/New_Logo_Modo_Claro.png" id="logo">
-        </div>
-        <h2 class="text-center  mb-2 " id="texto">Registro</h2>
-        <form action="registro2.html" id="R-FR-Datos" method="get" class="needs-validation" novalidate>
-            <div class="row mb-300">
-                <div class="col-md-6">
-                    <label for="nombre" class="form-label">Nombre</label>
-                    <input type="text" class="form-control" id="nombre" name= "nombre" placeholder="Requerido" [(ngModel)]="nombre"
-                        required>
-                    <div class="invalid-feedback">Ingresa tu nombre.</div>
-                </div>
+<main class="register-wrapper">
+    <div class="register-card">
+
+        <img src="/imagenes/logos/New_Logo_Modo_Claro.png" class="logo">
+
+        <h2 class="title">Crear cuenta</h2>
+        <p class="subtitle">Completa tus datos para continuar</p>
+
+        <form class="formulario" novalidate>
+
+            <!-- Nombre -->
+            <div class="form-group">
+                <label>Nombre</label>
+                <input type="text" class="input" [(ngModel)]="firstName" name="firstName" required>
             </div>
 
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="apellido" class="form-label input-group">Apellido</label>
-                    <input type="text" class="form-control" id="apellido" name= "apellido" placeholder="Requerido" [(ngModel)]="apellido"
-                        required>
-                    <div class="invalid-feedback">Ingresa tu apellido.</div>
-                </div>
+            <!-- Apellido -->
+            <div class="form-group">
+                <label>Apellido</label>
+                <input type="text" class="input" [(ngModel)]="lastName" name="lastName" required>
             </div>
 
-            <div class="mb-3">
-                <label for="apodo" class="form-label">Nombre de usuario</label>
-                <input type="text" class="form-control" id="apodo" name="apodo" placeholder="Requerido" [(ngModel)]="apodo" required>
-                <div class="invalid-feedback">Ingresa un correo válido.</div>
+            <!-- Username -->
+            <div class="form-group">
+                <label>Nombre de usuario</label>
+                <input type="text" class="input" [(ngModel)]="username" name="username" required>
             </div>
 
-            <div class="mb-3">
-                <label for="correo" class="form-label">Correo electrónico</label>
-                <input type="email" class="form-control" id="correo" name="correo" placeholder="Requerido" [(ngModel)]="correo"
-                    required>
-                <div class="invalid-feedback">Ingresa un correo válido.</div>
+            <!-- Correo -->
+            <div class="form-group">
+                <label>Correo electrónico</label>
+                <input type="email" class="input" [(ngModel)]="email" name="email" required>
             </div>
 
-            <div class="mb-4">
-                <label for="contrasena" class="form-label">Ingresa una contraseña</label>
-                <input type="password" class="form-control" id="contrasena" name="constrasena" placeholder="Requerido" [(ngModel)]="contrasena" required>
-                <div class="invalid-feedback">Ingresa una contraseña.</div>
-                <div id="emailHelp" class="form-text">La contraseña debe tener entre 10 y 15 caracteres, con al menos 2
-                    minúsculas, 1 mayúscula y 2 números.</div>
+            <!-- Fecha de nacimiento -->
+            <div class="form-group">
+                <label>Fecha de nacimiento</label>
+                <input type="date" class="input" [(ngModel)]="dateOfBirth" name="dateOfBirth" required>
             </div>
 
-            <div class="mb-4">
-                <label for="contrasenaDos" class="form-label">Verefica la contraseña.</label>
-                <input type="password" class="form-control" name="contrasenaDos" id="contrasenaDos" placeholder="Requerido"
-                    [(ngModel)]="contrasena2" required>
-                <div class="invalid-feedback">Verefica la contraseña.</div>
+            <!-- Contraseña -->
+            <div class="form-group">
+                <label>Contraseña</label>
+                <input type="password" class="input" [(ngModel)]="password" name="password" required>
+                <small class="hint">
+                    Debe tener entre 10 y 15 caracteres, con al menos 2 minúsculas, 1 mayúscula y 2 números.
+                </small>
             </div>
 
-            <div class="text-center">
-                <button type="button" class="btn btn-primary" id="button" (click)="registrar()">Registrarse</button>
+            <!-- Verificación -->
+            <div class="form-group">
+                <label>Confirmar contraseña</label>
+                <input type="password" class="input" [(ngModel)]="password2" name="password2" required>
             </div>
-            <br>
-            <div class="text-center">
-                <a class="btn btn-secondary" routerLink="/">Ir a iniciar sesión</a>
-            </div>
+
+            <!-- Botón -->
+            <button class="btn-register" type="button" (click)="registrar()">
+                Registrarse
+            </button>
+
+            <p class="login-link">
+                ¿Ya tienes cuenta?
+                <a routerLink="/">Inicia sesión</a>
+            </p>
 
         </form>
     </div>
+</main>

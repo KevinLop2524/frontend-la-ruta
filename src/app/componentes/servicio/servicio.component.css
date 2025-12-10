@@ -1,4 +1,4 @@
-/*main {
+main {
     flex: 1;
 }
 
@@ -86,7 +86,13 @@ a.btn-primary {
     .mostrarCont {
         margin-top: 10px;
     }
-}*/
+}
+
+
+#logoClaro{
+    width: 100px;
+    height: 100px;
+}
 
 body {
     background: var(--bg);
