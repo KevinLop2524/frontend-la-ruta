@@ -19,7 +19,7 @@ export class ReporteStatico implements OnInit {
   filtros = {
     fullName: '',
     email: '',
-    role: '',
+    role: "",
     active: '',
     fechaInicio: "2000/01/01",
     fechaFin: '2050/01/01'
@@ -35,9 +35,6 @@ export class ReporteStatico implements OnInit {
     this.aplicarFiltros();
   }
 
-  /** ============================
-   *  Cargar todos los usuarios
-   * ============================ */
   aplicarFiltros() {
     let post = {
       host: this.peticion.urlReal,
@@ -60,7 +57,7 @@ export class ReporteStatico implements OnInit {
     this.filtros = {
       fullName: '',
       email: '',
-      role: '',
+      role: "",
       active: '',
       fechaInicio: "2000/01/01",
       fechaFin: '2050/01/01'
@@ -84,7 +81,7 @@ export class ReporteStatico implements OnInit {
     a.click();
   })
   .catch(err => console.log(err));
- 
+
   }
 
 }
