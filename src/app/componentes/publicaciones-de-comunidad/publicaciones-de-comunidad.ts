@@ -64,7 +64,6 @@ eliminarPost(idPost: number) {
     cancelButtonText: 'Cancelar'
   }).then(result => {
     if (result.isConfirmed) {
-      // aquí luego conectas tu endpoint DELETE real
       console.log("Post eliminado:", idPost);
     }
   });
