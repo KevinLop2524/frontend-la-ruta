@@ -8,6 +8,11 @@
         <div>
             <button class="btn btn-primary" (click)="abrirModal()">Crear publicación</button>
         </div>
+        <div>
+            <button class="btn btn-primary" [routerLink]="['/servicios', idComunidad]">
+                Mis servicios
+            </button>
+        </div>
     </div>
 </nav>
 
@@ -77,8 +82,9 @@
                         <label class="form-label">Imagen</label>
 
                         <div class="drop-zone">
-                            <input class="drop-zone-content" type="file" name="imagenSeleccionada" (change)="onFileSelected($event)">
-                                <p>Haz clic para subir una imagen</p>
+                            <input class="drop-zone-content" type="file" name="imagenSeleccionada"
+                                (change)="onFileSelected($event)">
+                            <p>Haz clic para subir una imagen</p>
                         </div>
 
                     </div>
