@@ -27,7 +27,11 @@ export class PublicacionesDeComunidad {
   publicaciones: any = []
   comunidad: any = {}
   imagenSeleccionada: any;
+  publicacionSeleccionada: any = null
   modalAbierto: boolean = false;
+  comentarios: any[] = [];
+  nuevoComentario: string = "";
+
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -51,22 +55,23 @@ editarPost(idPost: number) {
   // Aquí luego llamas al modal de edición
 }
 
-eliminarPost(idPost: number) {
-  console.log("Eliminar post:", idPost);
-  this.menuAbierto = null;
+abrirComentarios(publicacion: any) {
+  this.publicacionSeleccionada = publicacion;
 
-  Swal.fire({
-    title: '¿Eliminar publicación?',
-    text: 'Esta acción no se puede deshacer',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Sí, eliminar',
-    cancelButtonText: 'Cancelar'
-  }).then(result => {
-    if (result.isConfirmed) {
-      console.log("Post eliminado:", idPost);
-    }
-  });
+  // Llamar a API de comentarios
+  this.cargarComentarios()
+  // Abrir modal
+  const modal = new (window as any).bootstrap.Modal(
+    document.getElementById('modalComentarios')
+  );
+  modal.show();
+}
+
+
+
+abrirModalEliminar(publicacion: any) {
+  this.publicacionSeleccionada = publicacion;
+  console.log("Publicación seleccionada:", this.publicacionSeleccionada);
 }
 
 
@@ -189,9 +194,102 @@ eliminarPost(idPost: number) {
       this.cargarPublicaciones();
     }).catch((err: any) => {
       console.log("Error en like", err);
+      //    @DeleteMapping("/{id}/like")
+
+      let del={
+        host: this.peticion.urlReal,
+        patch: '/api/post/'+idPost+'/like'
+      }
+      if(err.error.message== "Ya has dado like a esta publicación"){
+
+        this.peticion.delete(del.host+ del.patch, 
+          {}).then((res:any)=>{
+          console.log("Se quito el like de la publicación")
+          this.cargarPublicaciones()
+        }).catch((err: any)=>{
+          console.log("No se pudo quitar el like")
+        })
+      }
     })
   }
 
+  eliminarPublicacion(){
+    const id= this.publicacionSeleccionada.id;
+
+    let del={
+      path: '/api/posts/'+ id,
+      host: this.peticion.urlReal
+    };
+
+    this.peticion.delete(del.host+ del.path, {}).then((res: any)=>{
+      console.log("respuesta: ", res)
+      Swal.fire({
+        title: 'Eliminada',
+        text: 'La publicación fue eliminada',
+        icon: 'success',
+        confirmButtonText: 'OK'
+      })
+      this.cargarPublicaciones()
+    }).catch((err: any)=>{
+        console.log("respuesta error: ", err)
+
+        Swal.fire({
+          title: 'Error',
+          text: 'Error al eliminar la comunidad'+ err,
+          icon: 'error',
+          confirmButtonText: 'Cerrar'
+        })
+      })
+    
+  }
+//metodo para crear comentario en una publicación
+  crearComentario(){
+
+
+    let pos={
+      host: this.peticion.urlReal,
+      patch: '/api/posts/'+this.publicacionSeleccionada.id+'/comments',
+      payload: {
+        contenido: this.nuevoComentario
+      }
+    }
+
+    this.peticion.post(pos.host+pos.patch, pos.payload).then((res: any)=>{
+      Swal.fire({
+        title: 'Creado',
+        text: 'Se pudo crear el comentario',
+        icon: 'success',
+        confirmButtonText: 'Ok'
+      });
+      this.cargarComentarios();
+    }).catch((err: any)=>{
+      console.log("error al crear comentario", err)
+      Swal.fire({
+        title: 'Error',
+        text: 'No se pudo crear el comentario',
+        icon: 'error',
+        confirmButtonText: 'Ok'
+      });
+    })
+  }
+
+  cargarComentarios(){
+
+//    @GetMapping("/{id}/comments")
+
+
+    let get= {
+      host: this.peticion.urlReal,
+      patch: '/api/posts/'+this.publicacionSeleccionada.id+ '/comments'
+    }
+
+    this.peticion.get(get.host+ get.patch).then((res: any)=>{
+      this.comentarios= res;
+      console.log("Se cargaron las publicaciones correctamentes"+ this.comentarios);
+    }).catch((err: any)=>{
+      console.log("No se puedieron cargar las publicaciones correcatamente"+ err);
+    })
+  }
 }
 
 

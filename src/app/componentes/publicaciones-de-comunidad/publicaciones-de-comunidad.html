@@ -36,7 +36,8 @@
 
                         <div class="custom-menu" *ngIf="menuAbierto === publicacion.id">
                             <button class="dropdown-item btn-edit">✏️ Editar</button>
-                            <button class="dropdown-item btn-delete">🗑️ Eliminar</button>
+                            <button class="dropdown-item btn-delete" data-bs-target="#modalEliminar"
+                                data-bs-toggle="modal" (click)="abrirModalEliminar(publicacion)">🗑️ Eliminar</button>
                         </div>
                     </div>
                 </div>
@@ -49,7 +50,8 @@
 
                 <div class="post-actions">
                     <button class="action-btn" (click)="like(publicacion.id)">❤ {{publicacion.likes}}</button>
-                    <button class="action-btn">💬 Comentar</button>
+                    <button class="action-btn" (click)="abrirComentarios(publicacion)">💬 Comentar</button>
+
                     <button class="action-btn">↗ Compartir</button>
                 </div>
 
@@ -100,5 +102,81 @@
         </div>
     </div>
 </div>
+<!--Modal eliminar publicación-->
+<div class="modal fade" id="modalEliminar" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+
+            <div class="modal-header">
+                <h5 class="modal-title">¿Estas seguro de eliminar la publicación?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+
+            <div class="modal-body">
+                <p>Vas a eliminar <strong>{{publicacionSeleccionada?.contenido}}, esta acción no tiene marcha atras
+                        y
+                        no se podran recuperar los datos</strong>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" data-bs-dismiss="modal">Cancelar, desisto de mi
+                    acción</button>
+                <button class="btn btn-danger" (click)="eliminarPublicacion()" data-bs-dismiss="modal"
+                    name="eliminar">Estoy
+                    seguro, eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL COMENTARIOS -->
+<div class="modal fade" id="modalComentarios" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Comentarios</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <!-- CONTENIDO DEL POST -->
+                <div class="mb-3">
+                    <strong>{{publicacionSeleccionada?.authorName}}</strong>
+                    <p>{{publicacionSeleccionada?.contenido}}</p>
+                </div>
+
+                <hr>
+
+                <!-- LISTA DE COMENTARIOS -->
+                <div *ngIf="comentarios.length > 0; else sinComentarios">
+                    <div *ngFor="let comentario of comentarios" class="mb-3 p-2 border rounded">
+                        <strong>{{comentario.authorName}}</strong>
+                        <p class="m-0">{{comentario.contenido}}</p>
+                    </div>
+                </div>
+
+                <ng-template #sinComentarios>
+                    <p class="text-muted">No hay comentarios aún.</p>
+                </ng-template>
+
+                <hr>
+
+                <!-- CREAR COMENTARIO -->
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Escribe un comentario..."
+                        [(ngModel)]="nuevoComentario">
+                    <button class="btn btn-primary" (click)="crearComentario()">Enviar</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 
 <app-footer></app-footer>
