@@ -2,143 +2,137 @@
 <main>
   <div class="container">
 
-    <div class="row">
-      <div class="mostrarCont col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+    <!-- ✅ Formulario para crear publicación -->
+    <div class="row" id="bg-form-publicacion">
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+        <!-- Campo Contenido -->
         <div class="mb-3">
-          <label for="nuevaPublicacionPersonal" class="form-label">¿Algo nuevo?</label>
-          <input type="text" class="form-control" id="nuevaPublicacionPersonal"
-            placeholder="Describe el contenido, por favor">
+          <label for="contenido" class="form-label">Contenido</label>
+          <input type="text" id="contenido" class="form-control" [(ngModel)]="nuevaPublicacion.contenido"
+            name="contenido" placeholder="Escribe el contenido de la publicación">
         </div>
-        <div class="mb-3 oculto">
-          <label for="exampleFormControlTextarea1" class="form-label"></label>
-          <textarea class="form-control" id="exampleFormControlTextarea1" rows="5"
-            placeholder="Descripción de lo que desees comentarnos. Con todo gusto te excuchamos."></textarea>
+
+        <!-- Campo Descripción -->
+        <div class="mb-3">
+          <label for="descripcion" class="form-label">Descripción</label>
+          <textarea id="descripcion" class="form-control" [(ngModel)]="nuevaPublicacion.descripcion" name="descripcion"
+            rows="5" placeholder="Agrega  una descripción detallada"></textarea>
+        </div>
+
+        <!-- Campo Nombre -->
+        <div class="mb-3">
+          <label for="nombre" class="form-label">Nombre</label>
+          <input type="text" id="nombre" class="form-control" [(ngModel)]="nuevaPublicacion.nombre" name="nombre"
+            placeholder="Escribe tu nombre">
         </div>
       </div>
+
       <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+        <!-- Campo Categoría -->
         <div class="mb-3">
-          <label for="formFileMultiple" class="form-label">Seleccionar varios archivos</label>
-          <input class="form-control" type="file" id="formFileMultiple" multiple>
+          <label for="categoria" class="form-label">Categoría</label>
+          <input type="text" id="categoria" class="form-control" [(ngModel)]="nuevaPublicacion.categoria"
+            name="categoria" placeholder="Categoría de la publicación">
         </div>
 
+        <!-- Campo Fecha -->
         <div class="mb-3">
-          <label for="formFileSm" class="form-label">Seleccionar formato de archivo distinto</label>
-          <input class="form-control form-control-sm" id="formFileSm" type="file">
+          <label for="fecha" class="form-label">Fecha</label>
+          <input type="date" id="fecha" class="form-control" [(ngModel)]="nuevaPublicacion.fecha" name="fecha">
         </div>
+
+        <!-- Campo Usuario (oculto) -->
+        <input type="hidden" [(ngModel)]="nuevaPublicacion.usuario_id" name="usuario_id">
       </div>
-    </div>
-    <div class="row">
-      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
-        <div id="carouselExample" class="carousel slide">
-          <div class="carousel-inner">
-            <div class="carousel-item ">
-              <img src="/imagenes/static/imgGymUno.jpg" class="d-block w-100" alt="...">
-            </div>
-            <div class="carousel-item">
-              <img src="/imagenes/static/imgGymDos.jpg" class="d-block w-100" alt="...">
-            </div>
-            <div class="carousel-item active">
-              <img src="/imagenes/static/imgGymTres.jpg" class="d-block w-100" alt="...">
-            </div>
-          </div>
-          <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Anterior</span>
-          </button>
-          <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Siguiente</span>
-          </button>
-        </div>
-      </div>
-      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
-        <form class="was-validated">
-          <div class="mb-3">
-            <label for="validationTextarea" class="form-label">Comentar</label>
-            <textarea class="form-control" id="validationTextarea" placeholder="¡Hazle un comentario!"></textarea>
-            <div class="invalid-feedback">
-              Por favor, ingresa un comentario.
-            </div>
-          </div>
 
-          <div class="form-check">
-            <input type="radio" class="form-check-input" id="validationFormCheck2" name="radio-stacked" required
-              checked>
-            <label class="form-check-label" for="validationFormCheck2">Modo privado</label>
-          </div>
-          <div class="form-check mb-3">
-            <input type="radio" class="form-check-input" id="validationFormCheck3" name="radio-stacked" required>
-            <label class="form-check-label" for="validationFormCheck3">Modo público</label>
-            <div class="invalid-feedback">More example invalid feedback text</div>
-          </div>
-
-          <div class="mb-3">
-            <input type="file" class="form-control" aria-label="file example">
-            <div class="invalid-feedback">Añade una imagen</div>
-          </div>
-
-          <div class="mb-3">
-            <button class="btn btn-primary" type="submit" disabled>Submit form</button>
-          </div>
-        </form>
+      <!-- Botón de creación -->
+      <div class="text-center mt-3">
+        <button type="button" class="btn btn-danger" (click)="crearPublicacion()">
+          Crear publicación
+        </button>
       </div>
     </div>
 
-    <div class="row">
-      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
-        <div id="carruselDos" class="carousel slide">
-          <div class="carousel-inner">
-            <div class="carousel-item ">
-              <img src="/imagenes/static/imgGymUno.jpg" class="d-block w-100" alt="...">
-            </div>
-            <div class="carousel-item active">
-              <img src="/imagenes/static/imgGymDos.jpg" class="d-block w-100" alt="...">
-            </div>
-            <div class="carousel-item">
-              <img src="/imagenes/static/imgGymTres.jpg" class="d-block w-100" alt="...">
-            </div>
+
+    <!-- ✅ Lista de publicaciones -->
+    <div class="row lista-publi" id="post" *ngFor="let pub of publicaciones">
+      <!-- Columna izquierda: Publicación -->
+      <div class="col-12">
+        <div class="p-3 border rounded shadow-sm mb-3">
+          <div><h5 class="fw-bold">{{ pub.nombre }}</h5></div>
+          <div><h6 class="text-muted">Categoría: {{ pub.categoria }}</h6></div>
+          <div><p class="mb-2"><strong>Contenido:</strong> {{ pub.contenido }}</p></div>
+          <div><p class="text-secondary"><strong>Descripción:</strong> {{ pub.descripcion }}</p></div>
+          <div><p class="small text-muted">📅 {{ pub.fecha | date:'dd/MM/yyyy' }}</p></div>
+
+          <!-- Botones de acción -->
+          <div class="d-flex justify-content-between mt-2">
+            <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#modalEditar"
+              (click)="abrirEditar(pub)">
+              ✏ Editar
+            </button>
+            <button class="btn btn-danger btn-sm" (click)="eliminarPublicacion(pub.id)">
+              🗑 Eliminar
+            </button>
           </div>
-          <button class="carousel-control-prev" type="button" data-bs-target="#carruselDos" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Anterior</span>
-          </button>
-          <button class="carousel-control-next" type="button" data-bs-target="#carruselDos" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Siguiente</span>
-          </button>
         </div>
       </div>
-      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
-        <form class="was-validated">
+
+      <!-- Columna derecha: Formulario de comentario -->
+    </div>
+
+  </div>
+</main>
+
+
+<!-- ✅ Modal para editar publicación -->
+<div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="modalEditarLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-warning">
+        <h5 class="modal-title" id="modalEditarLabel">Editar publicación</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Formulario dentro del modal -->
+        <form>
           <div class="mb-3">
-            <label for="validationTextarea" class="form-label">Comentar</label>
-            <textarea class="form-control" id="validationTextarea" placeholder="¡Hazle un comentario!"></textarea>
-            <div class="invalid-feedback">
-              Por favor, ingresa un comentario.
-            </div>
+            <label for="editarContenido" class="form-label">Contenido</label>
+            <input type="text" id="editarContenido" class="form-control" [(ngModel)]="publicacionEditar.contenido"
+              name="editarContenido">
           </div>
 
-          <div class="form-check">
-            <input type="radio" class="form-check-input" id="validationFormCheck2" name="radio-stacked" required
-              checked>
-            <label class="form-check-label" for="validationFormCheck2">Modo privado</label>
-          </div>
-          <div class="form-check mb-3">
-            <input type="radio" class="form-check-input" id="validationFormCheck3" name="radio-stacked" required>
-            <label class="form-check-label" for="validationFormCheck3">Modo público</label>
-            <div class="invalid-feedback">More example invalid feedback text</div>
+          <div class="mb-3">
+            <label for="editarDescripcion" class="form-label">Descripción</label>
+            <textarea id="editarDescripcion" class="form-control" [(ngModel)]="publicacionEditar.descripcion"
+              name="editarDescripcion" rows="4"></textarea>
           </div>
 
           <div class="mb-3">
-            <input type="file" class="form-control" aria-label="file example">
-            <div class="invalid-feedback">Añade una imagen</div>
+            <label for="editarNombre" class="form-label">Nombre</label>
+            <input type="text" id="editarNombre" class="form-control" [(ngModel)]="publicacionEditar.nombre"
+              name="editarNombre">
           </div>
 
           <div class="mb-3">
-            <button class="btn btn-primary" type="submit" disabled>Submit form</button>
+            <label for="editarCategoria" class="form-label">Categoría</label>
+            <input type="text" id="editarCategoria" class="form-control" [(ngModel)]="publicacionEditar.categoria"
+              name="editarCategoria">
+          </div>
+
+          <div class="mb-3">
+            <label for="editarFecha" class="form-label">Fecha</label>
+            <input type="date" id="editarFecha" class="form-control" [(ngModel)]="publicacionEditar.fecha"
+              name="editarFecha">
           </div>
         </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-success" (click)="actualizarPublicacion(publicacionEditar)"
+          data-bs-dismiss="modal">Guardar cambios</button>
       </div>
     </div>
   </div>
-</main>
+</div>
+<app-footer></app-footer>

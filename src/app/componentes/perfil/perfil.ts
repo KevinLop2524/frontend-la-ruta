@@ -6,60 +6,93 @@ import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { Footer } from "../footer/footer";
+import { HttpClientModule, HttpClient } from '@angular/common/http';
+import { comunidadZodValidator } from '../../validators/comunidad-zod.validator';
+
+
+
 
 
 @Component({
   selector: 'app-perfil',
   standalone: true,
-  imports: [Header, FormsModule, RouterModule, CommonModule ],
+  imports: [Header, FormsModule, RouterModule, CommonModule, Footer, HttpClientModule],
   templateUrl: './perfil.html',
-  styleUrl: './perfil.css'
+  styleUrl: './perfil.css',
+  providers: [comunidadZodValidator]
 })
 export class Perfil {
 
-  tema: 'light' | 'dark'= 'light'
-  datosNoPermitidos: (string | null | undefined)[] = ["", null, undefined]
+  constructor(private peticion: Peticion, private cdr: ChangeDetectorRef, private route: ActivatedRoute, private http: HttpClient, private validar: comunidadZodValidator) { }
 
-  comunidadseleccionada: any= null
+  datosNoPermitidos: (string | null | undefined)[] = ["", null, undefined, "Seleccionar", " "]
+
+  comunidadseleccionada: any = { nombre: " " }
   comunidades: any[] = []
   usuario: any = {}
-  apodo: String| null= null
+  apodo: String | null = null
+  fraseMotivacional: String = '';
+  autorFrase: String = '';
+  fraseMoti: any= {}
 
   ngOnInit(): void {
-    const temaGuardado= localStorage.getItem('tema');
-    this.apodo=localStorage.getItem('apodo')
+    this.comunidadseleccionada.nombre = " "
+
+    this.apodo = localStorage.getItem('apodo')
     this.buscarUsuario();
+    this.obtenerFraseMotivacional();
 
   }
 
   comunidadEditar: any = {
-    tematica: '',
-    nombre: '',
-    descripcion: '',
-    tipo: '',
-    id_creador: this.usuario.id,
+    category: '',
+    name: '',
+    description: '',
   };
 
-  constructor(private peticion: Peticion, private cdr: ChangeDetectorRef, private route: ActivatedRoute) { }
   abrirModal(comunidad: any) {
-    this.comunidadseleccionada= comunidad;
+    this.comunidadseleccionada = comunidad;
     this.comunidadEditar = { ...comunidad };
   }
 
-  buscarUsuario() {
-    let apodo = localStorage.getItem('apodo') || undefined;
+
+
+
+  obtenerFraseMotivacional(): void {
     let get = {
       host: this.peticion.urlReal,
-      path: "/usuario/apodo/" + apodo,
+      path: "/api/frase"}
+      
+    let token = localStorage.getItem('token') || undefined;
+
+    this.peticion.get(get.host + get.path, token).then((res: any) => {
+      this.fraseMoti = res[0];
+      console.log('frase motivacional', this.fraseMoti)
+      this.cdr.detectChanges();
+    }).catch((err)=>{
+      console.log('error al obtener frase motivacional', err)
+    })
+  }
+
+
+  buscarUsuario() {
+    let apodo = localStorage.getItem('apodo') || undefined;
+    let token = localStorage.getItem('token') || undefined;
+    let get = {
+      host: this.peticion.urlReal,
+      path: "/api/users/me",
       payload: {
       }
     }
     this.peticion.get(get.host + get.path).then((res: any) => {
-      this.usuario = res.usuario;
+      this.usuario = res;
+      console.log("usuario obj", this.usuario)
+      console.log("Usuario logueado:", this.usuario.apodo);
       this.cargarComunidades()
-      this.cdr.detectChanges()
-    }).catch(() => {
-      console.log("Usuario logueado:", this.usuario.usuario);
+      this.cdr.detectChanges();
+    }).catch((err) => {
+      console.log(err)
       console.log("Error al encontrar usuario")
     })
   }
@@ -67,22 +100,30 @@ export class Perfil {
   cargarComunidades() {
     let get = {
       host: this.peticion.urlReal,
-      path: "/comunidad/creador/" + this.usuario.id,
+      path: "/api/communities/creator/"+ this.usuario.id +"/active" ,
       payload: {
       }
     }
     this.peticion.get(get.host + get.path).then((res: any) => {
       this.comunidades = res
       this.cdr.detectChanges()
-    }).catch(() => {
-      console.log("Error al obtener comunidades")
-    })
+    }).catch((err: any) => {
+      console.error("error al obtener las comunidades", err);})
+  }
+
+  traductiCategoria(categoria: string) {
+    switch (categoria) {
+      case 'NUTRITION': return 'NUTRICION';
+      case 'FITNESS': return 'FITNESS';
+      case 'PERSONAL_DEVELOPMENT': return 'DESARROLLO PERSONAL';
+      default: return categoria;
+    }
   }
 
   eliminarComunidad() {
     let del = {
       host: this.peticion.urlReal,
-      path: "/comunidad/eliminar/" + this.comunidadseleccionada.id
+      path: "/api/communities/delete/" + this.comunidadseleccionada.id
     };
 
     this.peticion.delete(del.host + del.path, {}).then((res: any) => {
@@ -107,84 +148,51 @@ export class Perfil {
   }
 
   actualizarComunidad(comunidad: any) {
-  
-      const newNombreE = this.datosNoPermitidos.findIndex((dato) => dato === this.comunidadEditar.nombre);
-      const newDescripcionE = this.datosNoPermitidos.findIndex((dato) => dato === this.comunidadEditar.descripcion);
-      const newtipoE = this.datosNoPermitidos.findIndex((dato) => dato === this.comunidadEditar.tipo);
-      const newTematicaE = this.datosNoPermitidos.findIndex((dato) => dato === this.comunidadEditar.tematica);
-  
-      if (this.datosNoPermitidos.includes(this.comunidadEditar.nombre) &&
-        this.datosNoPermitidos.includes(this.comunidadEditar.descripcion) &&
-      this.datosNoPermitidos.includes(this.comunidadEditar.tipo) &&
-    this.datosNoPermitidos.includes(this.comunidadEditar.tematica)) {
-        Swal.fire({
-          title: 'Error',
-          text: 'Tiene que ingresar al menos un campo para actualizar',
-          icon: 'warning'
-        });
-        return;
-      }if (this.datosNoPermitidos.includes(this.comunidadEditar.nombre)){
-        Swal.fire({
-          title: 'Error',
-          text: 'No puedes dejar el campo nombre vacio',
-          icon: 'warning'
-        });
-        return;
-      }if (this.datosNoPermitidos.includes(this.comunidadEditar.descripcion)){
-        Swal.fire({
-          title: 'Error',
-          text: 'No puedes dejar el campo descripción vacio',
-          icon: 'warning'
-        });
-        return;
-      }if (this.datosNoPermitidos.includes(this.comunidadEditar.tipo)){
-        Swal.fire({
-          title: 'Error',
-          text: 'No puedes dejar el campo tipo vacio',
-          icon: 'warning'
-        });
-        return;
-      }if (this.datosNoPermitidos.includes(this.comunidadEditar.tematica)){
-        Swal.fire({
-          title: 'Error',
-          text: 'No puedes dejar el campo tematica vacio',
-          icon: 'warning'
-        });
-        return;
-      }
-      let token = localStorage.getItem('token') || undefined;
-  
-  
-  
-      let act = {
-        host: this.peticion.urlReal,
-        path: '/comunidad/actualizar/' + comunidad.id,
-        payload: {
-          tematica: this.datosNoPermitidos.includes(this.comunidadEditar.tematica) ? comunidad.tematica : this.comunidadEditar.tematica,
-          nombre: this.datosNoPermitidos.includes(this.comunidadEditar.nombre) ? comunidad.nombre : this.comunidadEditar.nombre,
-          descripcion: this.datosNoPermitidos.includes(this.comunidadEditar.descripcion) ? comunidad.descripcion : this.comunidadEditar.descripcion,
-          tipo: this.datosNoPermitidos.includes(this.comunidadEditar.tipo) ? comunidad.tipo : this.comunidadEditar.tipo,
-          idCreador: this.usuario.id
-        }
-      };
-      this.peticion.put(act.host + act.path, act.payload, token).then((res: any) => {
-        Swal.fire({
-          title: 'Actualizada',
-          text: 'La comunidad fue actualizada',
-          icon: 'success',
-          confirmButtonText: 'Correcto'
-        })
-        this.cargarComunidades();
-      }).catch((err: any) => {
-        console.error("error al actualizar la comunidad", err);
-        Swal.fire({
-          title: 'Error',
-          text: 'Error al actualizar la comunidad',
-          icon: 'error',
-          confirmButtonText: 'Cerrar'
-        });
-      });
+
+    const resultado= this.validar.validar(this.comunidadEditar);
+
+    if (!resultado.ok){
+      const error= resultado.error;
+    Swal.fire({
+      title: 'Algo salio mal',
+      text: error,
+      icon: 'warning',
+      confirmButtonText: 'Ok'
+    })
+    console.log(error)
+    return;
     }
+
+    let token = localStorage.getItem('token') || undefined;
+
+
+
+    let act = {
+      host: this.peticion.urlReal,
+      path: '/api/communities/update/' + comunidad.id,
+      payload: {
+        name: this.comunidadEditar.name,
+        description: this.comunidadEditar.description,
+        category: this.comunidadEditar.category
+      }
+    };
+    this.peticion.patch(act.host + act.path, act.payload).then((res: any) => {
+      Swal.fire({
+        title: 'Actualizada',
+        text: 'La comunidad fue actualizada',
+        icon: 'success',
+        confirmButtonText: 'Correcto'
+      })
+      this.cargarComunidades();
+    }).catch((err: any) => {
+      console.error("error al actualizar la comunidad", err);
+      console.log(this.comunidadEditar)
+      Swal.fire({
+        title: 'Error',
+        text: 'Error al actualizar la comunidad'+ err,
+        icon: 'error',
+        confirmButtonText: 'Cerrar'
+      });
+    });
+  }
 }
-
-

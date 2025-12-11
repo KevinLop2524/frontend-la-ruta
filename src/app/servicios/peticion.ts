@@ -69,6 +69,30 @@ export class Peticion {
     return promesa
   }
 
+  patch = (url: string, payload: {}, token?: string) => {
+
+  let promesa = new Promise((resolve, reject) => {
+
+    this.requestOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+      }),
+      withCredentials: true
+    }
+
+    this.http.patch(url, payload, this.requestOptions).toPromise()
+      .then((res: any) => {
+        resolve(res)
+      }).catch((error: any) => {
+        reject(error)
+      })
+  })
+
+  return promesa
+}
+
+
   delete = (url: string, payload: {}) => {
 
     let promesa = new Promise((resolve, reject) => {
@@ -95,16 +119,43 @@ export class Peticion {
     return this.http.post(api, formData)
   }
 
-  downloadPdf(url: string, token?: string): Promise<Blob> {
-    return new Promise((resolve, reject) => {
-      const options = {
-        headers: new HttpHeaders(token ? { Authorization: `Bearer ${token}` } : {}),
-        responseType: 'blob' as 'json',
-        withCredentials: true
-      };
-      this.http.get(url, options).toPromise()
-        .then((res: any) => resolve(res))
-        .catch((err) => reject(err));
-    });
-  }
+  uploadBulk(formData: FormData, api: string) {
+  return this.http.post(api, formData, {
+    withCredentials: true
+  }).toPromise();
+}
+postFormData = (url: string, formData: FormData, token?: string) => {
+
+  let promesa = new Promise((resolve, reject) => {
+
+    this.requestOptions = {
+      headers: new HttpHeaders({
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+      }),
+      withCredentials: true
+    }
+
+    this.http.post(url, formData, this.requestOptions).toPromise()
+      .then((res: any) => resolve(res))
+      .catch((error: any) => reject(error))
+  })
+
+  return promesa
+}
+
+
+  downloadPdfPost(url: string, body: any, token?: string): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    const options = {
+      headers: new HttpHeaders(token ? { Authorization: `Bearer ${token}` } : {}),
+      responseType: 'blob' as const,
+      withCredentials: true
+    };
+
+    this.http.post(url, body, options)
+      .toPromise()
+      .then((res) => resolve(res as Blob))
+      .catch((err) => reject(err));
+  });
+}
 }

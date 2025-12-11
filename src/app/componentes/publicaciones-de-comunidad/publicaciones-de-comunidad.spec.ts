@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ReporteMulti } from './reporte-multi';
+import { PublicacionesDeComunidad } from './publicaciones-de-comunidad';
 
-describe('ReporteMulti', () => {
-  let component: ReporteMulti;
-  let fixture: ComponentFixture<ReporteMulti>;
+describe('PublicacionesDeComunidad', () => {
+  let component: PublicacionesDeComunidad;
+  let fixture: ComponentFixture<PublicacionesDeComunidad>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ReporteMulti]
+      imports: [PublicacionesDeComunidad]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ReporteMulti);
+    fixture = TestBed.createComponent(PublicacionesDeComunidad);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

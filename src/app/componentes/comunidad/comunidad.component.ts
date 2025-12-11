@@ -4,42 +4,39 @@ import { Peticion } from '../../servicios/peticion';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { Router, RouterLink } from '@angular/router';
 import { Footer } from '../footer/footer';
 import { RouterModule } from '@angular/router';
-
+import { z } from "zod";//Se importamos zod
+import { comunidadZodValidator } from '../../validators/comunidad-zod.validator';
 
 @Component({
   selector: 'app-comunidad',
   imports: [Header, CommonModule, FormsModule, Footer, RouterModule],
   templateUrl: './comunidad.component.html',
-  styleUrl: './comunidad.component.css'
+  styleUrl: './comunidad.component.css',
+  providers: [comunidadZodValidator]
 })
 export class ComunidadComponent implements OnInit {
   rol: string[] = [];
-
   apodo: String | null = null
   comunidadseleccionada: any = null
   datosNoPermitidos: (string | null | undefined)[] = ["", null, undefined];
-
-
   comunidades: any[] = []
   usuario: any = {}
 
   nuevaComunidad: any = {
-    tematica: '',
-    nombre: '',
+    category: '',
+    name: '',
     descripcion: '',
-    tipo: '',
-    idCreador: null,
-    estado: 'activo'
+    creatorId: null,
+    active: true
   };
 
   comunidadEditar: any = {
-    tematica: '',
-    nombre: '',
-    descripcion: '',
-    tipo: '',
-    idCreador: null
+    category: '',
+    name: '',
+    description: ''
   };
 
   abrirModal(comunidad: any) {
@@ -47,7 +44,7 @@ export class ComunidadComponent implements OnInit {
     this.comunidadEditar = { ...comunidad };
   }
 
-  constructor(private peticion: Peticion, private cdr: ChangeDetectorRef) { }
+  constructor(private peticion: Peticion, private cdr: ChangeDetectorRef, private validar: comunidadZodValidator, private router: Router) { }
 
   ngOnInit(): void {
     this.rol = JSON.parse(localStorage.getItem('roles') || '[]')
@@ -60,104 +57,83 @@ export class ComunidadComponent implements OnInit {
   cargarComunidades() {
     let get = {
       host: this.peticion.urlReal,
-      path: "/api/comunidades",
+      path: "/api/communities/active",
       payload: {
       }
     }
     this.peticion.get(get.host + get.path).then((res: any) => {
+      console.log(res)
       this.comunidades = res
       this.cdr.detectChanges()
-    }).catch(() => {
-      console.log("Error al obtener comunidades")
+    }).catch((err: any) => {
+      console.log("Error al encontrar comunidades Error: ", err);
     })
+  }
+
+  traductiCategoria(categoria: string) {
+    switch (categoria) {
+      case 'NUTRITION': return 'NUTRICION';
+      case 'FITNESS': return 'FITNESS';
+      case 'PERSONAL_DEVELOPMENT': return 'DESARROLLO PERSONAL';
+      default: return categoria;
+    }
   }
 
   buscarUsuario() {
 
     let apodo = localStorage.getItem('apodo') || undefined;
+    let token = localStorage.getItem('token') || undefined;
     let get = {
       host: this.peticion.urlReal,
-      path: "/usuario/apodo/" + apodo,
+      path: "/api/users/me",
       payload: {
       }
     }
-    this.peticion.get(get.host + get.path).then((res: any) => {
-      this.usuario = res.usuario;
-      this.nuevaComunidad.idCreador = this.usuario.id
+    this.peticion.get(get.host + get.path, token).then((res: any) => {
+      this.usuario = res;
+      this.nuevaComunidad.creatorId = this.usuario.id
       this.cdr.detectChanges()
-    }).catch(() => {
-      console.log("Usuario logueado:", this.usuario.usuario);
-      console.log("Error al encontrar usuario")
+      console.log("Usuario logueado:", this.usuario.id);
+
+    }).catch((err: any) => {
+      console.log("Error al encontrar usuario", apodo, "Error: ", err);
     })
   }
 
   crearComunidad() {
 
-
-    const newNombre = this.datosNoPermitidos.findIndex((dato) => dato === this.nuevaComunidad.nombre);
-    const newDescripcion = this.datosNoPermitidos.findIndex((dato) => dato === this.nuevaComunidad.descripcion);
-    const newTipo = this.datosNoPermitidos.findIndex((dato) => dato === this.nuevaComunidad.tipo);
-    const newTematica = this.datosNoPermitidos.findIndex((dato) => dato === this.nuevaComunidad.tematica);
     let token = localStorage.getItem('token') || undefined;
 
-    if (newNombre !== -1) {
-      console.log(this.nuevaComunidad.nombre)
+
+    const resultado = this.validar.validar(this.nuevaComunidad);
+
+    if (!resultado.ok) {
       Swal.fire({
-        title: 'Error',
-        text: 'Nombre de comunidad no valida',
-        icon: 'warning'
-      });
-      return;
-    } else if (newDescripcion !== -1) {
-      Swal.fire({
-        title: 'Error',
-        text: 'Descripción no valida',
-        icon: 'warning'
-      });
-      return;
-    } else if (newTipo !== -1) {
-      Swal.fire({
-        title: 'Error',
-        text: 'Campo tipo no valido',
-        icon: 'warning'
-      });
-      return;
-    }
-    else if (newTematica !== -1) {
-      Swal.fire({
-        title: 'Error',
-        text: 'Campo tematica no valida',
-        icon: 'warning'
+        title: 'Algo salio mal',
+        text: resultado.error,
+        icon: 'warning',
+        confirmButtonText: 'Ok'
       });
       return;
     }
 
-    if (!this.usuario || !this.usuario.id) {
-      Swal.fire({
-        title: 'Error',
-        text: 'No se ha cargado el usuario aún. Intente de nuevo.',
-        icon: 'warning'
-      });
-      return;
-    }
+    //Es una maravilla esta dependencia
 
     let post = {
       host: this.peticion.urlReal,
-      path: "/comunidad/crear",
+      path: "/api/communities/create",
       payload: {
-        tematica: this.nuevaComunidad.tematica,
-        nombre: this.nuevaComunidad.nombre,
-        descripcion: this.nuevaComunidad.descripcion,
-        tipo: this.nuevaComunidad.tipo,
-        idCreador: this.usuario.id,
-        estado: 'activo',
-        fecha: '2025-09-24'
+        category: this.nuevaComunidad.category,
+        name: this.nuevaComunidad.name,
+        description: this.nuevaComunidad.description,
+        creatorId: this.usuario.id,
+        active: true,
       }
     }
 
-    this.peticion.post(post.host + post.path, post.payload, token).then((res: any) => {
+    this.peticion.post(post.host + post.path, post.payload).then((res: any) => {
       console.log("Comunidad creada:", res);
-      if (res.estado) {
+      if (res.active) {
         Swal.fire({
           title: '¡Éxito!',
           text: res.mensaje,
@@ -168,7 +144,7 @@ export class ComunidadComponent implements OnInit {
         this.cargarComunidades();
         this.cdr.detectChanges()
 
-        this.nuevaComunidad = { tematica: '', nombre: '', descripcion: '', tipo: '', idCreador: this.usuario.id || null, estado: 'activo' }
+        this.nuevaComunidad = { category: '', name: '', description: '', creatorId: this.usuario.id || null, active: true }
       }
     })
 
@@ -176,7 +152,7 @@ export class ComunidadComponent implements OnInit {
         console.error("Error al crear la comunidad", err);
         Swal.fire({
           title: 'Error',
-          text: err.error?.mensaje || 'Error al crear la comunidad, terrible',
+          text: 'Error al crear la comunidad: ' + err.error.message,
           icon: 'error',
           confirmButtonText: 'Cerrar'
         });
@@ -186,7 +162,7 @@ export class ComunidadComponent implements OnInit {
   eliminarComunidad() {
     let del = {
       host: this.peticion.urlReal,
-      path: "/comunidad/eliminar/" + this.comunidadseleccionada.id
+      path: "/api/communities/delete/" + this.comunidadseleccionada.id
     };
 
     this.peticion.delete(del.host + del.path, {}).then((res: any) => {
@@ -212,79 +188,97 @@ export class ComunidadComponent implements OnInit {
 
   actualizarComunidad(comunidad: any) {
 
-    const newNombreE = this.datosNoPermitidos.findIndex((dato) => dato === this.comunidadEditar.nombre);
-    const newDescripcionE = this.datosNoPermitidos.findIndex((dato) => dato === this.comunidadEditar.descripcion);
-    const newtipoE = this.datosNoPermitidos.findIndex((dato) => dato === this.comunidadEditar.tipo);
-    const newTematicaE = this.datosNoPermitidos.findIndex((dato) => dato === this.comunidadEditar.tematica);
 
-    if (this.datosNoPermitidos.includes(this.comunidadEditar.nombre) &&
-      this.datosNoPermitidos.includes(this.comunidadEditar.descripcion) &&
-      this.datosNoPermitidos.includes(this.comunidadEditar.tipo) &&
-      this.datosNoPermitidos.includes(this.comunidadEditar.tematica)) {
+    const resultado = this.validar.validar(this.comunidadEditar);
+
+    if (!resultado.ok) {
+      const error = resultado.error;
       Swal.fire({
-        title: 'Error',
-        text: 'Tiene que ingresar al menos un campo para actualizar',
-        icon: 'warning'
-      });
-      return;
-    } if (this.datosNoPermitidos.includes(this.comunidadEditar.nombre)) {
-      Swal.fire({
-        title: 'Error',
-        text: 'No puedes dejar el campo nombre vacio',
-        icon: 'warning'
-      });
-      return;
-    } if (this.datosNoPermitidos.includes(this.comunidadEditar.descripcion)) {
-      Swal.fire({
-        title: 'Error',
-        text: 'No puedes dejar el campo descripción vacio',
-        icon: 'warning'
-      });
-      return;
-    } if (this.datosNoPermitidos.includes(this.comunidadEditar.tipo)) {
-      Swal.fire({
-        title: 'Error',
-        text: 'No puedes dejar el campo tipo vacio',
-        icon: 'warning'
-      });
-      return;
-    } if (this.datosNoPermitidos.includes(this.comunidadEditar.tematica)) {
-      Swal.fire({
-        title: 'Error',
-        text: 'No puedes dejar el campo tematica vacio',
-        icon: 'warning'
-      });
+        title: 'Algo salio mal',
+        text: error,
+        icon: 'warning',
+        confirmButtonText: 'Ok'
+      })
+      console.log(error)
       return;
     }
+
     let token = localStorage.getItem('token') || undefined;
 
 
 
     let act = {
       host: this.peticion.urlReal,
-      path: '/comunidad/actualizar/' + comunidad.id,
+      path: '/api/communities/update/' + comunidad.id,
       payload: {
-        tematica: this.datosNoPermitidos.includes(this.comunidadEditar.tematica) ? comunidad.tematica : this.comunidadEditar.tematica,
-        nombre: this.datosNoPermitidos.includes(this.comunidadEditar.nombre) ? comunidad.nombre : this.comunidadEditar.nombre,
-        descripcion: this.datosNoPermitidos.includes(this.comunidadEditar.descripcion) ? comunidad.descripcion : this.comunidadEditar.descripcion,
-        tipo: this.datosNoPermitidos.includes(this.comunidadEditar.tipo) ? comunidad.tipo : this.comunidadEditar.tipo,
-        idCreador: comunidad.idCreador
+        category: this.comunidadEditar.category,
+        name: this.comunidadEditar.name,
+        description: this.comunidadEditar.description,
       }
     };
-    this.peticion.put(act.host + act.path, act.payload, token).then((res: any) => {
+    this.peticion.patch(act.host + act.path, act.payload, token).then((res: any) => {
       console.log("id_creador de la actualización", comunidad)
       Swal.fire({
         title: 'Actualizada',
         text: 'La comunidad fue actualizada',
         icon: 'success',
         confirmButtonText: 'Correcto'
-        })
+      })
       this.cargarComunidades();
     }).catch((err: any) => {
       console.error("error al actualizar la comunidad", err);
       Swal.fire({
         title: 'Error',
-        text: 'Error al actualizar la comunidad',
+        text: 'Error al actualizar la comunidad: ' + err.error.message,
+        icon: 'error',
+        confirmButtonText: 'Cerrar'
+      });
+    });
+  }
+
+  verificarMembresia(comunidad: any) {
+    let get = {
+      host: this.peticion.urlReal,
+      path: "/api/communities/" + comunidad.id + "/is-member/" + this.usuario.id
+    }
+    this.peticion.get(get.host + get.path).then((res: any) => {
+      console.log("Es miembro?:" + res.isMember);
+      if (comunidad.creatorId == this.usuario.id) {
+        this.router.navigate(['publicaciones/', comunidad.id])
+      }
+      else if (res.isMember) {
+        this.router.navigate(['publicaciones/', comunidad.id]);
+        return;
+      } else {
+        this.comunidadseleccionada = comunidad;
+        document.getElementById("abrirUnirse")?.click();
+      }
+    })
+  }
+
+  UnirmeComunidad(comunidadId: any) {
+    let post = {
+      host: this.peticion.urlReal,
+      path: "/api/communities/" + comunidadId + "/join",
+      payload: {
+        userId: this.usuario.id
+      }
+    }
+
+    this.peticion.post(post.host + post.path, post.payload).then((res: any) => {
+      console.log("comunidad a la que se unio", comunidadId)
+      Swal.fire({
+        title: 'Se a unido',
+        text: 'Se unio a la comunidad',
+        icon: 'success',
+        confirmButtonText: 'Correcto'
+      })
+      this.cargarComunidades();
+    }).catch((err: any) => {
+      console.error("error al unirse a la comunidad", err);
+      Swal.fire({
+        title: 'Error',
+        text: 'Error al unirse a la comunidad: ' + err.error.message,
         icon: 'error',
         confirmButtonText: 'Cerrar'
       });

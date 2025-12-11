@@ -11,49 +11,77 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './reporte-statico.html',
   styleUrl: './reporte-statico.css'
 })
-export class ReporteStatico implements OnInit{
-  usuarios:any
-  tokenLog : any
-  constructor(private peticion: Peticion, private cdr: ChangeDetectorRef){}
+export class ReporteStatico implements OnInit {
+
+  usuarios: any[] = [];
+  tokenLog: any;
+
+  filtros = {
+    fullName: '',
+    email: '',
+    role: "",
+    active: '',
+    fechaInicio: "2000/01/01",
+    fechaFin: '2050/01/01'
+  };
+
+  constructor(
+    private peticion: Peticion,
+    private cdr: ChangeDetectorRef
+  ) { }
+
   ngOnInit(): void {
-      this.tokenLog = localStorage.getItem("token")
-      this.cargarUsuarios()
+    this.tokenLog = localStorage.getItem("token");
+    this.aplicarFiltros();
   }
-  cargarUsuarios(){
+
+  aplicarFiltros() {
     let post = {
       host: this.peticion.urlReal,
-      path: "/usuarios/info",
-      payload: {
-      }
+      path: "/api/reportes/usuarios/lista",
+      payload: {},
+      token: this.tokenLog
     }
-    this.peticion.get(post.host + post.path, ).then((res: any) => {
+    this.peticion.post(post.host + post.path, post.payload).then((res: any) => {
       console.log(res)
       this.usuarios = res
       this.cdr.detectChanges()
     }).catch((err) => {
       console.log(err)
-      console.log("Error al obtener comunidades")
+      console.log("Error al obtener usuarios")
     })
   }
 
-  reporte(){
-    this.peticion.downloadPdf(this.peticion.urlReal + '/usuarios/pdf')
-  .then((pdfBlob: Blob) => {
-    const url = window.URL.createObjectURL(pdfBlob);
+
+  limpiarFiltros() {
+    this.filtros = {
+      fullName: '',
+      email: '',
+      role: "",
+      active: '',
+      fechaInicio: "2000/01/01",
+      fechaFin: '2050/01/01'
+    };
+
+    this.aplicarFiltros();
+  }
+
+  reporte() {
+  this.peticion
+  .downloadPdfPost(
+    this.peticion.urlReal + "/api/reportes/usuarios/pdf",
+    this.filtros,
+    this.tokenLog
+  )
+  .then((blob) => {
+    const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'usuarios.pdf';
+    a.download = "usuarios_reporte.pdf";
     a.click();
-    window.URL.revokeObjectURL(url);
   })
-  .catch(err => console.error('Error descargando PDF', err));
+  .catch(err => console.log(err));
+
   }
 
 }
-
-// const headers = new HttpHeaders({
-//   'Authorization': `Bearer ${localStorage.getItem("token")}`
-// });
-
-// this.http.post("http://localhost:8080/comunidad/crear", payload, { headers })
-//   .subscribe(res => console.log(res));

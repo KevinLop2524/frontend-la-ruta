@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { BlogAdminStatico } from './blog-admin-statico';
+import { CargaDatos } from './carga-datos';
 
-describe('BlogAdminStatico', () => {
-  let component: BlogAdminStatico;
-  let fixture: ComponentFixture<BlogAdminStatico>;
+describe('CargaDatos', () => {
+  let component: CargaDatos;
+  let fixture: ComponentFixture<CargaDatos>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [BlogAdminStatico]
+      imports: [CargaDatos]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(BlogAdminStatico);
+    fixture = TestBed.createComponent(CargaDatos);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

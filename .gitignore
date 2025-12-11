@@ -1,0 +1,11 @@
+# Angular
+.angular/
+node_modules/
+dist/
+
+# Entorno
+.env
+
+# Sistema
+.DS_Store
+Thumbs.db

@@ -1,0 +1,201 @@
+import { Header } from '../header/header';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Peticion } from '../../servicios/peticion';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import Swal from 'sweetalert2';
+import { Router, RouterLink } from '@angular/router';
+import { Footer } from '../footer/footer';
+import { RouterModule } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
+
+
+@Component({
+  selector: 'app-publicaciones-de-comunidad',
+  imports: [Header, CommonModule, FormsModule, Footer, RouterModule],
+  templateUrl: './publicaciones-de-comunidad.html',
+  styleUrl: './publicaciones-de-comunidad.css'
+})
+export class PublicacionesDeComunidad {
+
+  constructor(private peticion: Peticion, private cdr: ChangeDetectorRef, private router: Router, private route: ActivatedRoute) { }
+
+
+  contenido: string = '';
+  idComunidad: number = 0;
+  usuario: any = {}
+  publicaciones: any = []
+  comunidad: any = {}
+  imagenSeleccionada: any;
+  modalAbierto: boolean = false;
+
+  ngOnInit(): void {
+    this.route.params.subscribe(params => {
+      this.idComunidad = +params['id'];
+      console.log('ID de la comunidad', this.idComunidad);
+      this.buscarUsuario();
+      this.cargarPublicaciones();
+      this.buscarComunidad();
+    })
+  }
+
+  menuAbierto: number | null = null;
+
+toggleMenu(idPost: number) {
+  this.menuAbierto = this.menuAbierto === idPost ? null : idPost;
+}
+
+editarPost(idPost: number) {
+  console.log("Editar post:", idPost);
+  this.menuAbierto = null;
+  // Aquí luego llamas al modal de edición
+}
+
+eliminarPost(idPost: number) {
+  console.log("Eliminar post:", idPost);
+  this.menuAbierto = null;
+
+  Swal.fire({
+    title: '¿Eliminar publicación?',
+    text: 'Esta acción no se puede deshacer',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar'
+  }).then(result => {
+    if (result.isConfirmed) {
+      // aquí luego conectas tu endpoint DELETE real
+      console.log("Post eliminado:", idPost);
+    }
+  });
+}
+
+
+  onFileSelected(event: any) {
+  this.imagenSeleccionada = event.target.files[0];
+}
+
+
+  abrirModal() {
+    this.modalAbierto = true;
+  }
+
+  cerrarModal() {
+    this.modalAbierto = false;
+  }
+  buscarComunidad() {
+    let token = localStorage.getItem('token') || undefined;
+
+    let get = {
+      host: this.peticion.urlReal,
+      path: "/api/communities/get/" + this.idComunidad
+    }
+
+    this.peticion.get(get.host + get.path, token).then((res: any) => {
+      this.comunidad = res;
+      this.cdr.detectChanges();
+    })
+  }
+  buscarUsuario() {
+
+    let apodo = localStorage.getItem('apodo') || undefined;
+    let token = localStorage.getItem('token') || undefined;
+    let get = {
+      host: this.peticion.urlReal,
+      path: "/api/users/me",
+      payload: {
+      }
+    }
+    this.peticion.get(get.host + get.path, token).then((res: any) => {
+      this.usuario = res;
+      this.cdr.detectChanges()
+      console.log("Usuario logueado:", this.usuario.id);
+
+    }).catch((err: any) => {
+      console.log("Error al encontrar usuario", apodo, "Error: ", err);
+    })
+  }
+
+  cargarPublicaciones() {
+    let get = {
+      host: this.peticion.urlReal,
+      path: "/api/posts/community/" + this.idComunidad,
+    }
+
+    this.peticion.get(get.host + get.path).then((res: any) => {
+      console.log(res)
+      this.publicaciones = res
+      this.cdr.detectChanges()
+    }).catch((err: any) => {
+      console.log("Error al encontrar publicaciones: ", err);
+    })
+  }
+
+  crearPublicacion() {
+
+    let token = localStorage.getItem('token') || undefined;
+
+
+    const formData = new FormData();
+
+    if (this.imagenSeleccionada) {
+      formData.append('media', this.imagenSeleccionada)
+    }
+
+    const data = {
+      "contenido": this.contenido,
+      "type": "COMMUNITY",
+      "comunidadId": this.idComunidad
+    }
+
+    formData.append('data', JSON.stringify(data));
+
+
+    this.peticion.postFormData(
+      this.peticion.urlReal + '/api/posts/communities/' + this.idComunidad,
+      formData,
+      token
+    ).then((res: any) => {
+
+      Swal.fire({
+        title: '¡Exito!',
+        text: 'Publicación creada con exito',
+        icon: 'success',
+        confirmButtonText: 'Ok'
+      });
+      this.contenido = '';
+      this.imagenSeleccionada = null;
+      this.cerrarModal();
+      this.cargarPublicaciones();
+    }).catch((err: any) => {
+      console.log(err);
+      Swal.fire({
+        title: 'Error',
+        text: 'Error al crear la publicación',
+        icon: 'error',
+        confirmButtonText: 'Cerrar'
+      });
+    });
+  }
+
+  like(idPost: number) {
+    let token = localStorage.getItem('token') || undefined;
+
+    this.peticion.post(
+      this.peticion.urlReal + '/api/posts/' + idPost + '/like',
+      {},
+      token
+    ).then((res: any) => {
+      console.log("Like exitoso", res);
+      this.cargarPublicaciones();
+    }).catch((err: any) => {
+      console.log("Error en like", err);
+    })
+  }
+
+}
+
+
+
+
+

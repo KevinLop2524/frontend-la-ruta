@@ -142,3 +142,12 @@ div.row div {
 .container {
     margin-top: 100px;
 }
+
+@media (max-width: 984px) {
+
+    #imagenInicio    {
+        width: 250px;
+        height: 250px;
+        display: none;
+    }
+}

@@ -1,275 +1,160 @@
-
-main {
-  flex: 1;
+/*.perfil-wrapper {
+    padding: 20px 0;
 }
-main div.row {
-  margin-top: 20px;
-  background-color: rgba(42, 80, 102, 0.158);
-  padding-top: 20px;
-  padding-bottom: 20px;
-}
-div.mostrarCont {
-  cursor: pointer;
-  transition: all 0.5s ease-in-out;
-}
-
-main div.container div.card {
-   border-radius: 10px;
-   width: 60%;
-}
-
-main div.container div.card div.text-bg-light {
-   border-radius: 10px;
-   width: 60%;
-}
-
-.card{
-   margin-bottom: 15px;
-   width: 95%
-}
-
-.btn-primary{
-   margin-right: 5px;
-}
-
-.card.border-primary.mb-3 {
-   border-radius: 10px;
-   padding: 20px;
-   width: 100%;
-}
-
-#botonModPrf {
-   margin-left: 0px;
-}
-#DatosPrivados{
-   padding: 10px;
-   width: 100%;
-}
-#DatosPrivados2{
-   padding: 10px;
-   width: 100%;
-}
-#botonDtPv1{
-   margin-left: 15px;
-}
-#botonDtPv2{
-   margin-left: 15px;
-}
-#CardMostrarDatos{
-      border: 0px;
-}
-.list-group-item{
-   border: solid 1px black;
-}
-#list-home-list{
-   border: solid 0px;
-}
-#list-profile-list{
-   border: solid 0px;
-}
-#list-settings-list{
-   border: solid 0px;
-}
-#list-comunidades-list{
-   border: solid 0px;
-}
-input{
-   border: solid 1px black;
-}
-#verMas{
-   margin-top: 25px;
-}
-#foto_perfil{
-   margin-top: 10px;
-   margin-bottom: 10px;
-   border-radius: 20px;
-}
-.form-control{
-   border: solid 1px black;
+*/
+.perfil-layout {
+    display: flex;
+    gap: 20px;
+   flex-wrap: wrap;
 }
 
 
+.perfil-sidebar {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 15px;
+}
 
+.sidebar-nav .sidebar-item {
+    font-weight: 500;
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+}
 
+.sidebar-nav .sidebar-item.active,
+.sidebar-nav .sidebar-item:hover {
+    background: #f0f0f0;
+}
 
-@media (min-width: 992px) {
+.perfil-main {
+    width: 100%;
+}
 
-   #cataComunidades{
-      width: 95%;
-      margin-left: 3%;
+.perfil-foto {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 15px;
+}
+
+.clean-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+}
+
+.section-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+#ContendorDePerfil{
+    width: auto;
+    max-width: auto;
+    overflow-x: hidden;
+    box-sizing: border-box;
    }
 
-   .btn-primary {
-        margin-top: 5px;
-        margin-bottom: 5px;
+.contenedor-listas {
+    width: 100%;
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+}
+
+.servicio-card {
+    border-radius: 12px;
+    background: #fff;
+    padding: 15px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+}
+
+.servicio-img {
+    width: 100%;
+    height: 150px;
+    background: #ddd;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.comunidad-card {
+    border-radius: 12px;
+    background: #fff;
+    padding: 15px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    word-wrap: break-word;
+    word-break: break-word;
+    height: 480px; 
+}
+#Btns{
+    margin-top: auto;
+    padding-top: 12px;
+}
+
+.comunidad-img {
+    width: 100%;
+    height: 150px;
+    background: #ddd;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.comunidad-botones button,
+.comunidad-botones a,
+.servicio-card button {
+    padding: 6px 10px;
+    border-radius: 8px;
+}
+.badge-nutrition {
+  background-color: rgb(94, 219, 94) !important;
+}
+
+.badge-fitness {
+  background-color: rgb(91, 93, 93) !important;
+}
+
+.badge-development {
+  background-color: orange !important;
+}
+
+
+@media (max-width: 992px) {
+    .perfil-layout {
+        flex-direction: column;
     }
-
-   #ultimaPublicación {
-      width: 100%;
-   }
-
-   #IdUsuario {
-      margin-left: 0px;
-      width: 95%;
-   }
-
-   #foto_perfil {
-      width: 25%;
-      margin-left: 300px;
-   }
-
-   #ContenedorCreacion {
-      margin-left: 10px;
-      width: 95%;
-   }
-
-   #CardMostrarDatos {
-      width: 100%;
-   }
-
-   #Tus_publicaciones {
-      width: 95%;
-   }
-
-   #CardMostrarDatos2 {
-      width: 100%;
-   }
-   #Publicaciones{
-      width: 95%;
-   }
-}
-
-@media (max-width: 991px) and (min-width: 500px) {
-   #contenedorDatosUsuario{
-      margin-top: 10px;
-   }
-
-   #ContenedorCreacion {
-      width: 100%;
-      margin-top: 10px;
-   }
-
-   #modalActualizar {
-      margin-left: 15px;
-        margin-top: 15px;
-        margin-bottom: 15px;
+    
+    .perfil-sidebar {
+        width: 100%;
     }
-
-   #botonDtPv {
-      margin-top: 10px;
-      margin-left: 10px;
-   }
-
-   #ultimaPublicación {
-      width: 100%;
-   }
-
-   #IdUsuario {
-      width: 100%;
-   }
-
-   #ContenedorCreacion {
-      margin-left: 10px;
-      width: 95%;
-   }
-
-   #Tus_publicaciones {
-      width: 100%;
-      margin-top: 10px;
-   }
-
-   #CardMostrarDatos {
-      width: 100%;
-   }
-
-   #collapseWidthExample2 {
-      width: 100%;
-   }
-
-   #CardMostrarDatos2 {
-      width: 100%;
-   }
-
-   #Publicaciones {
-      width: 100%;
-   }
-
-   #DatosPrivados {
-      width: 100%;
-   }
-
 }
 
-@media (max-width: 499px) {
-   #list-tab {
-      width: 100%;
-   }
-
-   #fichaUsuario {
-      width: 100%;
-      margin-left: 0px;
-   }
 
 
-   div#ContenedorCreacion {
-      margin-left: 0px;
-      width: 100%;
-      margin-top: 15px;
-   }
+#tab-perfil .perfil-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;  
+    text-align: center;   
+}
 
+.perfil-info {
+    width: 100%;
+    text-align: center;
+}
 
-   #contenedorDatosUsuario {
-      width: 100%;
-      padding: auto;
-   }
-
-   #IdUsuario {
-      margin-left: 0px;
-      width: 100%;
-      margin-top: 15px;
-   }
-
-   .container {
-      padding-left: 0;
-      padding-right: 0;
-   }
-
-   #Publicaciones {
-      width: 90%;
-   }
-
-   #Fila_publicaciones {
-      width: 300px;
-      margin-left: 40px;
-   }
-
-   #ultimaPublicación {
-      width: 100%;
-   }
-
-   #Tus_publicaciones {
-      margin-top: 15px;
-      width: 100%;
-   }
-
-   #CardMostrarDatos {
-      width: 100%;
-   }
-
-   #collapseWidthExample2 {
-      width: 100%;
-   }
-
-   #CardMostrarDatos2 {
-      width: 100%;
-      padding: 10px;
-   }
-
-   #DatosPrivados {
-      width: 100%;
-   }
-
-   .row {
-      width: 100%;
-   }
+.info-title,
+.info-text,
+.perfil-autor {
+    text-align: center;
 }

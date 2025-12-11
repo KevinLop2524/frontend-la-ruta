@@ -1,0 +1,98 @@
+<app-header></app-header>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <div class="container">
+        <a class="navbar-brand fw-bold">{{comunidad.name}}</a><br>
+        <h5 class="navbar-brand fw-bold">{{comunidad.description}}</h5>
+
+        <div>
+            <button class="btn btn-primary" (click)="abrirModal()">Crear publicación</button>
+        </div>
+    </div>
+</nav>
+
+<main class="container my-4">
+    <section id="feed" class="row gy-3">
+
+        <!-- PUBLICACIÓN DE EJEMPLO -->
+        <div class="col-12">
+            <div *ngFor="let publicacion of publicaciones" class="post-card">
+
+                <div class="post-header">
+                    <img class="avatar" src="imagenes/static/Fotoperfil.jpg">
+
+                    <div>
+                        <div class="username">{{publicacion.authorName}}</div>
+                        <div class="post-date">{{publicacion.fechaCreacion}}</div>
+                    </div>
+
+                    <div class="post-menu-wrapper" *ngIf="this.usuario.id== publicacion.authorId">
+                        <button class="post-menu-btn" (click)="toggleMenu(publicacion.id)">⋮</button>
+
+                        <div class="custom-menu" *ngIf="menuAbierto === publicacion.id">
+                            <button class="dropdown-item btn-edit">✏️ Editar</button>
+                            <button class="dropdown-item btn-delete">🗑️ Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="post-content mt-3" name="contenido">
+                    {{publicacion.contenido}}
+                </div>
+
+                <img class="post-image" [src]="publicacion.mediaUrl">
+
+                <div class="post-actions">
+                    <button class="action-btn" (click)="like(publicacion.id)">❤ {{publicacion.likes}}</button>
+                    <button class="action-btn">💬 Comentar</button>
+                    <button class="action-btn">↗ Compartir</button>
+                </div>
+
+            </div>
+        </div>
+
+    </section>
+</main>
+
+<!-- ✅ MODAL CREAR PUBLICACIÓN (CONTROLADO DESDE TS) -->
+<div class="modal fade show" *ngIf="modalAbierto" style="display: block;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 shadow border-0">
+
+            <div class="modal-header border-0">
+                <h5 class="modal-title">Crear publicación</h5>
+                <button type="button" class="btn-close" (click)="cerrarModal()"></button>
+            </div>
+
+            <div class="modal-body">
+                <form>
+
+                    <div class="mb-3">
+                        <label class="form-label">Contenido</label>
+                        <textarea class="form-control form-control-lg" rows="4" placeholder="Comparte algo..."
+                            [(ngModel)]="contenido" name="contenido"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Imagen</label>
+
+                        <div class="drop-zone">
+                            <input class="drop-zone-content" type="file" name="imagenSeleccionada" (change)="onFileSelected($event)">
+                                <p>Haz clic para subir una imagen</p>
+                        </div>
+
+                    </div>
+
+                </form>
+            </div>
+
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-link text-muted" (click)="cerrarModal()">Cancelar</button>
+                <button type="button" class="btn btn-primary" (click)="crearPublicacion()">Publicar</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<app-footer></app-footer>
