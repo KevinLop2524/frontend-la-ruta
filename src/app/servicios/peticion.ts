@@ -124,6 +124,24 @@ export class Peticion {
     withCredentials: true
   }).toPromise();
 }
+postFormData = (url: string, formData: FormData, token?: string) => {
+
+  let promesa = new Promise((resolve, reject) => {
+
+    this.requestOptions = {
+      headers: new HttpHeaders({
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+      }),
+      withCredentials: true
+    }
+
+    this.http.post(url, formData, this.requestOptions).toPromise()
+      .then((res: any) => resolve(res))
+      .catch((error: any) => reject(error))
+  })
+
+  return promesa
+}
 
 
   downloadPdfPost(url: string, body: any, token?: string): Promise<Blob> {

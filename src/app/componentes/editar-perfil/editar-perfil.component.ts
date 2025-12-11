@@ -70,7 +70,7 @@ export class EditarPerfilComponent implements OnInit {
     let token = localStorage.getItem('token') || undefined;
     let get = {
       host: this.peticion.urlReal,
-      path: "/api/users/get/" + 7,
+      path: "/api/users/me",
       payload: {
       }
     }

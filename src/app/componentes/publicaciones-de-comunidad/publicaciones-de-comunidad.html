@@ -22,14 +22,14 @@
                     <img class="avatar" src="imagenes/static/Fotoperfil.jpg">
 
                     <div>
-                        <div class="username">{{publicacion.username}}</div>
-                        <div class="post-date">Hace 2 horas</div>
+                        <div class="username">{{publicacion.authorName}}</div>
+                        <div class="post-date">{{publicacion.fechaCreacion}}</div>
                     </div>
 
-                    <div class="post-menu-wrapper">
-                        <button class="post-menu-btn">⋮</button>
+                    <div class="post-menu-wrapper" *ngIf="this.usuario.id== publicacion.authorId">
+                        <button class="post-menu-btn" (click)="toggleMenu(publicacion.id)">⋮</button>
 
-                        <div class="custom-menu">
+                        <div class="custom-menu" *ngIf="menuAbierto === publicacion.id">
                             <button class="dropdown-item btn-edit">✏️ Editar</button>
                             <button class="dropdown-item btn-delete">🗑️ Eliminar</button>
                         </div>
@@ -40,10 +40,10 @@
                     {{publicacion.contenido}}
                 </div>
 
-                <img class="post-image" src="/imagenes/static/imgGymUno.jpg">
+                <img class="post-image" [src]="publicacion.mediaUrl">
 
                 <div class="post-actions">
-                    <button class="action-btn">❤ {{publicacion.like}}</button>
+                    <button class="action-btn" (click)="like(publicacion.id)">❤ {{publicacion.likes}}</button>
                     <button class="action-btn">💬 Comentar</button>
                     <button class="action-btn">↗ Compartir</button>
                 </div>
@@ -70,16 +70,15 @@
                     <div class="mb-3">
                         <label class="form-label">Contenido</label>
                         <textarea class="form-control form-control-lg" rows="4" placeholder="Comparte algo..."
-                            [(ngModel)]="nuevaPublicacion.contenido" name="contenido"></textarea>
+                            [(ngModel)]="contenido" name="contenido"></textarea>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Imagen</label>
 
                         <div class="drop-zone">
-                            <div class="drop-zone-content">
+                            <input class="drop-zone-content" type="file" name="imagenSeleccionada" (change)="onFileSelected($event)">
                                 <p>Haz clic para subir una imagen</p>
-                            </div>
                         </div>
 
                     </div>

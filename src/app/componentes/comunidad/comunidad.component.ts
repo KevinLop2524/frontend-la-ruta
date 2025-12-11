@@ -85,7 +85,7 @@ export class ComunidadComponent implements OnInit {
     let token = localStorage.getItem('token') || undefined;
     let get = {
       host: this.peticion.urlReal,
-      path: "/api/users/get/" + 6,
+      path: "/api/users/me",
       payload: {
       }
     }

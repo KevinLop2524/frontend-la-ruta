@@ -20,15 +20,13 @@ export class PublicacionesDeComunidad {
 
   constructor(private peticion: Peticion, private cdr: ChangeDetectorRef, private router: Router, private route: ActivatedRoute) { }
 
-  nuevaPublicacion: any = {
-    contenido: '',
-    type: 'COMMUNITY'
-  };
+
+  contenido: string = '';
   idComunidad: number = 0;
   usuario: any = {}
-  publicaciones: any= []
-  comunidad: any= {}
-
+  publicaciones: any = []
+  comunidad: any = {}
+  imagenSeleccionada: any;
   modalAbierto: boolean = false;
 
   ngOnInit(): void {
@@ -41,6 +39,43 @@ export class PublicacionesDeComunidad {
     })
   }
 
+  menuAbierto: number | null = null;
+
+toggleMenu(idPost: number) {
+  this.menuAbierto = this.menuAbierto === idPost ? null : idPost;
+}
+
+editarPost(idPost: number) {
+  console.log("Editar post:", idPost);
+  this.menuAbierto = null;
+  // Aquí luego llamas al modal de edición
+}
+
+eliminarPost(idPost: number) {
+  console.log("Eliminar post:", idPost);
+  this.menuAbierto = null;
+
+  Swal.fire({
+    title: '¿Eliminar publicación?',
+    text: 'Esta acción no se puede deshacer',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar'
+  }).then(result => {
+    if (result.isConfirmed) {
+      // aquí luego conectas tu endpoint DELETE real
+      console.log("Post eliminado:", idPost);
+    }
+  });
+}
+
+
+  onFileSelected(event: any) {
+  this.imagenSeleccionada = event.target.files[0];
+}
+
+
   abrirModal() {
     this.modalAbierto = true;
   }
@@ -48,16 +83,16 @@ export class PublicacionesDeComunidad {
   cerrarModal() {
     this.modalAbierto = false;
   }
-  buscarComunidad(){
+  buscarComunidad() {
     let token = localStorage.getItem('token') || undefined;
 
-    let get={
+    let get = {
       host: this.peticion.urlReal,
       path: "/api/communities/get/" + this.idComunidad
     }
 
-    this.peticion.get(get.host+ get.path, token).then((res:any)=>{
-      this.comunidad= res;
+    this.peticion.get(get.host + get.path, token).then((res: any) => {
+      this.comunidad = res;
       this.cdr.detectChanges();
     })
   }
@@ -67,7 +102,7 @@ export class PublicacionesDeComunidad {
     let token = localStorage.getItem('token') || undefined;
     let get = {
       host: this.peticion.urlReal,
-      path: "/api/users/get/" + 1,
+      path: "/api/users/me",
       payload: {
       }
     }
@@ -75,24 +110,23 @@ export class PublicacionesDeComunidad {
       this.usuario = res;
       this.cdr.detectChanges()
       console.log("Usuario logueado:", this.usuario.id);
-      this.nuevaPublicacion.author_id = this.usuario.id;
 
     }).catch((err: any) => {
       console.log("Error al encontrar usuario", apodo, "Error: ", err);
     })
   }
 
-  cargarPublicaciones(){
-    let get= {
+  cargarPublicaciones() {
+    let get = {
       host: this.peticion.urlReal,
       path: "/api/posts/community/" + this.idComunidad,
     }
 
-    this.peticion.get(get.host+ get.path).then((res: any)=>{
+    this.peticion.get(get.host + get.path).then((res: any) => {
       console.log(res)
-      this.publicaciones= res
+      this.publicaciones = res
       this.cdr.detectChanges()
-    }).catch((err: any)=>{
+    }).catch((err: any) => {
       console.log("Error al encontrar publicaciones: ", err);
     })
   }
@@ -101,40 +135,62 @@ export class PublicacionesDeComunidad {
 
     let token = localStorage.getItem('token') || undefined;
 
-    let post = {
-      host: this.peticion.urlReal,
-      path: "/api/posts/communities/" + this.idComunidad,
-      payload: this.nuevaPublicacion
+
+    const formData = new FormData();
+
+    if (this.imagenSeleccionada) {
+      formData.append('media', this.imagenSeleccionada)
     }
-    this.peticion.post(post.host + post.path, post.payload, token).then((res: any) => {
-      if (res) {
-        Swal.fire({
-          title: '¡Exito!',
-          text: res.mensaje,
-          icon: 'success',
-          confirmButtonText: 'Ok'
-        })
-      }
+
+    const data = {
+      "contenido": this.contenido,
+      "type": "COMMUNITY",
+      "comunidadId": this.idComunidad
+    }
+
+    formData.append('data', JSON.stringify(data));
+
+
+    this.peticion.postFormData(
+      this.peticion.urlReal + '/api/posts/communities/' + this.idComunidad,
+      formData,
+      token
+    ).then((res: any) => {
+
+      Swal.fire({
+        title: '¡Exito!',
+        text: 'Publicación creada con exito',
+        icon: 'success',
+        confirmButtonText: 'Ok'
+      });
+      this.contenido = '';
+      this.imagenSeleccionada = null;
+      this.cerrarModal();
+      this.cargarPublicaciones();
     }).catch((err: any) => {
-      console.log(err.error.message)
+      console.log(err);
       Swal.fire({
         title: 'Error',
-        text: 'Error al crear la publicación' + err,
+        text: 'Error al crear la publicación',
         icon: 'error',
         confirmButtonText: 'Cerrar'
       });
     });
   }
-  
-  like()
-  {
+
+  like(idPost: number) {
     let token = localStorage.getItem('token') || undefined;
 
-    let post = {
-      host: this.peticion.urlReal,
-      path: "/api/posts/like/" + this.idComunidad,
-      payload: this.nuevaPublicacion
-    }
+    this.peticion.post(
+      this.peticion.urlReal + '/api/posts/' + idPost + '/like',
+      {},
+      token
+    ).then((res: any) => {
+      console.log("Like exitoso", res);
+      this.cargarPublicaciones();
+    }).catch((err: any) => {
+      console.log("Error en like", err);
+    })
   }
 
 }
