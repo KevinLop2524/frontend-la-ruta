@@ -31,7 +31,7 @@
                                     <button class="btn btn-grey-sm"
                                         (click)="verificarMembresia(comunidad)">Unirse</button>
                                     <button class="btn btn-grey-sm" id="botonAjustes" data-bs-toggle="modal"
-                                        data-bs-target="#modalActualizar" *ngIf="rol.includes('ROLE_ADMIN')"
+                                        data-bs-target="#modalActualizar" *ngIf="this.usuario.role== 'ADMIN'"
                                         (click)="abrirModal(comunidad)">
                                         Ajustes
                                     </button>
