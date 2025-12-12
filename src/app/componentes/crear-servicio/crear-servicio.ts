@@ -25,6 +25,8 @@ export class CrearServicio implements OnInit {
   comunidad: any = {};
   servicios: any[] = [];
 
+  miembrosComunidad: any[] = []; // ✅ NUEVO
+
   idComunidad: number = 0;
 
   formServicio: any = {
@@ -44,14 +46,13 @@ export class CrearServicio implements OnInit {
 
   ngOnInit(): void {
 
-    const id = this.route.snapshot.paramMap.get('id'); //con esto leo el id de la comunidad
+    const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.idComunidad = +id;
       this.formServicio.communityId = this.idComunidad;
     }
 
-    
-    this.buscarUsuario(); //con esto cargo usuario y luego servicios
+    this.buscarUsuario();
   }
 
   buscarUsuario() {
@@ -63,15 +64,11 @@ export class CrearServicio implements OnInit {
         this.usuario = res;
         this.formServicio.userId = res.id;
 
-        console.log("Usuario cargado:", res);
-
         this.cdr.detectChanges();
         this.BuscarComunidad();
         this.cargarServiciosDeComunidad();
       })
-      .catch(err => {
-        console.error("❌ Error al obtener usuario", err);
-      });
+      .catch(err => console.error("❌ Error al obtener usuario", err));
   }
 
   BuscarComunidad() {
@@ -86,10 +83,26 @@ export class CrearServicio implements OnInit {
   }
 
 
+  cargarMiembrosComunidad() {
+    const token = localStorage.getItem("token") || undefined;
+
+    this.peticion.get(
+      `${this.peticion.urlReal}/api/communities/${this.idComunidad}/members-basic`,
+      token
+    )
+    .then((res: any) => {
+      this.miembrosComunidad = res;
+      this.cdr.detectChanges();
+    })
+    .catch(err => console.error("Error al cargar miembros", err));
+  }
+
   openModal() {
     const modalEl = this.modalServicio.nativeElement;
     this.modalInstance = new bootstrap.Modal(modalEl);
     this.modalInstance.show();
+
+    this.cargarMiembrosComunidad(); 
   }
 
   closeModal() {
@@ -100,62 +113,62 @@ export class CrearServicio implements OnInit {
 
   guardarModal() {
 
-  if (!this.formServicio.name.trim()) {
-    Swal.fire("Error", "El nombre es obligatorio", "warning");
-    return;
+    if (!this.formServicio.userId) {
+      Swal.fire("Error", "Debe seleccionar un usuario", "warning");
+      return;
+    }
+
+    if (!this.formServicio.name.trim()) {
+      Swal.fire("Error", "El nombre es obligatorio", "warning");
+      return;
+    }
+
+    if (!this.formServicio.description.trim()) {
+      Swal.fire("Error", "La descripción es obligatoria", "warning");
+      return;
+    }
+
+    if (!this.formServicio.type) {
+      Swal.fire("Error", "Debe seleccionar un tipo", "warning");
+      return;
+    }
+
+    const token = localStorage.getItem('token') || undefined;
+
+    const payload = {
+      name: this.formServicio.name,
+      description: this.formServicio.description,
+      type: this.formServicio.type,
+      userId: this.formServicio.userId,
+      communityId: this.idComunidad
+    };
+
+    this.peticion.post(`${this.peticion.urlReal}/api/services/create`, payload, token)
+      .then(() => {
+        Swal.fire("¡Éxito!", "Servicio creado correctamente", "success");
+        this.closeModal();
+
+        this.formServicio = {
+          id: null,
+          name: '',
+          description: '',
+          type: '',
+          userId: null,
+          communityId: this.idComunidad
+        };
+
+        this.cargarServiciosDeComunidad();
+      })
+      .catch(err => {
+        Swal.fire("Error", err.error?.mensaje || "Error al crear el servicio", "error");
+      });
+      console.log("Payload enviado:", payload);
+
   }
-
-  if (!this.formServicio.description.trim()) {
-    Swal.fire("Error", "La descripción es obligatoria", "warning");
-    return;
-  }
-
-  if (!this.formServicio.type) {
-    Swal.fire("Error", "Debe seleccionar un tipo", "warning");
-    return;
-  }
-
-  const token = localStorage.getItem('token') || undefined;
-
-  const payload = {
-    name: this.formServicio.name,
-    description: this.formServicio.description,
-    type: this.formServicio.type,
-    userId: this.usuario.id,
-    communityId: this.idComunidad
-  };
-
-  console.log("Payload:", payload);
-
-  this.peticion.post(`${this.peticion.urlReal}/api/services/create`, payload, token)
-    .then(() => {
-      Swal.fire("¡Éxito!", "Servicio creado correctamente", "success");
-      this.closeModal();
-
-      this.formServicio = {
-        id: null,
-        name: '',
-        description: '',
-        type: '',
-        userId: this.usuario.id,
-        communityId: this.idComunidad
-      };
-
-      this.cargarServiciosDeComunidad();
-    })
-    .catch(err => {
-      Swal.fire("Error", err.error?.mensaje || "Error al crear el servicio", "error");
-    });
-
-  return;
-}
 
   cargarServiciosDeComunidad() {
 
-    if (!this.usuario?.id) {
-      console.error(" usuario.id inválido:", this.usuario);
-      return;
-    }
+    if (!this.usuario?.id) return;
 
     const token = localStorage.getItem("token") || undefined;
 
@@ -165,9 +178,10 @@ export class CrearServicio implements OnInit {
     )
       .then((res: any) => {
         this.servicios = Array.isArray(res) ? res : [res];
-        console.log("Servicios cargados:", this.servicios);
         this.cdr.detectChanges();
       })
       .catch(err => console.error("Error al obtener servicios", err));
+      console.log("ID comunidad usado:", this.idComunidad);
+
   }
 }

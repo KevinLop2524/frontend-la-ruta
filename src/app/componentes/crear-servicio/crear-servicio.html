@@ -3,14 +3,13 @@
 <main class="container-main">
   <h2>Servicios Deportivos</h2>
 
-  <!-- BOTÓN CREAR SERVICIO -->
   <div class="actions-bar">
     <button class="btn btn-danger" (click)="openModal()">
       ➕ Crear Servicio
     </button>
   </div>
 
-  <!-- SERVICIOS -->
+
   <div class="services-grid">
     <div class="card-comm" *ngFor="let s of servicios">
       <img class="comm-img" [src]="s.imageUrl || 'https://images.unsplash.com/photo-1518611012118-f0c5a4c0bf5d'">
@@ -21,7 +20,7 @@
   </div>
 </main>
 
-<!-- MODAL CREAR SERVICIO -->
+
 <div class="modal fade" #modalServicio tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -41,6 +40,16 @@
           <label class="form-label">Descripción</label>
           <textarea [(ngModel)]="formServicio.description" class="form-control"></textarea>
         </div>
+
+         <div class="mb-3">
+    <label class="form-label">Asignar servicio a</label>
+    <select [(ngModel)]="formServicio.userId" class="form-select">
+      <option value="">Seleccione un usuario...</option>
+      <option *ngFor="let u of miembrosComunidad" [value]="u.id">
+        {{ u.username }}
+      </option>
+    </select>
+  </div>
 
         <div class="mb-3">
           <label class="form-label">Tipo</label>

@@ -79,6 +79,7 @@ export class ServicioComponent implements OnInit {
     this.peticion.get(`${this.peticion.urlReal}/api/communities/get/${this.idComunidad}`, token)
       .then((res: any) => {
         this.comunidad = res;
+        console.log(this.comunidad)
         this.cdr.detectChanges();
       })
       .catch((err) => console.error("Error al obtener la comunidad", err));

@@ -2,7 +2,7 @@
 
 <main class="container-main">
 
-  <div class="d-flex justify-content-end mb-3">
+  <div *ngIf="this.usuario.id == this.comunidad.creatorId" class="d-flex justify-content-end mb-3">
     <a [routerLink]="['/crear-servicio', idComunidad]" class="btn btn-outline-danger btn-lg">
       Ver servicios
     </a>
