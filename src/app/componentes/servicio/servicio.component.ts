@@ -23,14 +23,6 @@ export class ServicioComponent implements OnInit {
   usuario: any = {};
   comunidad: any = {};
 
-  ServicioCrear: any = {
-    name: '',
-    description: '',
-    type: '',
-    userFitness: '',
-    communityId: ''
-  };
-
   modalModo: 'crear' | 'editar' = 'crear';
   modalRef: any;
 
@@ -39,15 +31,24 @@ export class ServicioComponent implements OnInit {
     name: '',
     description: '',
     type: '',
-    userFitness: null,
+    userId: null,
     communityId: null
   };
+
+  menuOpenId: number | null = null;
 
   constructor(
     private peticion: Peticion,
     private cdr: ChangeDetectorRef,
     private route: ActivatedRoute
-  ) {}
+  ) {
+    document.addEventListener("click", (e) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest(".post-menu-wrapper")) {
+        this.menuOpenId = null;
+      }
+    });
+  }
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -56,6 +57,10 @@ export class ServicioComponent implements OnInit {
       this.buscarUsuario();
       this.BuscarComunidad();
     }
+  }
+
+  toggleMenu(serviceId: number) {
+    this.menuOpenId = this.menuOpenId === serviceId ? null : serviceId;
   }
 
   buscarUsuario() {
@@ -75,9 +80,6 @@ export class ServicioComponent implements OnInit {
       .then((res: any) => {
         this.comunidad = res;
         this.cdr.detectChanges();
-        console.log(this.comunidad)
-        console.log(this.usuario)
-
       })
       .catch((err) => console.error("Error al obtener la comunidad", err));
   }
@@ -98,48 +100,6 @@ export class ServicioComponent implements OnInit {
       });
   }
 
-  crearServicio() {
-    if (this.datosNoPermitidos.includes(this.ServicioCrear.name)) {
-      Swal.fire({ title: 'Error', text: 'El nombre es obligatorio', icon: 'warning' });
-      return;
-    }
-    if (this.datosNoPermitidos.includes(this.ServicioCrear.description)) {
-      Swal.fire({ title: 'Error', text: 'La descripción es obligatoria', icon: 'warning' });
-      return;
-    }
-    if (this.datosNoPermitidos.includes(this.ServicioCrear.type)) {
-      Swal.fire({ title: 'Error', text: 'Debes seleccionar una categoría', icon: 'warning' });
-      return;
-    }
-
-    const token = localStorage.getItem('token') || undefined;
-
-    const payload = {
-      name: this.ServicioCrear.name,
-      description: this.ServicioCrear.description,
-      type: this.ServicioCrear.type,
-      userFitness: this.usuario.userFitnessId,
-      communityId: this.idComunidad
-    };
-
-    this.peticion.post(`${this.peticion.urlReal}/api/services/create`, payload, token)
-      .then(() => {
-        Swal.fire('¡Éxito!', 'Servicio creado correctamente', 'success');
-        this.cargarServicios();
-
-        this.ServicioCrear = {
-          name: '',
-          description: '',
-          type: '',
-          userFitness: this.usuario.userFitnessId,
-          communityId: this.idComunidad
-        };
-      })
-      .catch((err: any) => {
-        Swal.fire('Error', err.error?.mensaje || 'Error al crear el servicio', 'error');
-      });
-  }
-
   mostrarModal() {
     const modalElement = document.getElementById('modalServicio');
     this.modalRef = new (window as any).bootstrap.Modal(modalElement!);
@@ -153,7 +113,7 @@ export class ServicioComponent implements OnInit {
       name: '',
       description: '',
       type: '',
-      userFitness: this.usuario.userFitnessId,
+      userId: this.usuario.id,
       communityId: this.idComunidad
     };
     this.mostrarModal();
@@ -166,7 +126,7 @@ export class ServicioComponent implements OnInit {
       name: servicio.name,
       description: servicio.description,
       type: servicio.type,
-      userFitness: this.usuario.userFitnessId,
+      userId: this.usuario.id,
       communityId: this.idComunidad
     };
     this.mostrarModal();
@@ -180,48 +140,92 @@ export class ServicioComponent implements OnInit {
     }
   }
 
+  crearServicio() {
+    if (this.datosNoPermitidos.includes(this.formServicio.name)) {
+      Swal.fire('Error', 'El nombre es obligatorio', 'warning'); return;
+    }
+    if (this.datosNoPermitidos.includes(this.formServicio.description)) {
+      Swal.fire('Error', 'La descripción es obligatoria', 'warning'); return;
+    }
+    if (this.datosNoPermitidos.includes(this.formServicio.type)) {
+      Swal.fire('Error', 'Debe seleccionar un tipo', 'warning'); return;
+    }
+
+    const token = localStorage.getItem('token') || "";
+
+    const payload = {
+      name: this.formServicio.name,
+      description: this.formServicio.description,
+      type: this.formServicio.type,
+      userId: this.usuario.id,
+      communityId: this.idComunidad
+    };
+
+    this.peticion.post(`${this.peticion.urlReal}/api/services/create`, payload, token)
+      .then(() => {
+        Swal.fire('¡Éxito!', 'Servicio creado correctamente', 'success');
+        this.cargarServicios();
+        this.modalRef.hide();
+      })
+      .catch((err: any) => {
+        Swal.fire('Error', err.error?.mensaje || 'Error al crear el servicio', 'error');
+      });
+  }
+
   actualizarServicio() {
-  if (!this.formServicio.name.trim()) {
-    Swal.fire('Error', 'El nombre es obligatorio', 'warning');
-    return;
+    if (!this.formServicio.name.trim()) {
+      Swal.fire('Error', 'El nombre es obligatorio', 'warning'); return;
+    }
+    if (!this.formServicio.description.trim()) {
+      Swal.fire('Error', 'La descripción es obligatoria', 'warning'); return;
+    }
+    if (!this.formServicio.type) {
+      Swal.fire('Error', 'Debe seleccionar un tipo', 'warning'); return;
+    }
+
+    const token = localStorage.getItem('token') || "";
+
+    const payload: any = {
+      name: this.formServicio.name,
+      description: this.formServicio.description,
+      type: String(this.formServicio.type).toUpperCase().trim().replace(/ /g, "_")
+    };
+
+    this.peticion.put(
+      `${this.peticion.urlReal}/api/services/update/${this.formServicio.id}`,
+      payload,
+      token
+    )
+      .then(() => {
+        Swal.fire('Actualizado', 'Servicio actualizado correctamente', 'success');
+        this.cargarServicios();
+        this.modalRef.hide();
+      })
+      .catch(err => {
+        Swal.fire('Error', err.error?.message || 'No se pudo actualizar', 'error');
+      });
   }
-  if (!this.formServicio.description.trim()) {
-    Swal.fire('Error', 'La descripción es obligatoria', 'warning');
-    return;
-  }
-  if (!this.formServicio.type) {
-    Swal.fire('Error', 'Debe seleccionar un tipo', 'warning');
-    return;
-  }
 
-  const token = localStorage.getItem('token') || undefined;
-
-  const payload: any = {
-    name: this.formServicio.name,
-    description: this.formServicio.description,
-    type: String(this.formServicio.type)
-              .toUpperCase()
-              .trim()
-              .replace(/ /g, "_")
-  };
-
-  console.log("PAYLOAD:", payload);
-
-  this.peticion.put(
-    `${this.peticion.urlReal}/api/services/update/${this.formServicio.id}`,
-    payload,
-    token
-  )
-    .then(() => {
-      Swal.fire('Actualizado', 'Servicio actualizado correctamente', 'success');
-      this.cargarServicios();
-      this.modalRef.hide();
-    })
-    .catch(err => {
-      console.error("ERROR BACKEND:", err);
-      Swal.fire('Error', err.error?.message || 'No se pudo actualizar', 'error');
+  eliminarServicio(id: number) {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'No podrás recuperar este servicio',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.peticion.delete(`${this.peticion.urlReal}/api/services/delete/${id}`, {})
+          .then(() => {
+            Swal.fire('Eliminado', 'El servicio ha sido eliminado', 'success');
+            this.cargarServicios();
+          })
+          .catch((err) => {
+            Swal.fire('Error', err.error?.mensaje || 'Hubo un problema al eliminar', 'error');
+          });
+      }
     });
-}
-
+  }
 
 }
