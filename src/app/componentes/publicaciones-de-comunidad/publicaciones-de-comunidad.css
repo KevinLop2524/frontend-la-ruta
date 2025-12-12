@@ -148,9 +148,27 @@ body {
   padding:4px 8px;
 }
 
+.create-post-btn {
+  position: fixed;
+  bottom: 100px;  
+  right: 30px;   
+  z-index: index;
+  background-color: #d4464d;
+  border: solid 1px #d4464d;
+}
 
+.ver-mas-btn{
+  background-color: transparent;
+  border: solid 1px #d4464d;
+  color: black;
+}
 
-/* NUEVO MENÚ (sin clases Bootstrap) */
+#descripcionComunidad{
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
 .custom-menu {
   position:absolute;
   top:28px;

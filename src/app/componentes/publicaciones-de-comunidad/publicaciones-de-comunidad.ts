@@ -31,6 +31,9 @@ export class PublicacionesDeComunidad {
   modalAbierto: boolean = false;
   comentarios: any[] = [];
   nuevoComentario: string = "";
+  contenidoEditado: string = "";
+  imagenSeleccionadaEditar: any = null;
+
 
 
   ngOnInit(): void {
@@ -52,7 +55,17 @@ toggleMenu(idPost: number) {
 editarPost(idPost: number) {
   console.log("Editar post:", idPost);
   this.menuAbierto = null;
-  // Aquí luego llamas al modal de edición
+
+}
+
+abrirModalEditar(publicacion: any) {
+  this.publicacionSeleccionada = publicacion;
+
+  // Precargar contenido
+  this.contenidoEditado = publicacion.contenido;
+
+  // Resetear imagen
+  this.imagenSeleccionadaEditar = null;
 }
 
 abrirComentarios(publicacion: any) {
@@ -219,6 +232,33 @@ abrirModalEliminar(publicacion: any) {
           confirmButtonText: 'Ok'
         });
     }})
+  }
+
+  actualizarPublicacion(){
+    let act={
+      host: this.peticion.urlReal,
+      patch: '/api/posts/'+ this.publicacionSeleccionada.id,
+      payload: {
+        contenido: this.contenidoEditado
+      }
+    }
+
+    this.peticion.put(act.host+act.patch, act.payload).then((res: any)=>{
+      Swal.fire({
+        title: 'Correcto',
+        text: 'Se actualizo tu publicación',
+        icon: 'success',
+        confirmButtonText: 'Ok'
+      })
+      this.cargarPublicaciones()
+    }).catch((err: any)=>{
+      Swal.fire({
+        title: 'Error',
+        text: 'no se pudo actualizar tu publicación' + err,
+        icon: 'error',
+        confirmButtonText: 'Cerrar'
+      })
+    })
   }
 
   eliminarPublicacion(){
