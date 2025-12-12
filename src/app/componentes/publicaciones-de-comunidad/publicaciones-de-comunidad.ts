@@ -58,9 +58,8 @@ editarPost(idPost: number) {
 abrirComentarios(publicacion: any) {
   this.publicacionSeleccionada = publicacion;
 
-  // Llamar a API de comentarios
   this.cargarComentarios()
-  // Abrir modal
+
   const modal = new (window as any).bootstrap.Modal(
     document.getElementById('modalComentarios')
   );
@@ -198,19 +197,28 @@ abrirModalEliminar(publicacion: any) {
 
       let del={
         host: this.peticion.urlReal,
-        patch: '/api/post/'+idPost+'/like'
+        patch: '/api/posts/'+idPost+'/like'
       }
       if(err.error.message== "Ya has dado like a esta publicación"){
 
         this.peticion.delete(del.host+ del.patch, 
           {}).then((res:any)=>{
           console.log("Se quito el like de la publicación")
-          this.cargarPublicaciones()
+          this.nuevoComentario = "";
+          this.cargarPublicaciones();
+          this.cdr.detectChanges();
+
         }).catch((err: any)=>{
           console.log("No se pudo quitar el like")
         })
-      }
-    })
+      }else{
+        Swal.fire({
+          title: 'Error',
+          text: 'No se puede dar like: '+ err.error.message,
+          icon: 'error',
+          confirmButtonText: 'Ok'
+        });
+    }})
   }
 
   eliminarPublicacion(){
@@ -285,6 +293,7 @@ abrirModalEliminar(publicacion: any) {
 
     this.peticion.get(get.host+ get.patch).then((res: any)=>{
       this.comentarios= res;
+      this.cdr.detectChanges();
       console.log("Se cargaron las publicaciones correctamentes"+ this.comentarios);
     }).catch((err: any)=>{
       console.log("No se puedieron cargar las publicaciones correcatamente"+ err);
