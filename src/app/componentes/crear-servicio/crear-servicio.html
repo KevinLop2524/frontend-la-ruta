@@ -1,0 +1,77 @@
+<app-header></app-header>
+
+<main class="container-main">
+  <h2>Servicios Deportivos</h2>
+
+  <!-- BOTÓN CREAR SERVICIO -->
+  <div class="actions-bar">
+    <button class="btn btn-danger" (click)="openModal()">
+      ➕ Crear Servicio
+    </button>
+  </div>
+
+  <!-- SERVICIOS -->
+  <div class="services-grid">
+    <div class="card-comm">
+      <img class="comm-img" src="https://images.unsplash.com/photo-1518611012118-f0c5a4c0bf5d">
+      <h3>Entrenamiento Personalizado</h3>
+      <p>Sesiones guiadas para mejorar tu rendimiento.</p>
+      <button class="btn-more">Ver más</button>
+    </div>
+    <div class="card-comm">
+      <img class="comm-img" src="https://images.unsplash.com/photo-1558611848-73f7eb4001a1">
+      <h3>Nutrición Deportiva</h3>
+      <p>Transforma tu composición corporal con un plan profesional.</p>
+      <button class="btn-more">Ver más</button>
+    </div>
+    <div class="card-comm">
+      <img class="comm-img" src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438">
+      <h3>Programas de Resistencia</h3>
+      <p>Entrenamientos avanzados para aumentar tu capacidad física.</p>
+      <button class="btn-more">Ver más</button>
+    </div>
+  </div>
+</main>
+
+<!-- MODAL CREAR SERVICIO -->
+<div class="modal fade" #modalServicio tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Crear Servicio</h5>
+        <button type="button" class="btn-close" (click)="closeModal()"></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label">Nombre</label>
+          <input type="text" [(ngModel)]="formServicio.name" class="form-control">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Descripción</label>
+          <textarea [(ngModel)]="formServicio.description" class="form-control"></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Tipo</label>
+          <select [(ngModel)]="formServicio.type" class="form-select">
+            <option value="">Seleccione...</option>
+            <option value="ACTIVIDAD_FISICA">Actividad Física</option>
+            <option value="NUTRICION">Nutrición</option>
+            <option value="DEPORTE">Deporte</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+        <button type="button" class="btn btn-primary" (click)="guardarModal()">Crear</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>
