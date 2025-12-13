@@ -120,3 +120,8 @@ body {
 .badge-development {
   background-color: orange !important;
 }
+
+main.container-main {
+    margin-bottom: 450px;
+    margin-top: 70px;
+}

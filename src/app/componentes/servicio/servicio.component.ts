@@ -50,6 +50,9 @@ export class ServicioComponent implements OnInit {
     });
   }
 
+  miembrosComunidad: any[] = [];
+
+
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
@@ -64,42 +67,55 @@ export class ServicioComponent implements OnInit {
   }
 
   buscarUsuario() {
-    let token = localStorage.getItem('token') || undefined;
-    this.peticion.get(this.peticion.urlReal + "/users/me", token)
-      .then((res: any) => {
-        this.usuario = res;
-        this.cdr.detectChanges();
-        this.cargarServicios();
-      })
-      .catch((err: any) => console.log("Error al encontrar usuario", err));
-  }
+  let token = localStorage.getItem('token') || undefined;
+  this.peticion.get(this.peticion.urlReal + "/users/me", token)
+    .then((res: any) => {
+      this.usuario = res;
+      this.cdr.detectChanges();
+      this.intentarCargarServicios();
+    })
+    .catch((err: any) => console.log("Error al encontrar usuario", err));
+}
+
 
   BuscarComunidad() {
-    let token = localStorage.getItem('token') || undefined;
-    this.peticion.get(`${this.peticion.urlReal}/communities/get/${this.idComunidad}`, token)
-      .then((res: any) => {
-        this.comunidad = res;
-        console.log(this.comunidad)
-        this.cdr.detectChanges();
-      })
-      .catch((err) => console.error("Error al obtener la comunidad", err));
-  }
+  let token = localStorage.getItem('token') || undefined;
+  this.peticion.get(`${this.peticion.urlReal}/communities/get/${this.idComunidad}`, token)
+    .then((res: any) => {
+      this.comunidad = res;
+      this.cdr.detectChanges();
+      this.intentarCargarServicios();
+    })
+    .catch((err) => console.error("Error al obtener la comunidad", err));
+}
+
 
   cargarServicios() {
     if (!this.usuario?.id || !this.idComunidad) return;
 
+    const token = localStorage.getItem('token') || undefined;
+
+    if (this.usuario.id === this.comunidad.creatorId) {
+      this.peticion.get(
+        `${this.peticion.urlReal}/services/community/${this.idComunidad}/all?userId=${this.usuario.id}`,
+        token
+      )
+        .then((res: any) => {
+          this.servicios = Array.isArray(res) ? res : [];
+          this.cdr.detectChanges();
+        });
+      return;
+    }
     this.peticion.get(
-      `${this.peticion.urlReal}/services/user/${this.usuario.id}/community/${this.idComunidad}`
+      `${this.peticion.urlReal}/services/user/${this.usuario.id}/community/${this.idComunidad}`,
+      token
     )
       .then((res: any) => {
         this.servicios = Array.isArray(res) ? res : (res ? [res] : []);
         this.cdr.detectChanges();
-      })
-      .catch((err) => {
-        console.error("Error al obtener servicios por comunidad", err);
-        this.servicios = [];
       });
   }
+
 
   mostrarModal() {
     const modalElement = document.getElementById('modalServicio');
@@ -108,17 +124,19 @@ export class ServicioComponent implements OnInit {
   }
 
   abrirCrear() {
-    this.modalModo = 'crear';
-    this.formServicio = {
-      id: null,
-      name: '',
-      description: '',
-      type: '',
-      userId: this.usuario.id,
-      communityId: this.idComunidad
-    };
-    this.mostrarModal();
-  }
+  this.modalModo = 'crear';
+  this.formServicio = {
+    id: null,
+    name: '',
+    description: '',
+    type: '',
+    userId: null, 
+    communityId: this.idComunidad
+  };
+  this.cargarMiembrosComunidad();
+  this.mostrarModal();
+}
+
 
   abrirEditar(servicio: any) {
     this.modalModo = 'editar';
@@ -158,7 +176,7 @@ export class ServicioComponent implements OnInit {
       name: this.formServicio.name,
       description: this.formServicio.description,
       type: this.formServicio.type,
-      userId: this.usuario.id,
+      userId: this.formServicio.userId ?? this.usuario.id,
       communityId: this.idComunidad
     };
 
@@ -169,7 +187,7 @@ export class ServicioComponent implements OnInit {
         this.modalRef.hide();
       })
       .catch((err: any) => {
-        Swal.fire('Error', err.error?.mensaje || 'Error al crear el servicio', 'error');
+        Swal.fire('Error', err.error.message || 'Error al crear el servicio', 'error');
       });
   }
 
@@ -228,4 +246,27 @@ export class ServicioComponent implements OnInit {
       }
     });
   }
+  intentarCargarServicios() {
+    if (!this.usuario?.id) return;
+    if (!this.comunidad?.creatorId) return;
+
+    this.cargarServicios();
+  }
+
+  cargarMiembrosComunidad() {
+  const token = localStorage.getItem("token") || undefined;
+
+  this.peticion.get(
+    `${this.peticion.urlReal}/communities/${this.idComunidad}/members-basic`,
+    token
+  )
+  .then((res: any) => {
+    this.miembrosComunidad = res;
+    this.cdr.detectChanges();
+  })
+  .catch(err => console.error("Error al cargar miembros", err));
+}
+
+
+
 }
