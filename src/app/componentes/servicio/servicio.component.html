@@ -1,3 +1,76 @@
 <app-header></app-header>
 
+<main class="container-main">
+
+  <div *ngIf="this.usuario.id == this.comunidad.creatorId" class="d-flex justify-content-end mb-3">
+    <a [routerLink]="['/crear-servicio', idComunidad]" class="btn btn-outline-danger btn-lg">
+      Ver servicios
+    </a>
+  </div>
+
+  <h1 class="card-title" *ngIf="servicios.length > 0">Servicios de la comunidad</h1>
+  <h1 class="card-title" *ngIf="servicios.length === 0">No hay servicios disponibles</h1>
+
+  <div class="notes-section" *ngIf="servicios.length > 0">
+    <div class="saved-notes" *ngFor="let servicio of servicios">
+      <h4>Servicio</h4>
+      <p><strong>Nombre:</strong> {{ servicio.name }}</p>
+      <p><strong>Descripción:</strong> {{ servicio.description }}</p>
+
+      <div class="mt-3 d-flex gap-2" *ngIf="comunidad.creatorId == usuario.id">
+        <div class="post-menu-wrapper">
+          <button class="btn btn-link text-dark fs-4 p-0" (click)="toggleMenu(servicio.id)">⋮</button>
+
+          <div class="custom-menu" *ngIf="menuOpenId === servicio.id">
+            <button class="dropdown-item btn-edit" (click)="abrirEditar(servicio)">✏️ Editar</button>
+            <button class="dropdown-item btn-delete" (click)="eliminarServicio(servicio.id)">🗑️ Eliminar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<div class="modal fade" id="modalServicio" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">{{ modalModo === 'crear' ? 'Crear Servicio' : 'Editar Servicio' }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label">Nombre</label>
+          <input type="text" [(ngModel)]="formServicio.name" class="form-control">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Descripción</label>
+          <textarea [(ngModel)]="formServicio.description" class="form-control"></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Tipo</label>
+          <select [(ngModel)]="formServicio.type" class="form-select">
+            <option value="ACTIVIDAD_FISICA">Actividad Física</option>
+            <option value="NUTRICION">Nutrición</option>
+            <option value="DEPORTE">Deporte</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" (click)="guardarModal()">
+          {{ modalModo === 'crear' ? 'Crear' : 'Actualizar' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 <app-footer></app-footer>

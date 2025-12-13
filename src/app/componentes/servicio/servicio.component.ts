@@ -1,168 +1,231 @@
 import { CommonModule } from '@angular/common';
 import { Header } from '../header/header';
 import { Peticion } from '../../servicios/peticion';
-import { ChangeDetectorRef, Component, Host, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Footer } from '../footer/footer';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 
-
 @Component({
   selector: 'app-servicio',
-  imports: [CommonModule, Header, Footer, FormsModule],
+  standalone: true,
+  imports: [CommonModule, Header, Footer, FormsModule, RouterModule],
   templateUrl: './servicio.component.html',
   styleUrl: './servicio.component.css'
 })
 export class ServicioComponent implements OnInit {
 
-      datosNoPermitidos: (string | null | undefined)[] = ["", null, undefined];
+  datosNoPermitidos: (string | null | undefined)[] = ["", null, undefined];
 
-    servicios: any[] = []
-    idComunidad: number =0
-    usuario: any= {}
-    comunidad: any = {}
+  servicios: any[] = [];
+  idComunidad: number = 0;
+  usuario: any = {};
+  comunidad: any = {};
 
-    ServicioCrear: any ={
-      titulo: '',
-      descripcion: '',
-      categoria: '',
-      estado: 'activo',
-      fecha: '2025-09-24',
-      id_creador: '',
-      comunidad_id: ''
-    }
+  modalModo: 'crear' | 'editar' = 'crear';
+  modalRef: any;
 
+  formServicio: any = {
+    id: null,
+    name: '',
+    description: '',
+    type: '',
+    userId: null,
+    communityId: null
+  };
 
-constructor(private peticion: Peticion, private cdr: ChangeDetectorRef, private route: ActivatedRoute) { }
+  menuOpenId: number | null = null;
 
-
-ngOnInit(): void {
-  const id = this.route.snapshot.paramMap.get('id');
-  if (id) {
-    this.idComunidad = +id;
-    this.cargarServicios();
-    this.buscarUsuario();
-    this.BuscarComunidad();
-  }
-}
- buscarUsuario(){
-
-    let apodo = localStorage.getItem('apodo') || undefined;
-    let get= {
-      host: this.peticion.urlReal,
-      path: "/usuario/apodo/"+ apodo,
-      payload: {
+  constructor(
+    private peticion: Peticion,
+    private cdr: ChangeDetectorRef,
+    private route: ActivatedRoute
+  ) {
+    document.addEventListener("click", (e) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest(".post-menu-wrapper")) {
+        this.menuOpenId = null;
       }
-    }
-    this.peticion.get(get.host + get.path).then((res:any)=>{
-      this.usuario= res.usuario;
-      this.ServicioCrear.id_creador= this.usuario.id
-      this.cdr.detectChanges()
-    }).catch(()=> {
-      console.log("Usuario logueado:", this.usuario.usuario);
-      console.log("Error al encontrar usuario")
-    })
+    });
   }
 
-  BuscarComunidad(){
-    let get={
-      host: this.peticion.urlReal,
-      path: "/comunidad/"+ this.idComunidad,
-      payload:{}
+  ngOnInit(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.idComunidad = +id;
+      this.buscarUsuario();
+      this.BuscarComunidad();
     }
+  }
 
+  toggleMenu(serviceId: number) {
+    this.menuOpenId = this.menuOpenId === serviceId ? null : serviceId;
+  }
+
+  buscarUsuario() {
     let token = localStorage.getItem('token') || undefined;
-    this.peticion.get(get.host + get.path, token).then((res: any) => {
-       this.cdr.detectChanges()
-      this.comunidad = res
-      console.log("comunidad cargada: ", this.comunidad)
-      this.cdr.detectChanges()
-    }).catch((err)=>{
-      console.error("error al obtener la comunidad", err)
-    })
+    this.peticion.get(this.peticion.urlReal + "/users/me", token)
+      .then((res: any) => {
+        this.usuario = res;
+        this.cdr.detectChanges();
+        this.cargarServicios();
+      })
+      .catch((err: any) => console.log("Error al encontrar usuario", err));
   }
 
+  BuscarComunidad() {
+    let token = localStorage.getItem('token') || undefined;
+    this.peticion.get(`${this.peticion.urlReal}/communities/get/${this.idComunidad}`, token)
+      .then((res: any) => {
+        this.comunidad = res;
+        console.log(this.comunidad)
+        this.cdr.detectChanges();
+      })
+      .catch((err) => console.error("Error al obtener la comunidad", err));
+  }
 
   cargarServicios() {
-    let get = {
-      host: this.peticion.urlReal,
-      path: "/servicio/comunidad/" + this.idComunidad,
-      payload: {}
+    if (!this.usuario?.id || !this.idComunidad) return;
+
+    this.peticion.get(
+      `${this.peticion.urlReal}/services/user/${this.usuario.id}/community/${this.idComunidad}`
+    )
+      .then((res: any) => {
+        this.servicios = Array.isArray(res) ? res : (res ? [res] : []);
+        this.cdr.detectChanges();
+      })
+      .catch((err) => {
+        console.error("Error al obtener servicios por comunidad", err);
+        this.servicios = [];
+      });
+  }
+
+  mostrarModal() {
+    const modalElement = document.getElementById('modalServicio');
+    this.modalRef = new (window as any).bootstrap.Modal(modalElement!);
+    this.modalRef.show();
+  }
+
+  abrirCrear() {
+    this.modalModo = 'crear';
+    this.formServicio = {
+      id: null,
+      name: '',
+      description: '',
+      type: '',
+      userId: this.usuario.id,
+      communityId: this.idComunidad
+    };
+    this.mostrarModal();
+  }
+
+  abrirEditar(servicio: any) {
+    this.modalModo = 'editar';
+    this.formServicio = {
+      id: servicio.id,
+      name: servicio.name,
+      description: servicio.description,
+      type: servicio.type,
+      userId: this.usuario.id,
+      communityId: this.idComunidad
+    };
+    this.mostrarModal();
+  }
+
+  guardarModal() {
+    if (this.modalModo === 'crear') {
+      this.crearServicio();
+    } else {
+      this.actualizarServicio();
     }
-    this.peticion.get(get.host + get.path).then((res: any) => {
-      this.cdr.detectChanges()
-      this.servicios = res
-      console.log("Servicios cargados:", this.servicios);
-      this.cdr.detectChanges()
-    }).catch((err) => {
-      console.error("Error al obtener servicios", err)
-    })
   }
 
   crearServicio() {
-    
-    if (this.datosNoPermitidos.includes(this.ServicioCrear.titulo)) {
-  Swal.fire({
-    title: 'Error',
-    text: 'El campo nombre esta vacio',
-    icon: 'warning'
-  })
-  return;
-}else if (this.datosNoPermitidos.includes(this.ServicioCrear.descripcion)) {
-  Swal.fire({
-    title: 'Error',
-    text: 'El campo descripción esta vacio',
-    icon: 'warning'
-  })
-  return;
-}else if (this.datosNoPermitidos.includes(this.ServicioCrear.categoria)) {
-  Swal.fire({
-    title: 'Error',
-    text: 'El campo categoria esta vacio',
-    icon: 'warning'
-  })
-  return;
-}
-
-
-    let token = localStorage.getItem('token') || undefined;
-
-    let post = {
-      host: this.peticion.urlReal,
-      path: "/servicio/crear",
-      payload:{
-        nombre: this.ServicioCrear.titulo,
-        descripcion: this.ServicioCrear.descripcion,
-        estado: 'activo',
-        categoria: this.ServicioCrear.categoria,
-        idCreador: this.usuario.id,
-        comunidad: {id: this.idComunidad}
-      }
+    if (this.datosNoPermitidos.includes(this.formServicio.name)) {
+      Swal.fire('Error', 'El nombre es obligatorio', 'warning'); return;
+    }
+    if (this.datosNoPermitidos.includes(this.formServicio.description)) {
+      Swal.fire('Error', 'La descripción es obligatoria', 'warning'); return;
+    }
+    if (this.datosNoPermitidos.includes(this.formServicio.type)) {
+      Swal.fire('Error', 'Debe seleccionar un tipo', 'warning'); return;
     }
 
-      this.peticion.post ( post.host + post.path, post.payload, token).then((res:any) =>{
-        
-        console.log("se creo el servicio", res)
-        if(res.estado){
-        Swal.fire({
-          title: '¡Exito!',
-          text: res.mensaje,
-          icon: 'success',
-          confirmButtonText: 'Ok'
-        })
+    const token = localStorage.getItem('token') || "";
+
+    const payload = {
+      name: this.formServicio.name,
+      description: this.formServicio.description,
+      type: this.formServicio.type,
+      userId: this.usuario.id,
+      communityId: this.idComunidad
+    };
+
+    this.peticion.post(`${this.peticion.urlReal}/services/create`, payload, token)
+      .then(() => {
+        Swal.fire('¡Éxito!', 'Servicio creado correctamente', 'success');
         this.cargarServicios();
-        this.ServicioCrear= {titulo: '', descripcion: '', categoria: '', id_creador: this.usuario.id, comunidad_id: this.idComunidad, estado: '', fecha: '2025-09-24'}
-      } 
-      }
-    ).catch((err:any)=>{
-      console.error("error al crear servicio", err),
-      Swal.fire({
-        title: 'Error',
-        text: err.error?.mensaje || 'Error al crear el servicio, terrible',
-        icon: 'error',
-        confirmButtonText: 'Cerrar'
+        this.modalRef.hide();
       })
-    })
-    }
+      .catch((err: any) => {
+        Swal.fire('Error', err.error?.mensaje || 'Error al crear el servicio', 'error');
+      });
   }
+
+  actualizarServicio() {
+    if (!this.formServicio.name.trim()) {
+      Swal.fire('Error', 'El nombre es obligatorio', 'warning'); return;
+    }
+    if (!this.formServicio.description.trim()) {
+      Swal.fire('Error', 'La descripción es obligatoria', 'warning'); return;
+    }
+    if (!this.formServicio.type) {
+      Swal.fire('Error', 'Debe seleccionar un tipo', 'warning'); return;
+    }
+
+    const token = localStorage.getItem('token') || "";
+
+    const payload: any = {
+      name: this.formServicio.name,
+      description: this.formServicio.description,
+      type: String(this.formServicio.type).toUpperCase().trim().replace(/ /g, "_")
+    };
+
+    this.peticion.put(
+      `${this.peticion.urlReal}/services/update/${this.formServicio.id}`,
+      payload,
+      token
+    )
+      .then(() => {
+        Swal.fire('Actualizado', 'Servicio actualizado correctamente', 'success');
+        this.cargarServicios();
+        this.modalRef.hide();
+      })
+      .catch(err => {
+        Swal.fire('Error', err.error?.message || 'No se pudo actualizar', 'error');
+      });
+  }
+
+  eliminarServicio(id: number) {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'No podrás recuperar este servicio',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.peticion.delete(`${this.peticion.urlReal}/services/delete/${id}`, {})
+          .then(() => {
+            Swal.fire('Eliminado', 'El servicio ha sido eliminado', 'success');
+            this.cargarServicios();
+          })
+          .catch((err) => {
+            Swal.fire('Error', err.error?.mensaje || 'Hubo un problema al eliminar', 'error');
+          });
+      }
+    });
+  }
+}

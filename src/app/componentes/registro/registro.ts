@@ -2,9 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Peticion } from '../../servicios/peticion';
-import { Router, RouterLink } from '@angular/router';
 import Swal from 'sweetalert2';
 import { userZodValidator } from '../../validators/user-zod.validator';
+import { Router } from '@angular/router';
 
 
 @Component({
