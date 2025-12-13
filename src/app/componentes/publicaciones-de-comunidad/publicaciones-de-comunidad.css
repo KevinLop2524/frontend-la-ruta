@@ -155,7 +155,7 @@ body {
   z-index: index;
   /*background-color: rgb(168, 168, 168);
   border: solid 1px rgb(168, 168, 168);*/
-  background-color: transparent;
+  background-color: white;
   border: solid 1px #d4464d;
   color: black
 }

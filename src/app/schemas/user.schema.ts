@@ -1,5 +1,18 @@
 import { z } from "zod";
 
+function esMayorDeEdad(fecha: string): boolean {
+  const fechaNacimiento = new Date(fecha);
+  const hoy = new Date();
+
+  const fechaMayorEdad = new Date(
+    fechaNacimiento.getFullYear() + 18,
+    fechaNacimiento.getMonth(),
+    fechaNacimiento.getDate()
+  );
+
+  return hoy >= fechaMayorEdad;
+}
+
 export const userSchema = z.object({
 
   // Obligatorio: mínimo 1 letra real (nada de espacios)
@@ -42,13 +55,14 @@ export const userSchema = z.object({
     .regex(/^[a-zA-Z0-9_]+$/, "El nombre de usuario solo puede tener letras, números o guiones bajos"),
 
   // Obligatoria, formato y fecha válida real
-  dateOfBirth: z.string()
-    .refine((v) => /^\d{4}-\d{2}-\d{2}$/.test(v), {
-      message: "La fecha debe tener el formato YYYY-MM-DD",
-    })
-    .refine((v) => !isNaN(Date.parse(v)), {
-      message: "La fecha no es válida",
-    }),
+   dateOfBirth: z.string()
+      .refine(value => !isNaN(Date.parse(value)), {
+        message: "La fecha no es válida"
+      })
+      .refine(value => esMayorDeEdad(value), {
+        message: "Debe ser mayor de edad"
+      }),
+  
 
   // Opcional, solo 2 valores permitidos
   gender: z.enum(["masculino", "femenino"])

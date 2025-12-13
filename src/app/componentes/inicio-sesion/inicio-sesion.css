@@ -146,8 +146,8 @@ div.row div {
 @media (max-width: 984px) {
 
     #imagenInicio    {
-        width: 250px;
-        height: 250px;
-        display: none;
+        width: 100px;
+        height: 100px;
+        display: auto;
     }
 }
