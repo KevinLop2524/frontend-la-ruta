@@ -9,12 +9,40 @@ import { userZodValidator } from '../../validators/user-zod.validator';
 
 @Component({
   selector: 'app-registro',
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule],
   templateUrl: './registro.html',
   styleUrl: './registro.css',
   providers: [userZodValidator]
 })
 export class Registro {
+
+
+  step: number = 1;
+
+  
+  formStep1 = {
+    email: '',
+    username: '',
+    password: '',
+    password2: ''
+  };
+
+  formStep2 = {
+    nombre: '',
+    apellido: '',
+    fechaNacimiento: '',
+    genero: ''
+  };
+
+
+  // Cambiar al paso 2
+  nextStep() {
+    this.step = 2;
+  }
+
+  prevStep() {
+    this.step = 1;
+  }
 
   usuario: any={
   firstName: '',
@@ -22,7 +50,8 @@ export class Registro {
   email: '',
   password: '',
   username: '',
-  dateOfBirth: ''
+  dateOfBirth: '',
+  gender: ''
 }
   contrasena2: String= "";
 
@@ -92,7 +121,8 @@ export class Registro {
           email: this.usuario.email,
           password: this.usuario.password,
           username: this.usuario.username,
-          dateOfBirth: this.usuario.dateOfBirth
+          dateOfBirth: this.usuario.dateOfBirth,
+          gender: this.usuario.gender
         }
       }
       this.peticion.post(post.host + post.path, post.payload).then((res: any) => {
@@ -112,7 +142,7 @@ export class Registro {
 
         Swal.fire({
           title: 'Error!',
-          text: 'El usuario no se pudo registrar'+ err.error.message,
+          text: 'El usuario no se pudo registrar '+ err.error.message,
           icon: 'error',
           confirmButtonText: 'Cerrar'
 

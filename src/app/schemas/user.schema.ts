@@ -65,7 +65,7 @@ export const userSchema = z.object({
   
 
   // Opcional, solo 2 valores permitidos
-  gender: z.enum(["masculino", "femenino"])
+  gender: z.enum(["M", "F"])
     .optional(),
 
   // Opcional, valida número en caso de existir
