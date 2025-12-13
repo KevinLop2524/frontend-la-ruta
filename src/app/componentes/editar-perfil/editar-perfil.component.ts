@@ -70,7 +70,7 @@ export class EditarPerfilComponent implements OnInit {
     let token = localStorage.getItem('token') || undefined;
     let get = {
       host: this.peticion.urlReal,
-      path: "/api/users/me",
+      path: "/users/me",
       payload: {
       }
     }
@@ -128,7 +128,7 @@ export class EditarPerfilComponent implements OnInit {
 
     let act = {
       host: this.peticion.urlReal,
-      path: '/api/users/update/' + this.usuario.id,
+      path: '/users/update/' + this.usuario.id,
       payload: {
         firstName: this.perfilEditar.firstName /*|| this.usuario.firstName*/,
         secondName: this.perfilEditar.secondName/* || this.usuario.secondName*/,

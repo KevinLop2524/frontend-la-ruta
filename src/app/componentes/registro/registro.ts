@@ -128,7 +128,7 @@ export class Registro {
       this.peticion.post(post.host + post.path, post.payload).then((res: any) => {
         console.log(res)
         console.log(post.payload)
-        if (res.success == true && res.message == "Usuario registado") {
+        if (res.token == null) {
           Swal.fire({
           title: 'Exito!',
           text: 'Usuario registrado exitosamente',

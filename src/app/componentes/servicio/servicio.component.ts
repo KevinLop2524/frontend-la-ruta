@@ -87,7 +87,7 @@ ngOnInit(): void {
   cargarServicios() {
     let get = {
       host: this.peticion.urlReal,
-      path: "/api/servicio/comunidad/" + this.idComunidad,
+      path: "/servicio/comunidad/" + this.idComunidad,
       payload: {}
     }
     this.peticion.get(get.host + get.path).then((res: any) => {
@@ -130,7 +130,7 @@ ngOnInit(): void {
 
     let post = {
       host: this.peticion.urlReal,
-      path: "/api/servicio/crear",
+      path: "/servicio/crear",
       payload:{
         nombre: this.ServicioCrear.titulo,
         descripcion: this.ServicioCrear.descripcion,

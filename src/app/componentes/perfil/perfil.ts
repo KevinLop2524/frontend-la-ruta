@@ -62,7 +62,7 @@ export class Perfil {
   obtenerFraseMotivacional(): void {
     let get = {
       host: this.peticion.urlReal,
-      path: "/api/frase"}
+      path: "/frase"}
       
     let token = localStorage.getItem('token') || undefined;
 
@@ -81,7 +81,7 @@ export class Perfil {
     let token = localStorage.getItem('token') || undefined;
     let get = {
       host: this.peticion.urlReal,
-      path: "/api/users/me",
+      path: "/users/me",
       payload: {
       }
     }
@@ -100,7 +100,7 @@ export class Perfil {
   cargarComunidades() {
     let get = {
       host: this.peticion.urlReal,
-      path: "/api/communities/creator/"+ this.usuario.id +"/active" ,
+      path: "/communities/creator/"+ this.usuario.id +"/active" ,
       payload: {
       }
     }
@@ -123,7 +123,7 @@ export class Perfil {
   eliminarComunidad() {
     let del = {
       host: this.peticion.urlReal,
-      path: "/api/communities/delete/" + this.comunidadseleccionada.id
+      path: "/communities/delete/" + this.comunidadseleccionada.id
     };
 
     this.peticion.delete(del.host + del.path, {}).then((res: any) => {
@@ -169,7 +169,7 @@ export class Perfil {
 
     let act = {
       host: this.peticion.urlReal,
-      path: '/api/communities/update/' + comunidad.id,
+      path: '/communities/update/' + comunidad.id,
       payload: {
         name: this.comunidadEditar.name,
         description: this.comunidadEditar.description,

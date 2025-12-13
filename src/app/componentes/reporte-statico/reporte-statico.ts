@@ -38,7 +38,7 @@ export class ReporteStatico implements OnInit {
   aplicarFiltros() {
     let post = {
       host: this.peticion.urlReal,
-      path: "/api/reportes/usuarios/lista",
+      path: "/reportes/usuarios/lista",
       payload: {},
       token: this.tokenLog
     }
@@ -69,7 +69,7 @@ export class ReporteStatico implements OnInit {
   reporte() {
   this.peticion
   .downloadPdfPost(
-    this.peticion.urlReal + "/api/reportes/usuarios/pdf",
+    this.peticion.urlReal + "/reportes/usuarios/pdf",
     this.filtros,
     this.tokenLog
   )

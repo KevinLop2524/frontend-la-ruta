@@ -52,7 +52,7 @@ export class CargaDatos {
 
     const post = {
       host: this.peticion.urlReal,
-      path: "/api/v1/admin/bulk-upload",
+      path: "/v1/admin/bulk-upload",
       payload: formData   
     };
 

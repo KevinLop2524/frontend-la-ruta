@@ -57,7 +57,7 @@ export class ComunidadComponent implements OnInit {
   cargarComunidades() {
     let get = {
       host: this.peticion.urlReal,
-      path: "/api/communities/active",
+      path: "/communities/active",
       payload: {
       }
     }
@@ -85,7 +85,7 @@ export class ComunidadComponent implements OnInit {
     let token = localStorage.getItem('token') || undefined;
     let get = {
       host: this.peticion.urlReal,
-      path: "/api/users/me",
+      path: "/users/me",
       payload: {
       }
     }
@@ -121,7 +121,7 @@ export class ComunidadComponent implements OnInit {
 
     let post = {
       host: this.peticion.urlReal,
-      path: "/api/communities/create",
+      path: "/communities/create",
       payload: {
         category: this.nuevaComunidad.category,
         name: this.nuevaComunidad.name,
@@ -162,7 +162,7 @@ export class ComunidadComponent implements OnInit {
   eliminarComunidad() {
     let del = {
       host: this.peticion.urlReal,
-      path: "/api/communities/delete/" + this.comunidadseleccionada.id
+      path: "/communities/delete/" + this.comunidadseleccionada.id
     };
 
     this.peticion.delete(del.host + del.path, {}).then((res: any) => {
@@ -209,7 +209,7 @@ export class ComunidadComponent implements OnInit {
 
     let act = {
       host: this.peticion.urlReal,
-      path: '/api/communities/update/' + comunidad.id,
+      path: '/communities/update/' + comunidad.id,
       payload: {
         category: this.comunidadEditar.category,
         name: this.comunidadEditar.name,
@@ -239,7 +239,7 @@ export class ComunidadComponent implements OnInit {
   verificarMembresia(comunidad: any) {
     let get = {
       host: this.peticion.urlReal,
-      path: "/api/communities/" + comunidad.id + "/is-member/" + this.usuario.id
+      path: "/communities/" + comunidad.id + "/is-member/" + this.usuario.id
     }
     this.peticion.get(get.host + get.path).then((res: any) => {
       console.log("Es miembro?:" + res.isMember);
@@ -259,7 +259,7 @@ export class ComunidadComponent implements OnInit {
   UnirmeComunidad(comunidadId: any) {
     let post = {
       host: this.peticion.urlReal,
-      path: "/api/communities/" + comunidadId + "/join",
+      path: "/communities/" + comunidadId + "/join",
       payload: {
         userId: this.usuario.id
       }

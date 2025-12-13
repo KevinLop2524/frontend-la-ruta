@@ -69,7 +69,7 @@ export class BlogPrincipal implements OnInit {
   }
 
   cargarPublicaciones() {
-    const url = this.peticion.urlReal + "/api/publicaciones"; // GET correcto
+    const url = this.peticion.urlReal + "/publicaciones"; // GET correcto
     this.peticion.get(url).then((res: any) => {
       this.publicaciones = res;
       this.cdr.detectChanges();
@@ -109,7 +109,7 @@ export class BlogPrincipal implements OnInit {
     }
 
     const token = localStorage.getItem('token') || undefined;
-    const url = this.peticion.urlReal + "/api/publicaciones";
+    const url = this.peticion.urlReal + "/publicaciones";
 
     this.peticion.post(url, this.nuevaPublicacion, token).then((res: any) => {
       Swal.fire({
@@ -144,7 +144,7 @@ export class BlogPrincipal implements OnInit {
   }
 
   eliminarPublicacion(idSeleccionado: number) {
-    const url = this.peticion.urlReal + "/api/publicaciones/" + idSeleccionado;
+    const url = this.peticion.urlReal + "/publicaciones/" + idSeleccionado;
     this.peticion.delete(url, {}).then(() => {
       Swal.fire({
         title: 'Eliminada',
@@ -183,7 +183,7 @@ export class BlogPrincipal implements OnInit {
       return;
     }
     const token = localStorage.getItem('token') || undefined;
-    const url = this.peticion.urlReal + '/api/publicaciones/' + publicacion.id;
+    const url = this.peticion.urlReal + '/publicaciones/' + publicacion.id;
 
     this.peticion.put(url, this.publicacionEditar, token).then(() => {
       Swal.fire({

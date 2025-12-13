@@ -104,7 +104,7 @@ abrirModalEliminar(publicacion: any) {
 
     let get = {
       host: this.peticion.urlReal,
-      path: "/api/communities/get/" + this.idComunidad
+      path: "/communities/get/" + this.idComunidad
     }
 
     this.peticion.get(get.host + get.path, token).then((res: any) => {
@@ -118,7 +118,7 @@ abrirModalEliminar(publicacion: any) {
     let token = localStorage.getItem('token') || undefined;
     let get = {
       host: this.peticion.urlReal,
-      path: "/api/users/me",
+      path: "/users/me",
       payload: {
       }
     }
@@ -135,7 +135,7 @@ abrirModalEliminar(publicacion: any) {
   cargarPublicaciones() {
     let get = {
       host: this.peticion.urlReal,
-      path: "/api/posts/community/" + this.idComunidad,
+      path: "/posts/community/" + this.idComunidad,
     }
 
     this.peticion.get(get.host + get.path).then((res: any) => {
@@ -168,7 +168,7 @@ abrirModalEliminar(publicacion: any) {
 
 
     this.peticion.postFormData(
-      this.peticion.urlReal + '/api/posts/communities/' + this.idComunidad,
+      this.peticion.urlReal + '/posts/communities/' + this.idComunidad,
       formData,
       token
     ).then((res: any) => {
@@ -198,7 +198,7 @@ abrirModalEliminar(publicacion: any) {
     let token = localStorage.getItem('token') || undefined;
 
     this.peticion.post(
-      this.peticion.urlReal + '/api/posts/' + idPost + '/like',
+      this.peticion.urlReal + '/posts/' + idPost + '/like',
       {},
       token
     ).then((res: any) => {
@@ -210,7 +210,7 @@ abrirModalEliminar(publicacion: any) {
 
       let del={
         host: this.peticion.urlReal,
-        patch: '/api/posts/'+idPost+'/like'
+        patch: '/posts/'+idPost+'/like'
       }
       if(err.error.message== "Ya has dado like a esta publicación"){
 
@@ -237,7 +237,7 @@ abrirModalEliminar(publicacion: any) {
   actualizarPublicacion(){
     let act={
       host: this.peticion.urlReal,
-      patch: '/api/posts/'+ this.publicacionSeleccionada.id,
+      patch: '/posts/'+ this.publicacionSeleccionada.id,
       payload: {
         contenido: this.contenidoEditado
       }
@@ -265,7 +265,7 @@ abrirModalEliminar(publicacion: any) {
     const id= this.publicacionSeleccionada.id;
 
     let del={
-      path: '/api/posts/'+ id,
+      path: '/posts/'+ id,
       host: this.peticion.urlReal
     };
 
@@ -296,7 +296,7 @@ abrirModalEliminar(publicacion: any) {
 
     let pos={
       host: this.peticion.urlReal,
-      patch: '/api/posts/'+this.publicacionSeleccionada.id+'/comments',
+      patch: '/posts/'+this.publicacionSeleccionada.id+'/comments',
       payload: {
         contenido: this.nuevoComentario
       }
@@ -328,7 +328,7 @@ abrirModalEliminar(publicacion: any) {
 
     let get= {
       host: this.peticion.urlReal,
-      patch: '/api/posts/'+this.publicacionSeleccionada.id+ '/comments'
+      patch: '/posts/'+this.publicacionSeleccionada.id+ '/comments'
     }
 
     this.peticion.get(get.host+ get.patch).then((res: any)=>{
