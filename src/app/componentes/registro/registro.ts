@@ -114,7 +114,7 @@ export class Registro {
       } else {
       let post = {
         host: this.peticion.urlReal,
-        path: "/api/auth/register",
+        path: "/auth/register",
         payload: {
           firstName: this.usuario.firstName,
           lastName: this.usuario.lastName,
