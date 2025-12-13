@@ -19,7 +19,7 @@ export class InicioSesion {
   iniciar() {
     let post = {
       host: this.peticion.urlReal,
-      path: "/api/auth/login",
+      path: "/auth/login",
       payload: {  
         identifier: this.identifier,
         password: this.contrasena
@@ -43,13 +43,11 @@ export class InicioSesion {
       }
     }).catch((err: any) => {
       console.log(post.payload)
-      if (err.status==400) {
         Swal.fire({
           title: "Error",
-          text: err.error.message,
+          text: "Revisa los datos ingresados",
           icon: "error"
         });
-      }
     })
   }
 }

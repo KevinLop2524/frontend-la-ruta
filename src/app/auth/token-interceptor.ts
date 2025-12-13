@@ -8,6 +8,10 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const token = localStorage.getItem('token');
 
+  if (req.url.includes('/api/auth/')) {
+    return next(req);
+  }
+
   if (token) {
     req = req.clone({
       setHeaders: { Authorization: `Bearer ${token}` }
@@ -24,3 +28,4 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
     })
   );
 };
+

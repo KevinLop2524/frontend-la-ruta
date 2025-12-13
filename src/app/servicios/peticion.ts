@@ -9,7 +9,7 @@ export class Peticion {
 
   constructor(private http: HttpClient) { }
 
-  urlReal: string = "http://localhost:8080"
+  urlReal: string = "https://laruta.kolisevm.online/api"
   requestOptions: any = {}
 
   post = (url: string, payload: {}, token?: string) => {
