@@ -15,12 +15,10 @@
   <div class="notes-section" *ngIf="servicios.length > 0">
     <div class="saved-notes service-card" *ngFor="let servicio of servicios">
 
-      <!-- Imagen del servicio (placeholder por ahora) -->
       <div class="service-image">
         <img src="https://images.unsplash.com/photo-1518611012118-f0c5a4c0bf5d" alt="Imagen del servicio" />
       </div>
 
-      <!-- Contenido -->
       <div class="service-content">
         <h4>{{ servicio.name }}</h4>
         <p class="service-description">
@@ -28,11 +26,11 @@
         </p>
 
         <div class="service-actions">
-          <button class="btn btn-outline-secondary btn-sm">
+          <button class="btn btn-outline-primary btn-sm" [routerLink]="['/servicios-graficos', servicio.userId]">
             Ver detalles
           </button>
 
-          <!-- menú creador -->
+
           <div class="post-menu-wrapper" *ngIf="comunidad.creatorId == usuario.id">
             <button class="btn btn-link text-dark fs-4 p-0" (click)="toggleMenu(servicio.id)">
               ⋮

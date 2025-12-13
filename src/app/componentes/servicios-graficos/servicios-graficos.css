@@ -1,0 +1,14 @@
+.chart-wrapper {
+  max-width: 500px;
+  height: 300px;
+  margin: 0 auto;
+  padding: 15px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
