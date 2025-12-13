@@ -15,7 +15,10 @@
       <img class="comm-img" [src]="s.imageUrl || 'https://images.unsplash.com/photo-1518611012118-f0c5a4c0bf5d'">
       <h3>{{ s.name }}</h3>
       <p>{{ s.description }}</p>
-      <button class="btn-more">Ver más</button>
+      <button class="btn-more" [routerLink]="['/servicios', idComunidad]">
+        Ver más
+      </button>
+
     </div>
   </div>
 </main>
@@ -41,15 +44,15 @@
           <textarea [(ngModel)]="formServicio.description" class="form-control"></textarea>
         </div>
 
-         <div class="mb-3">
-    <label class="form-label">Asignar servicio a</label>
-    <select [(ngModel)]="formServicio.userId" class="form-select">
-      <option value="">Seleccione un usuario...</option>
-      <option *ngFor="let u of miembrosComunidad" [value]="u.id">
-        {{ u.username }}
-      </option>
-    </select>
-  </div>
+        <div class="mb-3">
+          <label class="form-label">Asignar servicio a</label>
+          <select [(ngModel)]="formServicio.userId" class="form-select">
+            <option value="">Seleccione un usuario...</option>
+            <option *ngFor="let u of miembrosComunidad" [value]="u.id">
+              {{ u.username }}
+            </option>
+          </select>
+        </div>
 
         <div class="mb-3">
           <label class="form-label">Tipo</label>

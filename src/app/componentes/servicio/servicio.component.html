@@ -2,11 +2,12 @@
 
 <main class="container-main">
 
-  <div *ngIf="this.usuario.id == this.comunidad.creatorId" class="d-flex justify-content-end mb-3">
-    <a [routerLink]="['/crear-servicio', idComunidad]" class="btn btn-outline-danger btn-lg">
-      Ver servicios
-    </a>
+  <div *ngIf="usuario.id === comunidad.creatorId" class="d-flex justify-content-end mb-3">
+    <button id="createServiceButton" class="btn btn-danger btn-lg" (click)="abrirCrear()">
+      ➕ Crear Servicio
+    </button>
   </div>
+
 
   <h1 class="card-title" *ngIf="servicios.length > 0">Servicios de la comunidad</h1>
   <h1 class="card-title" *ngIf="servicios.length === 0">No hay servicios disponibles</h1>
@@ -51,6 +52,17 @@
           <label class="form-label">Descripción</label>
           <textarea [(ngModel)]="formServicio.description" class="form-control"></textarea>
         </div>
+
+        <div class="mb-3" *ngIf="usuario.id === comunidad.creatorId">
+          <label class="form-label">Asignar servicio a</label>
+          <select [(ngModel)]="formServicio.userId" class="form-select">
+            <option value="">Seleccione un usuario...</option>
+            <option *ngFor="let u of miembrosComunidad" [value]="u.id">
+              {{ u.username }}
+            </option>
+          </select>
+        </div>
+
 
         <div class="mb-3">
           <label class="form-label">Tipo</label>

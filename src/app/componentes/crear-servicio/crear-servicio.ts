@@ -6,6 +6,7 @@ import { Footer } from "../footer/footer";
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import Swal from 'sweetalert2';
 import { Peticion } from '../../servicios/peticion';
 
@@ -14,7 +15,7 @@ import { Peticion } from '../../servicios/peticion';
   templateUrl: './crear-servicio.html',
   styleUrls: ['./crear-servicio.css'],
   standalone: true,
-  imports: [Header, Footer, FormsModule, CommonModule]
+  imports: [Header, Footer, FormsModule, CommonModule, RouterLink]
 })
 export class CrearServicio implements OnInit {
 
@@ -160,10 +161,8 @@ export class CrearServicio implements OnInit {
         this.cargarServiciosDeComunidad();
       })
       .catch(err => {
-        Swal.fire("Error", err.error?.mensaje || "Error al crear el servicio", "error");
+        Swal.fire("Error", err.error.message || "Error al crear el servicio", "error");
       });
-      console.log("Payload enviado:", payload);
-
   }
 
   cargarServiciosDeComunidad() {

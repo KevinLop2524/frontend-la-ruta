@@ -124,3 +124,16 @@ textarea {
 .custom-menu .dropdown-item:hover {
   background-color: #f5f5f5;
 }
+
+
+#createServiceButton{
+  position: fixed;
+  bottom: 100px;  
+  right: 30px;   
+  z-index: index;
+  /*background-color: rgb(168, 168, 168);
+  border: solid 1px rgb(168, 168, 168);*/
+  background-color: rgb(238, 67, 67);
+  border: solid 1px #d4464d;
+  color: black
+}

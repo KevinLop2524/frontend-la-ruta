@@ -11,7 +11,6 @@ import { AuthGuard } from './guards/auth-guard';
 import { EditarPerfilComponent } from './componentes/editar-perfil/editar-perfil.component';
 import { PublicacionesDeComunidad } from './componentes/publicaciones-de-comunidad/publicaciones-de-comunidad';
 import { CargaDatos } from './componentes/carga-datos/carga-datos';
-import { CrearServicio } from './componentes/crear-servicio/crear-servicio';
 
 export const routes: Routes = [
   { path: 'login', loadComponent: () => import('./componentes/inicio-sesion/inicio-sesion').then(m => m.InicioSesion) },
@@ -26,6 +25,5 @@ export const routes: Routes = [
   { path: 'BlogAdmin', component: ReporteStatico },
   { path: 'editarPerfil', component: EditarPerfilComponent, canActivate: [AuthGuard] },
   { path: 'cargaDatos', component: CargaDatos },
-  { path: 'publicaciones/:id', component: PublicacionesDeComunidad},
-  { path: 'crear-servicio/:id', component: CrearServicio, canActivate: [AuthGuard] }
+  { path: 'publicaciones/:id', component: PublicacionesDeComunidad}
 ];
