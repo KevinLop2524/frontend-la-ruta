@@ -1,132 +1,223 @@
 <app-header></app-header>
-
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-  <div class="container">
-    <a class="navbar-brand fw-bold" href="#">Community Name</a>
-    <div>
-      <button class="btn btn-primary" (click)="openModal()">Crear publicación</button>
+    <div class="container">
+        <a class="navbar-brand fw-bold">{{comunidad.name}}</a><br>
+        <h5 class="navbar-brand fw-bold" id="descripcionComunidad">{{comunidad.description}}</h5>
+
+        <div>
+            <button class="btn btn-primary create-post-btn" (click)="abrirModal()" id="btnEditarPost">Crear
+                publicación</button>
+        </div>
+        <div>
+            <button class="btn btn-primary ver-mas-btn" [routerLink]="['/servicios', idComunidad]">
+                Mis servicios
+            </button>
+        </div>
     </div>
-  </div>
 </nav>
-
 <main class="container my-4">
-  <section id="feed" class="row gy-3">
+    <section id="feed" class="row gy-3">
 
-    <div class="col-12" *ngFor="let post of posts">
-      <div class="post-card">
+        <!-- PUBLICACIÓN DE EJEMPLO -->
+        <div class="col-12 col-md-12 col-lg-12">
+            <div *ngFor="let publicacion of publicaciones" class="post-card">
 
-        <!-- HEADER -->
-        <div class="post-header">
-          <img class="avatar" [src]="post.avatar" alt="avatar">
+                <div class="post-header">
+                    <img class="avatar" src="imagenes/static/Fotoperfil.jpg">
 
-          <div>
-            <div class="username">{{ post.username }}</div>
-            <div class="post-date">{{ post.date }}</div>
-          </div>
+                    <div>
+                        <div class="username">{{publicacion.authorName}}</div>
+                        <div class="post-date">{{publicacion.fechaCreacion}}</div>
+                    </div>
 
-          <!-- MENÚ 3 PUNTOS -->
-          <div class="post-menu-wrapper">
+                    <div class="post-menu-wrapper" *ngIf="this.usuario.id== publicacion.authorId">
+                        <button class="post-menu-btn" (click)="toggleMenu(publicacion.id)">⋮</button>
 
-            <button class="post-menu-btn" (click)="toggleMenu(post)">⋮</button>
+                        <div class="custom-menu" *ngIf="menuAbierto === publicacion.id">
+                            <button class="dropdown-item btn-edit" (click)="abrirModalEditar(publicacion)"
+                                data-bs-toggle="modal" data-bs-target="#modalEditar">
+                                ✏️ Editar
+                            </button>
 
-            <!-- MENÚ -->
-            <div
-              class="custom-menu"
-              *ngIf="post.menuOpen"
-            >
-              <button class="dropdown-item btn-edit">✏️ Editar</button>
-              <button class="dropdown-item btn-delete">🗑️ Eliminar</button>
+                            <button class="dropdown-item btn-delete" data-bs-target="#modalEliminar"
+                                data-bs-toggle="modal" (click)="abrirModalEliminar(publicacion)">🗑️ Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="post-content mt-3" name="contenido">
+                    {{publicacion.contenido}}
+                </div>
+
+                <img class="post-image" [src]="publicacion.mediaUrl">
+
+                <div class="post-actions">
+                    <button class="action-btn" (click)="like(publicacion.id)">❤ {{publicacion.likes}}</button>
+                    <button class="action-btn" (click)="abrirComentarios(publicacion)">💬 Comentar</button>
+
+                    <button class="action-btn">↗ Compartir</button>
+                </div>
+
             </div>
-
-          </div>
-
         </div>
 
-        <!-- CONTENIDO -->
-        <div class="post-content mt-3">
-          {{ post.content }}
-        </div>
-
-        <!-- IMAGEN -->
-        <img *ngIf="post.image" class="post-image" [src]="post.image" alt="post image">
-
-        <!-- ACCIONES -->
-        <div class="post-actions">
-          <button class="action-btn">❤ {{ post.likes }}</button>
-          <button class="action-btn">💬 Comentar</button>
-          <button class="action-btn">↗ Compartir</button>
-        </div>
-
-      </div>
-    </div>
-
-  </section>
+    </section>
 </main>
 
-<!-- MODAL PUBLICACIÓN -->
-<div class="modal fade" tabindex="-1" #modalPublicacion>
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content rounded-4 shadow border-0">
+<!-- ✅ MODAL CREAR PUBLICACIÓN (CONTROLADO DESDE TS) -->
+<div class="modal fade show" *ngIf="modalAbierto" style="display: block;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 shadow border-0">
 
-      <div class="modal-header border-0">
-        <h5 class="modal-title">Crear publicación</h5>
-        <button type="button" class="btn-close" (click)="closeModal()"></button>
-      </div>
-
-      <div class="modal-body">
-        <form>
-
-          <!-- CONTENIDO -->
-          <div class="mb-3">
-            <label class="form-label">Contenido</label>
-            <textarea
-              [(ngModel)]="newPostContent"
-              name="contenido"
-              class="form-control form-control-lg"
-              rows="4"
-              placeholder="Comparte algo..."
-            ></textarea>
-          </div>
-
-          <!-- IMAGEN -->
-          <div class="mb-3">
-            <label class="form-label">Imagen</label>
-
-            <input
-              type="file"
-              #fileInput
-              class="d-none"
-              accept="image/*"
-              (change)="onImageSelect($event)"
-            >
-
-            <div class="drop-zone" (click)="fileInput.click()">
-              <div class="drop-zone-content">
-                <svg width="32" height="32" viewBox="0 0 24 24">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                  <polyline points="17 8 12 3 7 8"></polyline>
-                  <line x1="12" y1="3" x2="12" y2="15"></line>
-                </svg>
-                <p>Haz clic para subir una imagen</p>
-              </div>
+            <div class="modal-header border-0">
+                <h5 class="modal-title">Crear publicación</h5>
+                <button type="button" class="btn-close" (click)="cerrarModal()"></button>
             </div>
 
-            <div *ngIf="imagePreview" class="mt-3">
-              <img [src]="imagePreview" class="img-fluid rounded" style="max-height: 200px;">
+            <div class="modal-body">
+                <form>
+
+                    <div class="mb-3">
+                        <label class="form-label">Contenido</label>
+                        <textarea class="form-control form-control-lg" rows="4" placeholder="Comparte algo..."
+                            [(ngModel)]="contenido" name="contenido"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Imagen</label>
+
+                        <div class="drop-zone">
+                            <input class="drop-zone-content" type="file" name="imagenSeleccionada"
+                                (change)="onFileSelected($event)">
+                            <p>Haz clic para subir una imagen</p>
+                        </div>
+
+                    </div>
+
+                </form>
             </div>
 
-          </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-link text-muted" (click)="cerrarModal()">Cancelar</button>
+                <button type="button" class="btn btn-primary" (click)="crearPublicacion()">Publicar</button>
+            </div>
 
-        </form>
-      </div>
-
-      <div class="modal-footer border-0">
-        <button type="button" class="btn btn-link text-muted" (click)="closeModal()">Cancelar</button>
-        <button type="button" class="btn btn-primary" (click)="publish()">Publicar</button>
-      </div>
-
+        </div>
     </div>
-  </div>
 </div>
+<!--Modal eliminar publicación-->
+<div class="modal fade" id="modalEliminar" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+
+            <div class="modal-header">
+                <h5 class="modal-title">¿Estas seguro de eliminar la publicación?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+
+            <div class="modal-body">
+                <p>Vas a eliminar <strong>{{publicacionSeleccionada?.contenido}}, esta acción no tiene marcha atras
+                        y
+                        no se podran recuperar los datos</strong>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" data-bs-dismiss="modal">Cancelar, desisto de mi
+                    acción</button>
+                <button class="btn btn-danger" (click)="eliminarPublicacion()" data-bs-dismiss="modal"
+                    name="eliminar">Estoy
+                    seguro, eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL COMENTARIOS -->
+<div class="modal fade" id="modalComentarios" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Comentarios</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <!-- CONTENIDO DEL POST -->
+                <div class="mb-3">
+                    <strong>{{publicacionSeleccionada?.authorName}}</strong>
+                    <p>{{publicacionSeleccionada?.contenido}}</p>
+                </div>
+
+                <hr>
+
+                <!-- LISTA DE COMENTARIOS -->
+                <div *ngIf="comentarios.length > 0; else sinComentarios">
+                    <div *ngFor="let comentario of comentarios" class="mb-3 p-2 border rounded">
+                        <strong>{{comentario.authorName}}</strong>
+                        <p class="m-0">{{comentario.contenido}}</p>
+                    </div>
+                </div>
+
+                <ng-template #sinComentarios>
+                    <p class="text-muted">No hay comentarios aún.</p>
+                </ng-template>
+
+                <hr>
+
+                <!-- CREAR COMENTARIO -->
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Escribe un comentario..."
+                        [(ngModel)]="nuevoComentario">
+                    <button class="btn btn-primary" (click)="crearComentario()">Enviar</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL EDITAR PUBLICACIÓN -->
+<div class="modal fade" id="modalEditar" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 shadow border-0">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Editar publicación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="mb-3">
+                    <label class="form-label">Contenido</label>
+                    <textarea class="form-control form-control-lg"
+                        rows="4"
+                        [(ngModel)]="contenidoEditado"
+                        name="contenidoEditado">
+                    </textarea>
+                </div>
+<!--
+                <div class="mb-3">
+                    <label class="form-label">Imagen</label>
+                    <input type="file" class="form-control"
+                        (change)="onFileSelectedEditar($event)">
+                </div>
+
+            </div>-->
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button class="btn btn-primary" (click)="actualizarPublicacion()" data-bs-dismiss="modal">
+                    Guardar cambios
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 
 <app-footer></app-footer>
