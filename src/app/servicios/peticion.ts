@@ -9,7 +9,7 @@ export class Peticion {
 
   constructor(private http: HttpClient) { }
 
-  urlReal: string = "http://localhost:8080"
+  urlReal: string = "http://104.131.66.231:8080"
   requestOptions: any = {}
 
   post = (url: string, payload: {}, token?: string) => {
