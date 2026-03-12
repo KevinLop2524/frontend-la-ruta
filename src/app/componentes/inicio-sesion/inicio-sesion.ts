@@ -21,13 +21,13 @@ export class InicioSesion {
       host: this.peticion.urlReal,
       path: "/api/auth/login",
       payload: {
-        apodo: this.apodo,
-        contrasena: this.contrasena
+        identifier: this.apodo,
+        password: this.contrasena
       }
     }
     this.peticion.post(post.host + post.path, post.payload).then((res: any) => {
 
-      console.log(res)
+      console.log(post.payload)
       if (res.success==false) {
         Swal.fire({
           title: "Error ",
@@ -49,6 +49,7 @@ export class InicioSesion {
       }
     }).catch((err: any) => {
       console.log(err)
+      console.log("error")
       console.log(post.payload)
     })
   }
