@@ -1,42 +1,66 @@
+<div class="lr-root">
 
-<div class="container">
-  <div class="row g-4 align-items-center justify-content-center">
+  <div class="lr-left">
+    <div class="lr-bg"></div>
 
-    <div class="col-12 col-lg-6 text-center">
-      <img src="/imagenes/logos/New_Logo_Modo_Claro.png" alt="Logo La Ruta" class="img-fluid"
-        id="imagenInicio">
+    <div class="lr-logo">
+      <img src="imagenes/logos/New_Logo_Modo_Claro.png" alt="Logo La Ruta" class="lr-logo-img">
     </div>
 
-    <div class="col-12 col-lg-5">
-      <div class="card py-4 px-3 px-md-5 color-fondo shadow">
-        <form id="IS-FV-datos" class="row g-3 justify-content-center">
-
-          <div class="col-12 text-center">
-            <h1 id="textoInicio" class="mb-3">Iniciar sesión</h1>
-          </div>
-
-          <div class="col-12 col-sm-9 col-md-10">
-            <input type="text" id="IS-FV-usuario" class="form-control" placeholder="Apodo o correo" [(ngModel)]="identifier" name="identifier" required>
-          </div>
-
-          <div class="col-12 col-sm-9 col-md-10">
-            <input type="password" id="IS-FV-contrasena" class="form-control" placeholder="Contraseña" [(ngModel)]="contrasena" name="contrasena" required>
-          </div>
-
-          <div class="col-12 text-center mt-3">
-            <button type="button" class="btn btn-primary px-5 py-2" (click)="iniciar()">
-              Iniciar Sesión
-            </button>
-          </div>
-          <div class="col-12 text-center mt-3" id="link">
-            <a routerLink="/" class="recordar-link nuevoUsuario">¿Olvidaste tu cuenta?</a>
-          </div>
-          <div class="col-12 text-center mt-3" id=link>
-            <a routerLink="/registro" class="nuevoUsuario">Crea una cuenta</a>
-          </div>
-
-        </form>
+    <div class="lr-hero">
+      <div class="lr-hero-title">
+        <span class="white">Forja tu<br></span>
+        <span class="orange">mejor<br></span>
+        <span class="white">versión.</span>
       </div>
+      <div class="lr-hero-sub">Fitness &amp; Comunidad</div>
     </div>
+  </div>
+
+  <div class="lr-right">
+    <h1 class="lr-title">Bienvenido</h1>
+    <p class="lr-subtitle">Inicia sesión para continuar</p>
+
+    <form id="IS-FV-datos" class="lr-form">
+
+      <div class="lr-field">
+        <label class="lr-label" for="IS-FV-usuario">Apodo</label>
+        <input
+          type="text"
+          id="IS-FV-usuario"
+          class="lr-input"
+          placeholder="Tu apodo"
+          [(ngModel)]="identifier"
+          name="identifier"
+          required>
+      </div>
+
+      <div class="lr-field">
+        <label class="lr-label" for="IS-FV-contrasena">Contraseña</label>
+        <input
+          type="password"
+          id="IS-FV-contrasena"
+          class="lr-input"
+          placeholder="••••••••"
+          [(ngModel)]="contrasena"
+          name="contrasena"
+          required>
+      </div>
+
+      <button type="button" class="lr-btn" (click)="iniciar()">
+        Iniciar sesión
+      </button>
+
+    </form>
+
+
+
+    <hr class="lr-divider" />
+
+    <p class="lr-register">
+      ¿Nuevo aquí?
+      <a routerLink="/registro" class="lr-register-link">Crea una cuenta</a>
+    </p>
+
   </div>
 </div>

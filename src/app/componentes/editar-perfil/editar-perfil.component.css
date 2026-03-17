@@ -1,160 +1,237 @@
-.custom-navbar {
-  background: linear-gradient(90deg, #f53730, #ff6f61);
-  padding: 10px 20px;
-  box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=DM+Sans:wght@300;400;500&display=swap');
+
+/* ── Página ── */
+.ep-page {
+  min-height: 100vh;
+  background: #0f0f0f;
+  background-image: radial-gradient(ellipse at bottom right, rgba(255, 90, 0, 0.12) 0%, transparent 55%);
+  font-family: 'DM Sans', sans-serif;
+  padding: 40px 0 60px;
 }
 
-.logo-navbar {
-  width: 80px;
-  height: 100px;
-  object-fit: cover;
-}
-
-.navbar-nav .nav-link {
-  color: #fff !important;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.navbar-nav .nav-link:hover {
-  color: #ffe082 !important;
-  transform: translateY(-2px);
-}
-
-.perfil-container {
+/* ── Header ── */
+.ep-header {
   max-width: 700px;
-  margin: 40px auto;
-  padding: 30px;
-  background: #fff;
-  border-radius: 15px;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.1);
-  text-align: center;
+  margin: 0 auto 24px;
 }
 
-.perfil-foto {
-  width: 130px;
-  height: 130px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 4px solid #f53730;
-  margin-bottom: 15px;
-  transition: all 0.3s ease;
+.ep-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 36px;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 0 4px;
+  line-height: 1;
 }
 
-.perfil-foto:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-}
-
-.perfil-nombre {
-  font-size: 1.6rem;
-  font-weight: bold;
-  margin-bottom: 20px;
-  color: #333;
-}
-
-.form-group {
-  margin-bottom: 18px;
-  text-align: left;
-}
-
-.form-group label {
-  font-weight: 500;
+.ep-subtitle {
+  font-size: 13px;
   color: #444;
-}
-
-.form-control {
-  border-radius: 10px;
-  padding: 10px 14px;
-  border: 1px solid #ddd;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.form-control:focus {
-  border-color: #f53730;
-  box-shadow: 0 0 8px rgba(245, 55, 48, 0.3);
-  outline: none;
-}
-
-textarea.form-control {
-  resize: none;
-}
-
-.btn-guardar {
-  background: linear-gradient(135deg, #f53730, #ff6f61);
-  border: none;
-  border-radius: 12px;
-  padding: 12px 25px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #fff;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  width: 100%;
-}
-
-.btn-guardar:hover {
-  background: linear-gradient(135deg, #ff6f61, #f53730);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(0,0,0,0.2);
-}
-
-.btn-guardar:active {
-  transform: scale(0.96);
-}
-
-#btnTheme {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  z-index: 1100;
-  border: none;
-  border-radius: 50%;
-  width: 55px;
-  height: 55px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  background: linear-gradient(135deg, #f53730, #ff6f61);
-  color: #fff;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-#btnTheme:hover {
-  transform: scale(1.1) rotate(10deg);
-  background: linear-gradient(135deg, #ff6f61, #f53730);
-  box-shadow: 0 6px 14px rgba(0,0,0,0.3);
-}
-
-#btnTheme:active {
-  transform: scale(0.95);
-}
-
-footer, .site-footer, .footer, #footer {  
-  background-color:#F53730;
-  color: #fff;
-  text-align: center;
-  padding: 16px 10px;
-  width: 100%;
-  margin-top: 40px;   
-}
-
-.footer-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-}
-
-.footer-brand, .footer-heading, .contact-list {
   margin: 0;
 }
 
-.footer-bottom {
-  margin-top: 10px;
-  font-size: 0.9rem;
-  opacity: 0.9;
+/* ── Card ── */
+.ep-card {
+  background: #161616;
+  border: 1px solid #222;
+  border-radius: 14px;
+  padding: 36px 40px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* ── Foto de perfil ── */
+.ep-photo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 4px;
+}
+
+.ep-photo {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #FF5A00;
+  background: #1a1a1a;
+  display: block;
+  flex-shrink: 0;
+}
+
+.ep-photo-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.ep-photo-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  color: #fff;
+  line-height: 1;
+}
+
+.ep-photo-handle {
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.ep-photo-btn {
+  padding: 7px 16px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  background: transparent;
+  color: #FF5A00;
+  border: 1px solid rgba(255, 90, 0, 0.3);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  font-family: 'DM Sans', sans-serif;
+  width: fit-content;
+}
+
+.ep-photo-btn:hover {
+  background: #FF5A00;
+  color: #0d0d0d;
+}
+
+/* ── Divisor ── */
+.ep-divider {
+  border: none;
+  border-top: 1px solid #1e1e1e;
+  margin: 24px 0;
+}
+
+/* ── Label de sección ── */
+.ep-section-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #FF5A00;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+}
+
+/* ── Grid de campos ── */
+.ep-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.ep-grid--4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/* ── Campos ── */
+.ep-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ep-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #555;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.ep-input {
+  width: 100%;
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+  padding: 11px 14px;
+  color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.ep-input::placeholder { color: #333; }
+.ep-input:focus { border-color: #FF5A00; }
+
+.ep-input option {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+.ep-input::-webkit-calendar-picker-indicator {
+  filter: invert(1) opacity(0.4);
+  cursor: pointer;
+}
+
+/* ── Acciones ── */
+.ep-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.ep-btn-save {
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  background: #FF5A00;
+  color: #0d0d0d;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.ep-btn-save:hover { background: #e64e00; }
+.ep-btn-save:active { transform: scale(0.98); }
+
+.ep-btn-cancel {
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  background: transparent;
+  color: #555;
+  border: 1px solid #222;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.ep-btn-cancel:hover {
+  border-color: #FF5A00;
+  color: #FF5A00;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .ep-card { padding: 24px 20px; }
+  .ep-grid { grid-template-columns: 1fr; }
+  .ep-grid--4 { grid-template-columns: 1fr 1fr; }
+  .ep-photo-wrap { flex-direction: column; align-items: flex-start; }
+  .ep-actions { flex-direction: column; }
+  .ep-btn-save, .ep-btn-cancel { width: 100%; justify-content: center; }
+}
+
+@media (max-width: 480px) {
+  .ep-grid--4 { grid-template-columns: 1fr; }
 }

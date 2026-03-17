@@ -1,52 +1,113 @@
-footer,
-.site-footer,
-.footer,
-#footer {
-    background-color: #F53730;
-    color: #fff;
-    text-align: center;
-    padding: 16px 10px;
-    width: 100%;
-    margin-top: 40px;
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=DM+Sans:wght@300;400;500&display=swap');
+
+/* ── Footer ── */
+.ft-footer {
+  background: #0d0d0d;
+  border-top: 3px solid #FF5A00;
+  font-family: 'DM Sans', sans-serif;
+  padding: 48px 0 0;
 }
 
-.footer-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
+/* ── Body ── */
+.ft-body {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 48px;
+  padding-bottom: 40px;
 }
 
-.footer-brand,
-.footer-heading,
-.contact-list {
-    margin: 0;
+/* ── Marca ── */
+.ft-logo {
+  height: 52px;
+  width: auto;
+  display: block;
+  filter: brightness(0) invert(1);
+  margin-bottom: 16px;
 }
 
-.footer-bottom {
-    margin-top: 10px;
-    font-size: 0.9rem;
-    opacity: 0.9;
+.ft-desc {
+  font-size: 13px;
+  color: #444;
+  line-height: 1.7;
+  margin: 0;
+  max-width: 320px;
 }
 
-html,
-body {
-    height: 100%;
-    margin: 0;
+/* ── Headings ── */
+.ft-heading {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 0 16px;
+  position: relative;
+  padding-bottom: 10px;
 }
 
-body {
-    display: flex;
-    flex-direction: column;
+.ft-heading::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 28px; height: 2px;
+  background: #FF5A00;
+  border-radius: 2px;
 }
 
-main {
-    flex: 1;
+/* ── Listas ── */
+.ft-list {
+  list-style: none;
+  padding: 0; margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.footer {
-    background: linear-gradient(90deg, var(--primary), var(--secondary));
-    color: white;
-    padding: 10px 12px;
-    text-align: center;
+.ft-list-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #555;
+}
+
+.ft-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+/* ── Links ── */
+.ft-link {
+  font-size: 13px;
+  color: #555;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.ft-link:hover { color: #FF5A00; }
+
+/* ── Bottom ── */
+.ft-divider {
+  border: none;
+  border-top: 1px solid #1a1a1a;
+  margin-bottom: 20px;
+}
+
+.ft-copy {
+  font-size: 12px;
+  color: #333;
+  text-align: center;
+  margin: 0;
+  padding-bottom: 24px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .ft-body {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .ft-desc { max-width: 100%; }
 }

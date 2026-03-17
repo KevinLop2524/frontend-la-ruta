@@ -1,58 +1,267 @@
-body {
-  font-family: Arial, sans-serif;
-  background-size: cover;
-  background-position: center;
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=DM+Sans:wght@300;400;500&display=swap');
+
+/* ── Página ── */
+.rg-page {
   min-height: 100vh;
+  background: radial-gradient(ellipse at top right, #FF5A00 -20%, #1a1a1a 45%, #0a0a0a 100%);
+  font-family: 'DM Sans', sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Navbar ── */
+.rg-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 48px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.rg-nav-logo-img {
+  height: 38px;
+  width: auto;
+  display: block;
+  filter: brightness(0) invert(1);
+}
+
+.rg-nav-right {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+}
+
+.rg-nav-link {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.45);
+  text-decoration: none;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  white-space: nowrap;
+}
+
+.rg-nav-link:hover {
+  color: #ffffff;
+}
+
+.rg-nav-btn {
+  background: #FF5A00;
+  color: #0d0d0d;
+  border: none;
+  border-radius: 6px;
+  padding: 9px 22px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s ease;
+}
+
+.rg-nav-btn:hover {
+  background: #e64e00;
+}
+
+/* ── Body centrado ── */
+.rg-body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px;
+}
+
+/* ── Card formulario ── */
+.rg-card {
+  background: rgba(17, 17, 17, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  padding: 44px 48px;
+  width: 100%;
+  max-width: 560px;
+}
+
+.rg-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 48px;
+  color: #ffffff;
+  text-transform: uppercase;
+  line-height: 1;
+  margin: 0 0 6px;
+}
+
+.rg-subtitle {
+  font-size: 13px;
+  color: #555555;
+  font-weight: 300;
+  margin: 0 0 30px;
+}
+
+/* ── Grid de campos ── */
+.rg-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 20px;
+}
+
+.rg-field {
+  margin-bottom: 16px;
+}
+
+.rg-field.full {
+  grid-column: 1 / -1;
+}
+
+/* ── Labels e inputs ── */
+.rg-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 500;
+  color: #FF5A00;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.rg-input {
+  width: 100%;
+  background: #1a1a1a;
+  border: 1px solid #252525;
+  border-radius: 8px;
+  padding: 12px 14px;
+  color: #ffffff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.rg-input::placeholder {
+  color: #3a3a3a;
+}
+
+.rg-input:focus {
+  border-color: #FF5A00;
+}
+
+.rg-input.ng-invalid.ng-touched {
+  border-color: #e63946;
+}
+
+/* ── Mensajes de error ── */
+.rg-error {
+  font-size: 11px;
+  color: #e63946;
+  margin-top: 5px;
+}
+
+/* ── Hint contraseña ── */
+.rg-hint {
+  grid-column: 1 / -1;
+  font-size: 11px;
+  color: #3d3d3d;
+  margin: 0 0 12px;
+  line-height: 1.5;
+}
+
+/* ── Botón principal ── */
+.rg-btn {
+  width: 100%;
+  background: #FF5A00;
+  color: #0d0d0d;
+  border: none;
+  border-radius: 8px;
+  padding: 14px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.rg-btn:hover {
+  background: #e64e00;
+}
+
+.rg-btn:active {
+  transform: scale(0.98);
+}
+
+/* ── Divider y link login ── */
+.rg-divider {
+  border: none;
+  border-top: 1px solid #1e1e1e;
+  margin: 24px 0 18px;
+}
+
+.rg-login {
+  text-align: center;
+  font-size: 13px;
+  color: #444444;
   margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
-#container {
-  width: 400px;
-  min-height: 400px;
-  background-color: rgba(234, 233, 233, 0.721);
-  backdrop-filter: blur(6px);
-  border-radius: 200x;
-  box-shadow: 0 0 60px rgba(8, 8, 8, 0.3);
-  padding: 30px;
-  margin: 40px auto;
-   border-radius: 30px;
-  padding: 30px;
-  box-shadow: 10px 10px 60px #F53730;
-  border:solid 1px black ;
-}
-.formulario-angosto label,
-
-.formulario-angosto h2 {
-  color: #000000; /* Totalmente negro */
-  font-weight: bold;
-}
-body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 1vh;
+.rg-login-link {
+  color: #FF5A00;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s ease;
 }
 
-/* input.form-control {
-  border-radius: 20px;
-  padding: 10px 15px;
-  border: 1.8px solid #040404;
-  transition: border-color 0.3s ease;
-} */
-
-#button{
-color: #f2f4f5;
-border:solid 1px black ;
-font-weight: bold;
-padding: 7px;
-background-color: #F53730;
-
+.rg-login-link:hover {
+  color: #ff7733;
 }
-#logo{
-width: 150px;
-margin-left: calc(50% - 75px);
 
-}   
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .rg-nav {
+    padding: 14px 24px;
+    gap: 16px;
+  }
+
+  .rg-nav-right {
+    gap: 16px;
+  }
+
+  .rg-nav-link {
+    display: none;
+  }
+
+  .rg-card {
+    padding: 36px 28px;
+  }
+
+  .rg-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rg-field.full {
+    grid-column: 1;
+  }
+
+  .rg-hint {
+    grid-column: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .rg-nav-logo-img {
+    height: 30px;
+  }
+
+  .rg-title {
+    font-size: 38px;
+  }
+
+  .rg-card {
+    padding: 28px 20px;
+  }
+}

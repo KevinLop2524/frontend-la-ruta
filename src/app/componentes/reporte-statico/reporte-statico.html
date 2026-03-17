@@ -1,112 +1,151 @@
-
 <app-header></app-header>
-<main class="container mt-5">
 
-    <!-- Botón de reporte -->
-    <div id="reporte">
-        <button type="button" class="btn btn-primary" (click)="reporte()">
-            Generar reporte
+<main class="rs-page">
+  <div class="container">
+
+    <!-- HEADER -->
+    <div class="rs-header">
+      <div>
+        <h2 class="rs-title">Gestión de usuarios</h2>
+        <p class="rs-subtitle">Filtra, visualiza y genera reportes del sistema</p>
+      </div>
+      <button class="rs-btn-report" type="button" (click)="reporte()">
+        <i class="bi bi-file-earmark-arrow-down-fill me-2"></i>Generar reporte PDF
+      </button>
+    </div>
+
+    <!-- FILTROS -->
+    <div class="rs-filters">
+      <div class="rs-filters-grid">
+
+        <div>
+          <label class="rs-label">Nombre</label>
+          <input type="text" class="rs-input"
+            [(ngModel)]="filtros.fullName"
+            placeholder="Buscar nombre...">
+        </div>
+
+        <div>
+          <label class="rs-label">Correo</label>
+          <input type="text" class="rs-input"
+            [(ngModel)]="filtros.email"
+            placeholder="Buscar correo...">
+        </div>
+
+        <div>
+          <label class="rs-label">Rol</label>
+          <select class="rs-input" [(ngModel)]="filtros.role">
+            <option value="">Todos</option>
+            <option value="ADMIN">Admin</option>
+            <option value="ASESOR">Asesor</option>
+            <option value="CLIENT">Cliente</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="rs-label">Estado</label>
+          <select class="rs-input" [(ngModel)]="filtros.active">
+            <option value="">Todos</option>
+            <option value="true">Activo</option>
+            <option value="false">Inactivo</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="rs-label">Fecha inicio</label>
+          <input type="date" class="rs-input"
+            [(ngModel)]="filtros.fechaInicio">
+        </div>
+
+        <div>
+          <label class="rs-label">Fecha fin</label>
+          <input type="date" class="rs-input"
+            [(ngModel)]="filtros.fechaFin">
+        </div>
+
+      </div>
+      <div class="rs-filter-actions">
+        <button class="rs-btn rs-btn--ghost" (click)="limpiarFiltros()">
+          <i class="bi bi-x-circle me-1"></i>Limpiar
         </button>
+        <button class="rs-btn rs-btn--primary" (click)="aplicarFiltros()">
+          <i class="bi bi-search me-1"></i>Aplicar filtros
+        </button>
+      </div>
     </div>
 
-    <!-- Filtros -->
-    <div class="card shadow p-4 mb-4">
-        <h5 class="mb-3">Filtros de búsqueda</h5>
+    <!-- CONTADOR -->
+    <p class="rs-count">
+      Mostrando <span>{{usuarios.length}}</span> usuarios
+    </p>
 
-        <div class="row g-3">
+    <!-- TABLA -->
+    <div class="rs-table-wrap">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr>
+              <th>Usuario</th>
+              <th>Apodo</th>
+              <th>Rol</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tablaComunidades">
+            <tr *ngFor="let item of usuarios">
+              <td>
+                <div class="td-name">{{item.fullName}}</div>
+                <div class="td-email">{{item.email}}</div>
+              </td>
+              <td>
+                <span class="rs-badge rs-badge--apodo">@{{item.username}}</span>
+              </td>
+              <td>
+                <span class="rs-badge"
+                  [ngClass]="{
+                    'rs-badge--admin': item.role === 'ADMIN',
+                    'rs-badge--asesor': item.role === 'ASESOR',
+                    'rs-badge--client': item.role === 'CLIENT'
+                  }">
+                  {{item.role}}
+                </span>
+              </td>
+              <td>
+                <span class="rs-badge"
+                  [ngClass]="{
+                    'rs-badge--active': item.active === true,
+                    'rs-badge--inactive': item.active === false
+                  }">
+                  {{ item.active ? '● Activo' : '● Inactivo' }}
+                </span>
+              </td>
+              <td>
+                <div class="td-actions">
+                  <button class="td-btn">
+                    <i class="bi bi-eye me-1"></i>Ver
+                  </button>
+                  <button class="td-btn td-btn--danger">
+                    <i class="bi bi-trash me-1"></i>Eliminar
+                  </button>
+                </div>
+              </td>
+            </tr>
 
-            <!-- Nombre -->
-            <div class="col-md-3">
-                <label class="form-label">Nombre</label>
-                <input type="text" class="form-control"
-                       [(ngModel)]="filtros.fullName" placeholder="Buscar por nombre">
-            </div>
+            <!-- ESTADO VACÍO -->
+            <tr *ngIf="usuarios.length === 0">
+              <td colspan="5" class="rs-empty">
+                <div class="rs-empty-icon">👤</div>
+                <div class="rs-empty-text">No se encontraron usuarios con los filtros aplicados.</div>
+              </td>
+            </tr>
 
-            <!-- Correo -->
-            <div class="col-md-3">
-                <label class="form-label">Correo</label>
-                <input type="text" class="form-control"
-                       [(ngModel)]="filtros.email" placeholder="Buscar por correo">
-            </div>
-
-            <!-- Rol -->
-            <div class="col-md-2">
-                <label class="form-label">Rol</label>
-                <select class="form-select" [(ngModel)]="filtros.role">
-                    <option value="">Todos</option>
-                    <option value="ADMIN">Admin</option>
-                    <option value="ASESOR">Asesor</option>
-                    <option value="CLIENTE">Cliente</option>
-                </select>
-            </div>
-
-           <div class="col-md-2">
-                <label class="form-label">Activo</label>
-                <select class="form-select" [(ngModel)]="filtros.active">
-                    <option value="">Todos</option>
-                    <option value="true">Activo</option>
-                    <option value="false">Inactivo</option>
-                </select>
-            </div>
-
-            <!-- Fecha inicio -->
-            <div class="col-md-2">
-                <label class="form-label">Fecha inicio</label>
-                <input type="date" class="form-control"
-                       [(ngModel)]="filtros.fechaInicio">
-            </div>
-
-            <!-- Fecha fin -->
-            <div class="col-md-2">
-                <label class="form-label">Fecha fin</label>
-                <input type="date" class="form-control"
-                       [(ngModel)]="filtros.fechaFin">
-            </div>
-
-        </div>
-
-        <div class="mt-3 d-flex justify-content-end">
-            <button class="btn btn-danger me-2" (click)="limpiarFiltros()">
-                Limpiar
-            </button>
-            <button class="btn btn-primary" (click)="aplicarFiltros()">
-                Aplicar filtros
-            </button>
-        </div>
-
-    </div>
-
-    <!-- Tabla -->
-    <div class="table-responsive">
-        <table class="table table-hover table-bordered align-middle text-center">
-            <thead class="table-danger">
-                <tr>
-                    <th>Nombre</th>
-                    <th>Correo</th>
-                    <th>Apodo</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-
-            <tbody id="tablaComunidades">
-                <tr *ngFor="let item of usuarios">
-                    <td>{{item.fullName}}</td>
-                    <td>{{item.email}}</td>
-                    <td>{{item.username}}</td>
-                    <td>
-                        <button class="btn btn-sm btn-primary">
-                            <i class="bi bi-eye"></i>
-                        </button>
-                        <button class="btn btn-sm btn-danger">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-
+          </tbody>
         </table>
+      </div>
     </div>
 
+  </div>
 </main>
 
 <app-footer></app-footer>

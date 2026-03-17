@@ -285,4 +285,21 @@ export class ComunidadComponent implements OnInit {
     });
   }
 
+  // Agrega esta propiedad en la clase:
+editandoId: any = null;
+
+// Reemplaza abrirModal por:
+toggleEditar(comunidad: any) {
+  if (this.comunidadEditar?.id === comunidad.id) {
+    this.cerrarEditar();
+  } else {
+    this.comunidadseleccionada = comunidad;
+    this.comunidadEditar = { ...comunidad };
+  }
+}
+
+cerrarEditar() {
+  this.comunidadEditar = { category: '', name: '', description: '' };
+}
+
 }

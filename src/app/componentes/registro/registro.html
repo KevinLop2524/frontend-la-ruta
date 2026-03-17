@@ -1,63 +1,84 @@
-<main>
-    <div class="container formulario-angosto" id="container">
-        <div>
-            <img src="/imagenes/logos/New_Logo_Modo_Claro.png" id="logo">
-        </div>
-        <h2 class="text-center  mb-2 " id="texto">Registro</h2>
-        <form action="registro2.html" id="R-FR-Datos" method="get" class="needs-validation" novalidate>
-            <div class="row mb-300">
-                <div class="col-md-6">
-                    <label for="nombre" class="form-label">Nombre</label>
-                    <input type="text" class="form-control" id="nombre" name= "nombre" placeholder="Requerido" [(ngModel)]="nombre"
-                        required>
-                    <div class="invalid-feedback">Ingresa tu nombre.</div>
-                </div>
-            </div>
+<div class="rg-page">
 
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="apellido" class="form-label input-group">Apellido</label>
-                    <input type="text" class="form-control" id="apellido" name= "apellido" placeholder="Requerido" [(ngModel)]="apellido"
-                        required>
-                    <div class="invalid-feedback">Ingresa tu apellido.</div>
-                </div>
-            </div>
-
-            <div class="mb-3">
-                <label for="apodo" class="form-label">Nombre de usuario</label>
-                <input type="text" class="form-control" id="apodo" name="apodo" placeholder="Requerido" [(ngModel)]="apodo" required>
-                <div class="invalid-feedback">Ingresa un correo válido.</div>
-            </div>
-
-            <div class="mb-3">
-                <label for="correo" class="form-label">Correo electrónico</label>
-                <input type="email" class="form-control" id="correo" name="correo" placeholder="Requerido" [(ngModel)]="correo"
-                    required>
-                <div class="invalid-feedback">Ingresa un correo válido.</div>
-            </div>
-
-            <div class="mb-4">
-                <label for="contrasena" class="form-label">Ingresa una contraseña</label>
-                <input type="password" class="form-control" id="contrasena" name="constrasena" placeholder="Requerido" [(ngModel)]="contrasena" required>
-                <div class="invalid-feedback">Ingresa una contraseña.</div>
-                <div id="emailHelp" class="form-text">La contraseña debe tener entre 10 y 15 caracteres, con al menos 2
-                    minúsculas, 1 mayúscula y 2 números.</div>
-            </div>
-
-            <div class="mb-4">
-                <label for="contrasenaDos" class="form-label">Verefica la contraseña.</label>
-                <input type="password" class="form-control" name="contrasenaDos" id="contrasenaDos" placeholder="Requerido"
-                    [(ngModel)]="contrasena2" required>
-                <div class="invalid-feedback">Verefica la contraseña.</div>
-            </div>
-
-            <div class="text-center">
-                <button type="button" class="btn btn-primary" id="button" (click)="registrar()">Registrarse</button>
-            </div>
-            <br>
-            <div class="text-center">
-                <a class="btn btn-secondary" routerLink="/">Ir a iniciar sesión</a>
-            </div>
-
-        </form>
+  <nav class="rg-nav">
+    <div class="rg-nav-logo">
+      <img src="/imagenes/logos/New_Logo_Modo_Claro.png" alt="Logo La Ruta" class="rg-nav-logo-img">
     </div>
+    <div class="rg-nav-right">
+      <a routerLink="/quienes-somos" class="rg-nav-link">¿Quiénes somos?</a>
+      <a routerLink="/preguntas-frecuentes" class="rg-nav-link">Preguntas frecuentes</a>
+      <a routerLink="/contacto" class="rg-nav-link">Contáctanos</a>
+      <button type="button" class="rg-nav-btn" routerLink="/">Iniciar sesión</button>
+    </div>
+  </nav>
+
+  <div class="rg-body">
+    <div class="rg-card">
+
+      <h1 class="rg-title">Crear cuenta</h1>
+      <p class="rg-subtitle">Completa los datos para registrarte</p>
+
+      <form action="registro2.html" id="R-FR-Datos" method="get" class="rg-grid needs-validation" novalidate>
+
+        <div class="rg-field">
+          <label for="nombre" class="rg-label">Nombre</label>
+          <input type="text" class="rg-input" id="nombre" name="firstName"
+            placeholder="Requerido" [(ngModel)]="firstName" required>
+          <div class="invalid-feedback">Ingresa tu nombre.</div>
+        </div>
+
+        <div class="rg-field">
+          <label for="apellido" class="rg-label">Apellido</label>
+          <input type="text" class="rg-input" id="apellido" name="lastName"
+            placeholder="Requerido" [(ngModel)]="lastName" required>
+          <div class="invalid-feedback">Ingresa tu apellido.</div>
+        </div>
+
+        <div class="rg-field full">
+          <label for="apodo" class="rg-label">Nombre de usuario</label>
+          <input type="text" class="rg-input" id="apodo" name="username"
+            placeholder="Requerido" [(ngModel)]="username" required>
+          <div class="invalid-feedback">Ingresa un nombre de usuario.</div>
+        </div>
+
+        <div class="rg-field full">
+          <label for="correo" class="rg-label">Correo electrónico</label>
+          <input type="email" class="rg-input" id="correo" name="email"
+            placeholder="Requerido" [(ngModel)]="email" required>
+          <div class="invalid-feedback">Ingresa un correo válido.</div>
+        </div>
+
+        <div class="rg-field">
+          <label for="contrasena" class="rg-label">Ingresa una contraseña</label>
+          <input type="password" class="rg-input" id="contrasena" name="password"
+            placeholder="Requerido" [(ngModel)]="password" required>
+          <div class="invalid-feedback">Ingresa una contraseña.</div>
+          <div id="emailHelp" class="rg-hint">La contraseña debe tener entre 10 y 15 caracteres,
+            con al menos 2 minúsculas, 1 mayúscula y 2 números.</div>
+        </div>
+
+        <div class="rg-field">
+          <label for="contrasenaDos" class="rg-label">Verifica la contraseña</label>
+          <input type="password" class="rg-input" id="contrasenaDos" name="password2"
+            placeholder="Requerido" [(ngModel)]="password2" required>
+          <div class="invalid-feedback">Verifica la contraseña.</div>
+        </div>
+
+        <div class="rg-field full">
+          <button type="button" class="rg-btn" id="button" (click)="registrar()">
+            Registrarse
+          </button>
+        </div>
+
+      </form>
+
+      <hr class="rg-divider" />
+      <p class="rg-login">
+        ¿Ya tienes cuenta?
+        <a routerLink="/" class="rg-login-link">Ir a iniciar sesión</a>
+      </p>
+
+    </div>
+  </div>
+
+</div>

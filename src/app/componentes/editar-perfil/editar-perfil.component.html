@@ -1,76 +1,116 @@
 <app-header></app-header>
-<main>
-    <div class="container">
-        <br>
-        <h2 class="mb-4">Editar Perfil</h2>
 
-        <form>
-            <!-- FOTO DE PERFIL -->
-            <div class="text-center mb-4">
-                <img id="previewFoto" src="imagenes/static/Fotoperfil.jpg" class="rounded-circle border" width="150"
-                    height="150" alt="Foto de perfil">
-                <div class="mt-2">
-                    <label for="fotoPerfil" class="btn btn-outline-primary btn-sm">
-                        Cambiar foto
-                    </label>
-                    <input class="form-control d-none" type="file" id="fotoPerfil" accept="image/*">
-                </div>
-            </div>
+<main class="ep-page">
+  <div class="container">
 
-            <!-- DATOS BÁSICOS -->
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label for="nombre" class="form-label">Nombre</label>
-                    <input type="text" class="form-control" name="firstName" id="firstName"
-                        placeholder="Ingresa tu primer nombre" [(ngModel)]="perfilEditar.firstName">
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label for="nombre2" class="form-label">Segundo nombre</label>
-                    <input type="text" class="form-control" name="secondName" id="nombre2"
-                        placeholder="Ingresa tu segundo nombre" [(ngModel)]="perfilEditar.secondName">
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label for="apellido" class="form-label">Apellido</label>
-                    <input type="text" class="form-control" name="lastName" id="apellido"
-                        placeholder="Ingresa tu primer apellido" [(ngModel)]="perfilEditar.lastName">
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label for="apellido2" class="form-label">Segundo apellido</label>
-                    <input type="text" class="form-control" name="secondLastName" id="apellido2"
-                        placeholder="Ingresa tu segundo apellido" [(ngModel)]="perfilEditar.secondLastName">
-                </div>
-
-                <div class="col-md-6 mb-3">
-                    <label for="nacimiento" class="form-label">Fecha de nacimiento</label>
-                    <input type="date" class="form-control" name="dateOfBirth" id="nacimiento"
-                        [(ngModel)]="perfilEditar.dateOfBirth" [min]="fechaMinima()" [max]="fechaMaxima()">
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label for="altura" class="form-label">Altura (cm)</label>
-                    <input type="text" class="form-control" name="height" id="altura" placeholder="Ej: 175"
-                        [(ngModel)]="perfilEditar.height">
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label for="peso" class="form-label">Peso (kg)</label>
-                    <input type="text" class="form-control" name="weight" id="peso" placeholder="Ej: 64"
-                        [(ngModel)]="perfilEditar.weight">
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label for="sexo" class="form-label">Sexo</label>
-                    <select id="sexo" class="form-select" name="gender" [(ngModel)]="perfilEditar.gender">
-                        <option [ngValue]="null">Selecciona tu sexo</option>
-                        <option value="M">Hombre</option>
-                        <option value="F">Mujer</option>
-
-                    </select>
-                </div>
-            </div>
-
-            <div class="mb-3">
-                <button class="btn btn-primary" (click)="actualizarPerfil()">Guardar cambios</button>
-            </div>
-        </form>
+    <!-- HEADER -->
+    <div class="ep-header">
+      <h2 class="ep-title">Editar perfil</h2>
+      <p class="ep-subtitle">Actualiza tu información personal</p>
     </div>
+
+    <div class="ep-card">
+      <form>
+
+        <!-- FOTO DE PERFIL -->
+        <div class="ep-photo-wrap">
+          <img id="previewFoto" src="imagenes/static/Fotoperfil.jpg"
+            class="ep-photo" alt="Foto de perfil">
+          <div class="ep-photo-info">
+            <div class="ep-photo-name">{{usuario?.firstName}} {{usuario?.lastName}}</div>
+            <div class="ep-photo-handle">@{{usuario?.username}}</div>
+            <label for="fotoPerfil" class="ep-photo-btn">
+              <i class="bi bi-camera-fill me-2"></i>Cambiar foto
+            </label>
+            <input class="d-none" type="file" id="fotoPerfil" accept="image/*">
+          </div>
+        </div>
+
+        <hr class="ep-divider">
+
+        <!-- NOMBRES -->
+        <div class="ep-section-label">
+          <i class="bi bi-person-fill me-2"></i>Nombres
+        </div>
+        <div class="ep-grid">
+          <div class="ep-field">
+            <label for="firstName" class="ep-label">Primer nombre</label>
+            <input type="text" class="ep-input" name="firstName" id="firstName"
+              placeholder="Tu primer nombre"
+              [(ngModel)]="perfilEditar.firstName">
+          </div>
+          <div class="ep-field">
+            <label for="nombre2" class="ep-label">Segundo nombre</label>
+            <input type="text" class="ep-input" name="secondName" id="nombre2"
+              placeholder="Tu segundo nombre"
+              [(ngModel)]="perfilEditar.secondName">
+          </div>
+          <div class="ep-field">
+            <label for="apellido" class="ep-label">Primer apellido</label>
+            <input type="text" class="ep-input" name="lastName" id="apellido"
+              placeholder="Tu primer apellido"
+              [(ngModel)]="perfilEditar.lastName">
+          </div>
+          <div class="ep-field">
+            <label for="apellido2" class="ep-label">Segundo apellido</label>
+            <input type="text" class="ep-input" name="secondLastName" id="apellido2"
+              placeholder="Tu segundo apellido"
+              [(ngModel)]="perfilEditar.secondLastName">
+          </div>
+        </div>
+
+        <hr class="ep-divider">
+
+        <!-- DATOS FÍSICOS -->
+        <div class="ep-section-label">
+          <i class="bi bi-activity me-2"></i>Datos físicos
+        </div>
+        <div class="ep-grid ep-grid--4">
+          <div class="ep-field">
+            <label for="nacimiento" class="ep-label">Fecha de nacimiento</label>
+            <input type="date" class="ep-input" name="dateOfBirth" id="nacimiento"
+              [(ngModel)]="perfilEditar.dateOfBirth"
+              [min]="fechaMinima()"
+              [max]="fechaMaxima()">
+          </div>
+          <div class="ep-field">
+            <label for="altura" class="ep-label">Altura (cm)</label>
+            <input type="text" class="ep-input" name="height" id="altura"
+              placeholder="Ej: 175"
+              [(ngModel)]="perfilEditar.height">
+          </div>
+          <div class="ep-field">
+            <label for="peso" class="ep-label">Peso (kg)</label>
+            <input type="text" class="ep-input" name="weight" id="peso"
+              placeholder="Ej: 64"
+              [(ngModel)]="perfilEditar.weight">
+          </div>
+          <div class="ep-field">
+            <label for="sexo" class="ep-label">Sexo</label>
+            <select class="ep-input" id="sexo" name="gender"
+              [(ngModel)]="perfilEditar.gender">
+              <option [ngValue]="null">Selecciona tu sexo</option>
+              <option value="M">Hombre</option>
+              <option value="F">Mujer</option>
+            </select>
+          </div>
+        </div>
+
+        <hr class="ep-divider">
+
+        <!-- ACCIONES -->
+        <div class="ep-actions">
+          <button class="ep-btn-cancel" type="button" routerLink="/perfil">
+            <i class="bi bi-x-circle me-2"></i>Cancelar
+          </button>
+          <button class="ep-btn-save" type="button" (click)="actualizarPerfil()">
+            <i class="bi bi-check-lg me-2"></i>Guardar cambios
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
 </main>
 
 <app-footer></app-footer>
