@@ -3,203 +3,488 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Peticion } from '../../servicios/peticion';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import Swal from 'sweetalert2';
 import { Footer } from '../footer/footer';
 import { RouterModule } from '@angular/router';
-import { z } from "zod";//Se importa la dependencia zod
+import { z } from 'zod';
 
-
-//aqui se crea el esquema que queremos para nuestra publicación
-    const publicacionSchema = z.object({
-    contenido: z.string().min(1, "Contenido requerido").regex(/[a-zA-Z]/, "El contenido es invalido"),
-    nombre: z.string().min(1, "Nombre requerido").regex(/[a-zA-Z]/, "El nombre es invalido"),
-    descripcion: z.string().min(1, "descripción requerida").regex(/[a-zA-Z]/, "La descripción es invalida"),
-    categoria: z.string().min(1, "categoria requerida").regex(/[a-zA-Z]/, "La categoria es invalida"),
-    estado: z.string().default("activo"),
-    usuario_id: z.number()
-  })
+const publicacionSchema = z.object({
+  contenido: z.string().min(1, 'Contenido requerido').regex(/[a-zA-ZÁÉÍÓÚáéíóúÑñ0-9]/, 'El contenido es inválido'),
+  tipo: z.string().min(1, 'El tipo es requerido'),
+  authorId: z.number(),
+  comunidadId: z.number()
+});
 
 @Component({
   selector: 'app-publicacion',
   imports: [Header, CommonModule, FormsModule, Footer, RouterModule],
   templateUrl: './blog-principal.html',
-  styleUrls: ['./blog-principal.css']  
+  styleUrls: ['./blog-principal.css']
 })
-
-
 export class BlogPrincipal implements OnInit {
-
   usuario: any = {};
-  datosNoPermitidos: (string | null | undefined)[] = ["", null, undefined];
   publicaciones: any[] = [];
 
-  // 🚀 Usuario mínimo necesario para backend
+  loadingUsuario: boolean = false;
+  loadingPosts: boolean = false;
+  creatingPost: boolean = false;
+  updatingPost: boolean = false;
+  deletingPostId: number | null = null;
+
+  createOpen: boolean = false;
+  editMode: boolean = false;
+  confirmandoId: number | null = null;
+
+  submittedCreate: boolean = false;
+  submittedEdit: boolean = false;
+
+  generalError: string = '';
+  generalSuccess: string = '';
+  createError: string = '';
+  createSuccess: string = '';
+  editError: string = '';
+  editSuccess: string = '';
+
+  selectedCreateImageFile: File | null = null;
+  selectedCreateImageName: string = '';
+  createImagePreview: string | null = null;
+  createImageError: string = '';
+
+  selectedEditImageFile: File | null = null;
+  selectedEditImageName: string = '';
+  editImagePreview: string | null = null;
+  editImageError: string = '';
+  editImageTargetId: number | null = null;
+
   nuevaPublicacion: any = {
     contenido: '',
-    nombre: '',
-    descripcion: '',
-    categoria: '',
-    estado: 'activo',
-    fecha: new Date().toISOString().split('T')[0],
-    usuario_id: this.usuario.id 
+    tipo: 'COMMUNITY',
+    authorId: null,
+    comunidadId: null,
+    imageUrl: null
   };
 
-  publicacionEditar: any = { ...this.nuevaPublicacion };
+  publicacionEditar: any = {
+    id: null,
+    contenido: '',
+    tipo: 'COMMUNITY',
+    authorId: null,
+    comunidadId: null,
+    imageUrl: null
+  };
 
-  constructor(private peticion: Peticion, private cdr: ChangeDetectorRef) { }
+  constructor(
+    private peticion: Peticion,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
-    this.buscarUsuario();    // 🔹 Primero buscamos el usuario
-    this.cargarPublicaciones(); // 🔹 Luego cargamos publicaciones
+    this.buscarUsuario();
+    this.cargarPublicaciones();
   }
 
-  buscarUsuario() {
-    const apodo = localStorage.getItem('apodo') || undefined;
-    const url = this.peticion.urlReal + "/usuarios/apodo/" + apodo;
-
-    this.peticion.get(url).then((res: any) => {
-      this.usuario = res;
-      console.log(res)
-      // ⚡ Asignamos usuario_id después de recibir el usuario
-      this.nuevaPublicacion.usuario_id = this.usuario.id;
-      this.cdr.detectChanges();
-    }).catch(() => {
-      console.log("Error al encontrar usuario");
-    });
+  limpiarFeedbackGeneral(): void {
+    this.generalError = '';
+    this.generalSuccess = '';
   }
 
-  cargarPublicaciones() {
-    const url = this.peticion.urlReal + "/api/publicaciones"; // GET correcto
-    this.peticion.get(url).then((res: any) => {
-      this.publicaciones = res;
-      this.cdr.detectChanges();
-    }).catch(() => {
-      console.log("Error al obtener publicaciones");
-    });
+  limpiarFeedbackCrear(): void {
+    this.createError = '';
+    this.createSuccess = '';
+    this.generalError = '';
   }
 
-  crearPublicacion() {
+  limpiarFeedbackEdicion(): void {
+    this.editError = '';
+    this.editSuccess = '';
+  }
 
-    /*aqui se hace una comprobación sobre el objeto nueva publicación con el esquema que creamos anteriormente
-    para asignarle a la variable resultado
-    */
+  buscarUsuario(): void {
+    this.loadingUsuario = true;
 
-    const resultado= publicacionSchema.safeParse(this.nuevaPublicacion)
+    const userStorage = localStorage.getItem('user');
+    const token = localStorage.getItem('token');
 
+    if (!userStorage || !token) {
+      this.generalError = 'No se pudo identificar el usuario actual.';
+      this.loadingUsuario = false;
+          this.cdr.detectChanges();
 
-    //Aqui estamos verificando que si la validación fallo entonces muestre en una alerta el resultado con el mensaje de error
-    if (!resultado.success){
-      const error= resultado.error.errors[0];
-      Swal.fire({
-        title: 'Error de validación',
-        text: error.message,
-        icon: 'warning'
-      });
       return;
     }
 
-    // ⚠ Revisamos que el usuario esté cargado
-    if (!this.nuevaPublicacion.usuario_id) {
-      Swal.fire({
-        title: 'Error',
-        text: 'No se pudo obtener el usuario logueado',
-        icon: 'error'
-      });
+    let user;
+
+    try {
+      user = JSON.parse(userStorage);
+    } catch (error) {
+      console.error('Error parseando user del localStorage', error);
+      this.generalError = 'No se pudo leer la sesión actual.';
+      this.loadingUsuario = false;
+          this.cdr.detectChanges();
+
       return;
     }
+
+    if (!user?.id) {
+      this.generalError = 'El usuario actual no tiene un identificador válido.';
+      this.loadingUsuario = false;
+          this.cdr.detectChanges();
+
+      return;
+    }
+
+    const url = `${this.peticion.urlReal}/api/users/get/${user.id}`;
+
+    this.peticion.get(url, token)
+      .then((res: any) => {
+        this.usuario = res?.data || res || {};
+        this.nuevaPublicacion.authorId = this.usuario.id;
+        this.cdr.detectChanges();
+      })
+      .catch((err: any) => {
+        console.error('Error al encontrar usuario', err);
+        this.generalError = 'No fue posible cargar el usuario actual.';
+      })
+      .finally(() => {
+        this.loadingUsuario = false;
+            this.cdr.detectChanges();
+
+      });
+  }
+
+  cargarPublicaciones(): void {
+    this.loadingPosts = true;
+    const url = `${this.peticion.urlReal}/api/posts/feed/global`;
+
+    this.peticion.get(url)
+      .then((res: any) => {
+        this.publicaciones = Array.isArray(res) ? res : [];
+        console.log(this.publicaciones)
+        this.cdr.detectChanges();
+      })
+      .catch((err: any) => {
+        console.error('Error al obtener publicaciones', err);
+        this.generalError = 'No fue posible cargar las publicaciones.';
+        this.publicaciones = [];
+      })
+      .finally(() => {
+        this.loadingPosts = false;
+            this.cdr.detectChanges();
+
+      });
+  }
+
+  validarArchivoImagen(file: File | null): string {
+    if (!file) return '';
+
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    const maxSizeBytes = 5 * 1024 * 1024;
+
+    if (!allowedTypes.includes(file.type)) {
+      return 'Formato no permitido. Usa JPG, PNG o WEBP.';
+    }
+
+    if (file.size > maxSizeBytes) {
+      return 'La imagen no puede superar 5 MB.';
+    }
+
+    return '';
+  }
+
+  onCreateImageSelected(event: Event): void {
+    this.createImageError = '';
+
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] || null;
+
+    const error = this.validarArchivoImagen(file);
+    if (error) {
+      this.createImageError = error;
+      this.selectedCreateImageFile = null;
+      this.selectedCreateImageName = '';
+      this.createImagePreview = null;
+      input.value = '';
+      return;
+    }
+
+    if (!file) return;
+
+    this.selectedCreateImageFile = file;
+    this.selectedCreateImageName = file.name;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.createImagePreview = reader.result as string;
+      this.cdr.detectChanges();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  onEditImageSelected(event: Event, postId: number): void {
+    this.editImageError = '';
+    this.editImageTargetId = postId;
+
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] || null;
+
+    const error = this.validarArchivoImagen(file);
+    if (error) {
+      this.editImageError = error;
+      this.selectedEditImageFile = null;
+      this.selectedEditImageName = '';
+      this.editImagePreview = null;
+      input.value = '';
+      return;
+    }
+
+    if (!file) return;
+
+    this.selectedEditImageFile = file;
+    this.selectedEditImageName = file.name;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.editImagePreview = reader.result as string;
+      this.cdr.detectChanges();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  validarPayloadPublicacion(payload: any): string {
+    const resultado = publicacionSchema.safeParse(payload);
+
+    if (!resultado.success) {
+      return resultado.error.errors[0]?.message || 'Datos inválidos.';
+    }
+
+    return '';
+  }
+
+  crearPublicacion(): void {
+    this.submittedCreate = true;
+    this.limpiarFeedbackCrear();
+
+    const comunidadId = Number(this.nuevaPublicacion.comunidadId);
+
+    const payload = {
+      contenido: this.nuevaPublicacion.contenido?.trim(),
+      tipo: 'COMMUNITY',
+      authorId: this.usuario.id,
+      comunidadId,
+      imageUrl: this.createImagePreview
+    };
+
+    const error = this.validarPayloadPublicacion(payload);
+    if (error) {
+      this.createError = error;
+      return;
+    }
+
+    this.creatingPost = true;
+    const token = localStorage.getItem('token') || undefined;
+    const url = `${this.peticion.urlReal}/api/publicaciones`;
+
+    this.peticion.post(url, payload, token)
+      .then(() => {
+        this.createSuccess = 'Publicación creada correctamente.';
+        this.generalSuccess = 'Tu publicación se agregó al feed.';
+        this.cargarPublicaciones();
+
+        this.nuevaPublicacion = {
+          contenido: '',
+          tipo: 'COMMUNITY',
+          authorId: this.usuario.id,
+          comunidadId: null,
+          imageUrl: null
+        };
+
+        this.selectedCreateImageFile = null;
+        this.selectedCreateImageName = '';
+        this.createImagePreview = null;
+        this.createImageError = '';
+        this.submittedCreate = false;
+        this.createOpen = false;
+      })
+      .catch((err: any) => {
+        console.error('Error al crear la publicación', err);
+        this.createError =
+          err?.error?.mensaje ||
+          err?.error?.message ||
+          'No fue posible crear la publicación.';
+      })
+      .finally(() => {
+        this.creatingPost = false;
+            this.cdr.detectChanges();
+
+      });
+  }
+
+  eliminarPublicacion(idSeleccionado: number): void {
+    this.deletingPostId = idSeleccionado;
+    this.limpiarFeedbackGeneral();
 
     const token = localStorage.getItem('token') || undefined;
-    const url = this.peticion.urlReal + "/api/publicaciones";
+    const url = `${this.peticion.urlReal}/api/publicaciones/${idSeleccionado}`;
 
-    this.peticion.post(url, this.nuevaPublicacion, token).then((res: any) => {
-      Swal.fire({
-        title: '¡Éxito!',
-        text: 'Publicación creada correctamente',
-        icon: 'success',
-        confirmButtonText: 'Ok'
+    this.peticion.delete(url, token ? { token } : {})
+      .then(() => {
+        this.generalSuccess = 'La publicación fue eliminada correctamente.';
+        this.toggleConfirmar(null);
+        this.cargarPublicaciones();
+      })
+      .catch((err: any) => {
+        console.error('Error al eliminar la publicación', err);
+        this.generalError =
+          err?.error?.mensaje ||
+          err?.error?.message ||
+          'No se pudo eliminar la publicación.';
+      })
+      .finally(() => {
+        this.deletingPostId = null;
       });
-
-      this.cargarPublicaciones();
-      this.cdr.detectChanges();
-
-      // 🔄 Reiniciar el formulario sin perder el usuario_id
-      this.nuevaPublicacion = {
-        contenido: '',
-        nombre: '',
-        descripcion: '',
-        categoria: '',
-        estado: 'activo',
-        fecha: new Date().toISOString().split('T')[0],
-        usuario_id: this.usuario.id
-      };
-
-    }).catch((err: any) => {
-      console.error("Error al crear la publicación", err);
-      Swal.fire({
-        title: 'Error',
-        text: err.error?.mensaje || 'Error al crear la publicación',
-        icon: 'error'
-      });
-    });
   }
 
-  eliminarPublicacion(idSeleccionado: number) {
-    const url = this.peticion.urlReal + "/api/publicaciones/" + idSeleccionado;
-    this.peticion.delete(url, {}).then(() => {
-      Swal.fire({
-        title: 'Eliminada',
-        text: 'La publicación fue eliminada',
-        icon: 'success',
-        confirmButtonText: 'Correcto'
-      });
-      this.cargarPublicaciones();
-      this.cdr.detectChanges();
-    }).catch((err: any) => {
-      console.error("error al eliminar la publicación", err);
-      Swal.fire({
-        title: 'Error',
-        text: 'No se pudo eliminar la publicación',
-        icon: 'error'
-      });
-    });
+  abrirEditar(publicacion: any): void {
+    this.publicacionEditar = {
+      id: publicacion.id,
+      contenido: publicacion.contenido || '',
+      tipo: publicacion.tipo || 'COMMUNITY',
+      authorId: publicacion.authorId,
+      comunidadId: publicacion.comunidadId,
+      imageUrl: publicacion.imageUrl
+    };
+
+    this.editMode = true;
+    this.submittedEdit = false;
+    this.limpiarFeedbackEdicion();
+
+    this.selectedEditImageFile = null;
+    this.selectedEditImageName = '';
+    this.editImagePreview = null;
+    this.editImageError = '';
+    this.editImageTargetId = publicacion.id;
+
+    this.cdr.detectChanges();
   }
 
-  abrirEditar(publicacion: any) {
-    this.publicacionEditar = { ...publicacion }; // clonar para no editar en vivo
-    this.cdr.detectChanges(); // refrescar vista
-  }
+  actualizarPublicacion(publicacion: any): void {
+    this.submittedEdit = true;
+    this.limpiarFeedbackEdicion();
 
-  actualizarPublicacion(publicacion: any) {
+    const payload = {
+      contenido: this.publicacionEditar.contenido?.trim(),
+      tipo: this.publicacionEditar.tipo || 'COMMUNITY',
+      authorId: this.publicacionEditar.authorId,
+      comunidadId: Number(this.publicacionEditar.comunidadId),
+      imageUrl: this.editImageTargetId === publicacion.id && this.editImagePreview
+        ? this.editImagePreview
+        : this.publicacionEditar.imageUrl
+    };
 
-    const resultado= publicacionSchema.safeParse(this.publicacionEditar)
-
-    if (!resultado.success){
-      const error= resultado.error.errors[0];
-      Swal.fire({
-        title: 'Error de validación',
-        text: error.message,
-        icon: 'warning'
-      });
+    const error = this.validarPayloadPublicacion(payload);
+    if (error) {
+      this.editError = error;
       return;
     }
-    const token = localStorage.getItem('token') || undefined;
-    const url = this.peticion.urlReal + '/api/publicaciones/' + publicacion.id;
 
-    this.peticion.put(url, this.publicacionEditar, token).then(() => {
-      Swal.fire({
-        title: 'Actualizada',
-        text: 'La publicación fue actualizada',
-        icon: 'success',
-        confirmButtonText: 'Correcto'
+    this.updatingPost = true;
+    const token = localStorage.getItem('token') || undefined;
+    const url = `${this.peticion.urlReal}/api/publicaciones/${publicacion.id}`;
+
+    this.peticion.put(url, payload, token)
+      .then(() => {
+        this.editSuccess = 'La publicación fue actualizada correctamente.';
+        this.generalSuccess = 'Se guardaron los cambios de la publicación.';
+        this.cargarPublicaciones();
+
+        setTimeout(() => {
+          this.cerrarEditar();
+        }, 700);
+      })
+      .catch((err: any) => {
+        console.error('Error al actualizar la publicación', err);
+        this.editError =
+          err?.error?.mensaje ||
+          err?.error?.message ||
+          'No se pudo actualizar la publicación.';
+      })
+      .finally(() => {
+        this.updatingPost = false;
+            this.cdr.detectChanges();
+
       });
-      this.cargarPublicaciones();
-    }).catch((err: any) => {
-      console.error("error al actualizar la publicación", err);
-      Swal.fire({
-        title: 'Error',
-        text: 'Error al actualizar la publicación',
-        icon: 'error'
-      });
-    });
+  }
+
+  openCreate(): void {
+    this.createOpen = true;
+    this.limpiarFeedbackCrear();
+  }
+
+  closeCreate(): void {
+    if (this.creatingPost) return;
+
+    this.createOpen = false;
+    this.submittedCreate = false;
+    this.limpiarFeedbackCrear();
+
+    this.selectedCreateImageFile = null;
+    this.selectedCreateImageName = '';
+    this.createImagePreview = null;
+    this.createImageError = '';
+
+    this.nuevaPublicacion = {
+      contenido: '',
+      tipo: 'COMMUNITY',
+      authorId: this.usuario.id || null,
+      comunidadId: null,
+      imageUrl: null
+    };
+  }
+
+  toggleEditar(pub: any): void {
+    if (this.publicacionEditar?.id === pub.id && this.editMode) {
+      this.cerrarEditar();
+    } else {
+      this.abrirEditar(pub);
+    }
+  }
+
+  cerrarEditar(): void {
+    this.editMode = false;
+    this.publicacionEditar = {
+      id: null,
+      contenido: '',
+      tipo: 'COMMUNITY',
+      authorId: null,
+      comunidadId: null,
+      imageUrl: null
+    };
+
+    this.submittedEdit = false;
+    this.limpiarFeedbackEdicion();
+
+    this.selectedEditImageFile = null;
+    this.selectedEditImageName = '';
+    this.editImagePreview = null;
+    this.editImageError = '';
+    this.editImageTargetId = null;
+  }
+
+  toggleConfirmar(id: number | null): void {
+    this.confirmandoId = this.confirmandoId === id ? null : id;
+  }
+
+  mostrarMensajeComentarios(): void {
+    this.generalError = 'La integración de comentarios aún está pendiente con el backend.';
+  }
+
+  darLike(pub: any): void {
+    pub.likeado = !pub.likeado;
+    pub.likes = pub.likeado ? (pub.likes || 0) + 1 : Math.max((pub.likes || 1) - 1, 0);
+    this.cdr.detectChanges();
+  }
+
+  trackByPublicacionId(index: number, pub: any): number {
+    return pub.id;
   }
 }

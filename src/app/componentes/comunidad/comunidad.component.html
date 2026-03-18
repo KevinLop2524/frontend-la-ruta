@@ -3,7 +3,6 @@
 <main class="cm-page">
   <div class="container">
 
-    <!-- HEADER -->
     <div class="cm-header">
       <div>
         <h2 class="cm-title">Comunidades</h2>
@@ -14,29 +13,74 @@
       </button>
     </div>
 
-    <!-- TOOLBAR -->
-    <div class="cm-toolbar">
-      <input class="cm-search" type="text" placeholder="Buscar comunidades...">
-      <button class="cm-filter active">Todas</button>
-      <button class="cm-filter">Fitness</button>
-      <button class="cm-filter">Nutrición</button>
-      <button class="cm-filter">Desarrollo</button>
+    <!-- Feedback general -->
+    <div *ngIf="generalError" class="cm-alert cm-alert--error">
+      {{ generalError }}
     </div>
 
-    <!-- LISTA -->
-    <div class="cm-list">
+    <div *ngIf="generalSuccess" class="cm-alert cm-alert--success">
+      {{ generalSuccess }}
+    </div>
 
-      <div *ngFor="let comunidad of comunidades"
+    <!-- Toolbar -->
+    <div class="cm-toolbar">
+      <input
+        class="cm-search"
+        type="text"
+        placeholder="Buscar comunidades..."
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="aplicarFiltros()"
+      >
+
+      <button
+        class="cm-filter"
+        [class.active]="categoriaActiva === 'ALL'"
+        (click)="seleccionarCategoria('ALL')">
+        Todas
+      </button>
+
+      <button
+        class="cm-filter"
+        [class.active]="categoriaActiva === 'FITNESS'"
+        (click)="seleccionarCategoria('FITNESS')">
+        Fitness
+      </button>
+
+      <button
+        class="cm-filter"
+        [class.active]="categoriaActiva === 'NUTRITION'"
+        (click)="seleccionarCategoria('NUTRITION')">
+        Nutrición
+      </button>
+
+      <button
+        class="cm-filter"
+        [class.active]="categoriaActiva === 'PERSONAL_DEVELOPMENT'"
+        (click)="seleccionarCategoria('PERSONAL_DEVELOPMENT')">
+        Desarrollo
+      </button>
+    </div>
+
+    <!-- Estado de carga -->
+    <div class="cm-loading" *ngIf="loadingComunidades">
+      Cargando comunidades...
+    </div>
+
+    <!-- Lista -->
+    <div class="cm-list" *ngIf="!loadingComunidades">
+
+      <div *ngFor="let comunidad of comunidadesFiltradas; trackBy: trackByComunidadId"
         class="cm-item-wrap"
         [class.editing]="comunidadEditar?.id === comunidad.id">
 
-        <!-- FILA PRINCIPAL -->
         <div class="cm-item">
           <div class="cm-avatar cm-avatar--default">
-            {{comunidad.name?.charAt(0)?.toUpperCase()}}
+            {{ comunidad.name?.charAt(0)?.toUpperCase() }}
           </div>
+
           <div class="cm-info">
-            <div class="cm-name">{{comunidad.name}}</div>
+            <div class="cm-name">{{ comunidad.name }}</div>
+
             <div class="cm-meta">
               <span class="cm-badge"
                 [ngClass]="{
@@ -44,80 +88,130 @@
                   'cm-badge--nutrition': comunidad.category === 'NUTRITION',
                   'cm-badge--development': comunidad.category === 'PERSONAL_DEVELOPMENT'
                 }">
-                {{traductiCategoria(comunidad.category)}}
+                {{ traductiCategoria(comunidad.category) }}
               </span>
               <span class="cm-meta-dot">·</span>
               <span>Pública</span>
             </div>
-            <p class="cm-desc">{{comunidad.description}}</p>
+
+            <p class="cm-desc">{{ comunidad.description }}</p>
           </div>
+
           <div class="cm-actions">
-            <button class="cm-btn cm-btn--join"
+            <button
+              class="cm-btn cm-btn--join"
+              type="button"
+              [disabled]="joiningCommunityId === comunidad.id"
               (click)="verificarMembresia(comunidad)">
-              Unirse
+              {{ joiningCommunityId === comunidad.id ? 'Procesando...' : 'Unirse' }}
             </button>
-            <button class="cm-btn cm-btn--settings"
-              *ngIf="rol.includes('ROLE_ADMIN')"
+
+            <button
+              class="cm-btn cm-btn--settings"
+              type="button"
+              *ngIf="esAdmin()"
               (click)="toggleEditar(comunidad)">
               <i class="bi bi-gear-fill"></i>
             </button>
           </div>
         </div>
 
-        <!-- PANEL EDICIÓN INLINE — solo admins -->
-        <div class="cm-edit" *ngIf="rol.includes('ROLE_ADMIN') && comunidadEditar?.id === comunidad.id">
+        <!-- Panel edición inline -->
+        <div class="cm-edit" *ngIf="esAdmin() && comunidadEditar?.id === comunidad.id">
           <div class="cm-edit-title">Editar comunidad</div>
+
+          <div *ngIf="editError" class="cm-alert cm-alert--error cm-alert--compact">
+            {{ editError }}
+          </div>
+
+          <div *ngIf="editSuccess" class="cm-alert cm-alert--success cm-alert--compact">
+            {{ editSuccess }}
+          </div>
+
           <div class="cm-edit-grid">
             <div>
               <label class="cm-edit-label">Nombre</label>
-              <input class="cm-edit-input"
+              <input
+                class="cm-edit-input"
                 [(ngModel)]="comunidadEditar.name"
-                name="nombre">
+                name="nombre"
+                maxlength="60"
+                (ngModelChange)="limpiarFeedbackEdicion()">
+              <div class="cm-inline-error" *ngIf="submittedEdit && !comunidadEditar.name?.trim()">
+                El nombre es obligatorio.
+              </div>
             </div>
+
             <div>
               <label class="cm-edit-label">Descripción</label>
-              <input class="cm-edit-input"
+              <input
+                class="cm-edit-input"
                 [(ngModel)]="comunidadEditar.description"
-                name="descripcion">
+                name="descripcion"
+                maxlength="160"
+                (ngModelChange)="limpiarFeedbackEdicion()">
+              <div class="cm-inline-error" *ngIf="submittedEdit && !comunidadEditar.description?.trim()">
+                La descripción es obligatoria.
+              </div>
             </div>
+
             <div>
               <label class="cm-edit-label">Categoría</label>
-              <select class="cm-edit-input"
+              <select
+                class="cm-edit-input"
                 [(ngModel)]="comunidadEditar.category"
-                name="category">
+                name="category"
+                (ngModelChange)="limpiarFeedbackEdicion()">
+                <option value="">Selecciona una categoría</option>
                 <option value="FITNESS">Fitness</option>
                 <option value="NUTRITION">Nutrición</option>
                 <option value="PERSONAL_DEVELOPMENT">Desarrollo personal</option>
               </select>
+              <div class="cm-inline-error" *ngIf="submittedEdit && !comunidadEditar.category">
+                La categoría es obligatoria.
+              </div>
             </div>
           </div>
+
           <div class="cm-edit-actions">
-            <button class="cm-edit-save"
+            <button
+              class="cm-edit-save"
+              type="button"
+              [disabled]="savingEdit"
               (click)="actualizarComunidad(comunidadEditar)">
-              <i class="bi bi-check-lg me-1"></i>Guardar
+              <i class="bi bi-check-lg me-1"></i>
+              {{ savingEdit ? 'Guardando...' : 'Guardar' }}
             </button>
-            <button class="cm-edit-cancel"
+
+            <button
+              class="cm-edit-cancel"
+              type="button"
+              [disabled]="savingEdit || deletingCommunity"
               (click)="cerrarEditar()">
               Cancelar
             </button>
-            <button class="cm-edit-delete"
+
+            <button
+              class="cm-edit-delete"
+              type="button"
+              [disabled]="deletingCommunity"
               (click)="eliminarComunidad()">
-              <i class="bi bi-trash me-1"></i>Eliminar
+              <i class="bi bi-trash me-1"></i>
+              {{ deletingCommunity ? 'Eliminando...' : 'Eliminar' }}
             </button>
           </div>
         </div>
-
       </div>
 
-      <!-- ESTADO VACÍO -->
-      <div class="cm-empty" *ngIf="comunidades.length === 0">
+      <!-- Estado vacío -->
+      <div class="cm-empty" *ngIf="comunidadesFiltradas.length === 0">
         <div class="cm-empty-icon">🏋️</div>
-        <div class="cm-empty-text">No hay comunidades disponibles aún.</div>
+        <div class="cm-empty-text">No se encontraron comunidades con ese filtro.</div>
       </div>
 
     </div>
 
-    <!-- MODAL UNIRSE (disparado por botón oculto) -->
+    <!-- Modal unirse -->
     <button id="abrirUnirse" data-bs-toggle="modal" data-bs-target="#modalUnirse" hidden></button>
     <div class="modal fade" id="modalUnirse" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog">
@@ -129,12 +223,19 @@
             <button type="button" class="btn-close btn-close-white"
               data-bs-dismiss="modal" aria-label="Cerrar"></button>
           </div>
+
           <div class="modal-body cm-modal-body">
-            <p>Vas a unirte a <strong class="cm-modal-strong">{{comunidadseleccionada?.name}}</strong>. ¿Estás seguro de realizar esta acción?</p>
+            <p>
+              Vas a unirte a
+              <strong class="cm-modal-strong">{{ comunidadseleccionada?.name }}</strong>.
+              ¿Estás seguro de realizar esta acción?
+            </p>
           </div>
+
           <div class="modal-footer cm-modal-footer">
             <button class="cm-btn-modal" data-bs-dismiss="modal">Cancelar</button>
-            <button class="cm-btn-modal cm-btn-modal--primary"
+            <button
+              class="cm-btn-modal cm-btn-modal--primary"
               (click)="UnirmeComunidad(comunidadseleccionada?.id)"
               data-bs-dismiss="modal">
               <i class="bi bi-check-lg me-1"></i>Unirme

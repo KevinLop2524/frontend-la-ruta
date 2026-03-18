@@ -26,15 +26,6 @@
         (ngSubmit)="registrar(registroForm)"
       >
 
-        <!-- Feedback general -->
-        <div *ngIf="serverError" class="rg-alert rg-alert-error full">
-          {{ serverError }}
-        </div>
-
-        <div *ngIf="serverSuccess" class="rg-alert rg-alert-success full">
-          {{ serverSuccess }}
-        </div>
-
         <!-- Nombre -->
         <div class="rg-field">
           <label for="nombre" class="rg-label">Nombre</label>
@@ -209,6 +200,15 @@
           >
             {{ loading ? 'Registrando...' : 'Registrarse' }}
           </button>
+        </div>
+
+        <!-- Feedback general -->
+        <div *ngIf="serverError" class="rg-alert rg-alert-error full">
+          {{ serverError }}
+        </div>
+
+        <div *ngIf="serverSuccess" class="rg-alert rg-alert-success full">
+          {{ serverSuccess }}
         </div>
 
       </form>

@@ -1,198 +1,275 @@
-import { Header } from '../header/header';
-import { Peticion } from '../../servicios/peticion';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { FormsModule } from '@angular/forms';
-import Swal from 'sweetalert2';
-import { RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { Header } from "../header/header";
+import { Peticion } from "../../servicios/peticion";
+import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
+import { FormsModule } from "@angular/forms";
+import { RouterModule } from "@angular/router";
+import { CommonModule } from "@angular/common";
 import { Footer } from "../footer/footer";
-import { HttpClientModule, HttpClient } from '@angular/common/http';
-import { comunidadZodValidator } from '../../validators/comunidad-zod.validator';
-
-
-
-
 
 @Component({
-  selector: 'app-perfil',
+  selector: "app-perfil",
   standalone: true,
-  imports: [Header, FormsModule, RouterModule, CommonModule, Footer, HttpClientModule],
-  templateUrl: './perfil.html',
-  styleUrl: './perfil.css',
-  providers: [comunidadZodValidator]
+  imports: [Header, FormsModule, RouterModule, CommonModule, Footer],
+  templateUrl: "./perfil.html",
+  styleUrl: "./perfil.css",
 })
-export class Perfil {
+export class Perfil implements OnInit {
+  usuario: any = {};
+  fraseMoti: any = {};
 
-  constructor(private peticion: Peticion, private cdr: ChangeDetectorRef, private route: ActivatedRoute, private http: HttpClient, private validar: comunidadZodValidator) { }
+  loadingUsuario: boolean = false;
+  uploadingImage: boolean = false;
+  userStorage: any = {};
 
-  datosNoPermitidos: (string | null | undefined)[] = ["", null, undefined, "Seleccionar", " "]
+  generalError: string = "";
+  generalSuccess: string = "";
+  imageError: string = "";
 
-  comunidadseleccionada: any = { nombre: " " }
-  comunidades: any[] = []
-  usuario: any = {}
-  apodo: String | null = null
-  fraseMotivacional: String = '';
-  autorFrase: String = '';
-  fraseMoti: any= {}
+  selectedImageFile: File | null = null;
+  selectedImageName: string = "";
+  previewImageUrl: string | null = null;
+  apodo: string | null = null;
+
+  constructor(
+    private peticion: Peticion,
+    private cdr: ChangeDetectorRef,
+    private uploadService: Peticion,
+  ) {}
 
   ngOnInit(): void {
-    this.comunidadseleccionada.nombre = " "
-
-    this.apodo = localStorage.getItem('apodo')
     this.buscarUsuario();
     this.obtenerFraseMotivacional();
-
   }
 
-  comunidadEditar: any = {
-    category: '',
-    name: '',
-    description: '',
-  };
-
-  abrirModal(comunidad: any) {
-    this.comunidadseleccionada = comunidad;
-    this.comunidadEditar = { ...comunidad };
+  limpiarFeedbackGeneral(): void {
+    this.generalError = "";
+    this.generalSuccess = "";
   }
-
-
-
 
   obtenerFraseMotivacional(): void {
-    let get = {
-      host: this.peticion.urlReal,
-      path: "/api/frase"}
-      
-    let token = localStorage.getItem('token') || undefined;
+    const token = localStorage.getItem("token") || undefined;
+    const url = `${this.peticion.urlReal}/api/frase`;
 
-    this.peticion.get(get.host + get.path, token).then((res: any) => {
-      this.fraseMoti = res[0];
-      console.log('frase motivacional', this.fraseMoti)
-      this.cdr.detectChanges();
-    }).catch((err)=>{
-      console.log('error al obtener frase motivacional', err)
-    })
-  }
-
-
-  buscarUsuario() {
-    let apodo = localStorage.getItem('apodo') || undefined;
-    let token = localStorage.getItem('token') || undefined;
-    let get = {
-      host: this.peticion.urlReal,
-      path: "/api/users/get/" + 7,
-      payload: {
-      }
-    }
-    this.peticion.get(get.host + get.path).then((res: any) => {
-      this.usuario = res;
-      console.log("usuario obj", this.usuario)
-      console.log("Usuario logueado:", this.usuario.apodo);
-      this.cargarComunidades()
-      this.cdr.detectChanges();
-    }).catch((err) => {
-      console.log(err)
-      console.log("Error al encontrar usuario")
-    })
-  }
-
-  cargarComunidades() {
-    let get = {
-      host: this.peticion.urlReal,
-      path: "/api/communities/creator/"+ this.usuario.id +"/active" ,
-      payload: {
-      }
-    }
-    this.peticion.get(get.host + get.path).then((res: any) => {
-      this.comunidades = res
-      this.cdr.detectChanges()
-    }).catch((err: any) => {
-      console.error("error al obtener las comunidades", err);})
-  }
-
-  traductiCategoria(categoria: string) {
-    switch (categoria) {
-      case 'NUTRITION': return 'NUTRICION';
-      case 'FITNESS': return 'FITNESS';
-      case 'PERSONAL_DEVELOPMENT': return 'DESARROLLO PERSONAL';
-      default: return categoria;
-    }
-  }
-
-  eliminarComunidad() {
-    let del = {
-      host: this.peticion.urlReal,
-      path: "/api/communities/delete/" + this.comunidadseleccionada.id
-    };
-
-    this.peticion.delete(del.host + del.path, {}).then((res: any) => {
-      Swal.fire({
-        title: 'Eliminada',
-        text: 'La comunidad fue eliminada',
-        icon: 'success',
-        confirmButtonText: 'Correcto'
+    this.peticion
+      .get(url, token)
+      .then((res: any) => {
+        this.fraseMoti = Array.isArray(res) ? res[0] || {} : res || {};
+        this.cdr.detectChanges();
       })
-      this.cargarComunidades();
-      this.cdr.detectChanges()
-
-    }).catch((err: any) => {
-      console.error("error al eliminar la comunidad", err);
-      Swal.fire({
-        title: 'Error',
-        text: err.error,
-        icon: 'error',
-        confirmButtonText: 'Cerrar'
+      .catch((err: any) => {
+        console.error("Error al obtener frase motivacional", err);
       });
+  }
+
+  buscarUsuario(): void {
+    this.loadingUsuario = true;
+    this.limpiarFeedbackGeneral();
+
+    const userStorage2 = localStorage.getItem("user") || "";
+
+    if (localStorage.getItem("user"))
+      this.userStorage = JSON.parse(localStorage.getItem("user") || "");
+
+    console.log(this.userStorage);
+    const token = localStorage.getItem("token");
+    this.apodo = localStorage.getItem("apodo");
+
+    if (!this.userStorage || !token) {
+      this.generalError = "No se pudo identificar la sesión actual.";
+      this.loadingUsuario = false;
+      return;
+    }
+
+    let user;
+
+    try {
+      user = JSON.parse(userStorage2);
+    } catch (error) {
+      console.error("Error parseando user del localStorage", error);
+      this.generalError = "No se pudo leer la información del usuario actual.";
+      this.loadingUsuario = false;
+      return;
+    }
+
+    if (!user?.id) {
+      this.generalError = "El usuario actual no tiene un identificador válido.";
+      this.loadingUsuario = false;
+      return;
+    }
+
+    const url = `${this.peticion.urlReal}/api/users/get/${user.id}`;
+
+    this.peticion
+      .get(url, token)
+      .then((res: any) => {
+        this.usuario = res?.data || res || {};
+        console.log(this.usuario);
+        this.cdr.detectChanges();
+      })
+      .catch((err: any) => {
+        console.error("Error al encontrar usuario", err);
+        this.generalError = "No fue posible cargar la información del perfil.";
+      })
+      .finally(() => {
+        this.loadingUsuario = false;
+        this.cdr.detectChanges();
+      });
+  }
+
+  onImageSelected(event: Event): void {
+    this.imageError = "";
+    this.generalError = "";
+    this.generalSuccess = "";
+
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] || null;
+
+    if (!file) {
+      return;
+    }
+
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+    const maxSizeBytes = 5 * 1024 * 1024;
+
+    if (!allowedTypes.includes(file.type)) {
+      this.imageError = "Formato no permitido. Usa JPG, PNG o WEBP.";
+      this.resetImageSelection(input);
+      return;
+    }
+
+    if (file.size > maxSizeBytes) {
+      this.imageError = "La imagen no puede superar 5 MB.";
+      this.resetImageSelection(input);
+      return;
+    }
+
+    this.selectedImageFile = file;
+    this.selectedImageName = file.name;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.previewImageUrl = reader.result as string;
+      this.cdr.detectChanges();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  cancelarSeleccionImagen(): void {
+    this.selectedImageFile = null;
+    this.selectedImageName = "";
+    this.previewImageUrl = null;
+    this.imageError = "";
+
+    const input = document.getElementById(
+      "pfImageInput",
+    ) as HTMLInputElement | null;
+    if (input) {
+      input.value = "";
+    }
+  }
+
+  resetImageSelection(input?: HTMLInputElement | null): void {
+    this.selectedImageFile = null;
+    this.selectedImageName = "";
+    this.previewImageUrl = null;
+
+    if (input) {
+      input.value = "";
+    }
+  }
+
+  subirImagenPerfil(): void {
+    this.limpiarFeedbackGeneral();
+    this.imageError = "";
+
+    if (!this.selectedImageFile) {
+      this.imageError = "Primero selecciona una imagen.";
+      return;
+    }
+
+    if (!this.usuario?.id) {
+      this.generalError = "No se pudo identificar el usuario actual.";
+      return;
+    }
+
+    this.uploadingImage = true;
+
+    const url = `${this.peticion.urlReal}/api/users/${this.usuario.id}/images/avatar`;
+
+    this.uploadService.UploadFile(this.selectedImageFile, url).subscribe({
+      next: (res: any) => {
+        this.generalSuccess =
+          res?.message || "Foto de perfil actualizada correctamente.";
+
+        const nuevaUrl =
+          res?.imageUrl || res?.data?.imageUrl || res?.profileImage || null;
+
+        if (nuevaUrl) {
+          this.usuario.profileImageUrl = nuevaUrl;
+        }
+
+        this.cancelarSeleccionImagen();
+        this.uploadingImage = false;
+        this.cdr.detectChanges();
+      },
+
+      error: (err: any) => {
+        console.error("Error al subir la imagen de perfil", err);
+
+        this.generalError =
+          err?.error?.message ||
+          err?.error?.mensaje ||
+          "No fue posible actualizar la foto de perfil.";
+
+        this.uploadingImage = false;
+        this.cdr.detectChanges();
+      },
     });
   }
 
-  actualizarComunidad(comunidad: any) {
+  obtenerFotoPerfil(): string {
+    return (
+      this.usuario?.profileImageUrl ||
+      this.usuario?.photoUrl ||
+      this.usuario?.avatarUrl ||
+      "imagenes/static/Fotoperfil.jpg"
+    );
+  }
 
-    const resultado= this.validar.validar(this.comunidadEditar);
+  obtenerNombreCompleto(): string {
+    return (
+      [this.usuario?.nombre, this.usuario?.apellido]
+        .filter((valor) => !!valor && String(valor).trim() !== "")
+        .join(" ") || "No disponible"
+    );
+  }
 
-    if (!resultado.ok){
-      const error= resultado.error;
-    Swal.fire({
-      title: 'Algo salio mal',
-      text: error,
-      icon: 'warning',
-      confirmButtonText: 'Ok'
-    })
-    console.log(error)
-    return;
-    }
+  obtenerNombres(): string {
+    return (
+      [this.usuario?.nombre, this.usuario?.apellido]
+        .filter((valor) => !!valor && String(valor).trim() !== "")
+        .join(" ") || "No disponible"
+    );
+  }
 
-    let token = localStorage.getItem('token') || undefined;
+  obtenerApellidos(): string {
+    return (
+      [this.usuario?.apellido]
+        .filter((valor) => !!valor && String(valor).trim() !== "")
+        .join(" ") || "No disponible"
+    );
+  }
 
+  formatearFecha(fecha: string | null | undefined): string {
+    if (!fecha) return "No disponible";
 
+    const date = new Date(fecha);
+    if (isNaN(date.getTime())) return fecha;
 
-    let act = {
-      host: this.peticion.urlReal,
-      path: '/api/communities/update/' + comunidad.id,
-      payload: {
-        name: this.comunidadEditar.name,
-        description: this.comunidadEditar.description,
-        category: this.comunidadEditar.category
-      }
-    };
-    this.peticion.patch(act.host + act.path, act.payload).then((res: any) => {
-      Swal.fire({
-        title: 'Actualizada',
-        text: 'La comunidad fue actualizada',
-        icon: 'success',
-        confirmButtonText: 'Correcto'
-      })
-      this.cargarComunidades();
-    }).catch((err: any) => {
-      console.error("error al actualizar la comunidad", err);
-      console.log(this.comunidadEditar)
-      Swal.fire({
-        title: 'Error',
-        text: 'Error al actualizar la comunidad'+ err,
-        icon: 'error',
-        confirmButtonText: 'Cerrar'
-      });
+    return date.toLocaleDateString("es-CO", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
     });
   }
 }

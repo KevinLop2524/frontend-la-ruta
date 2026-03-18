@@ -2,111 +2,201 @@
 
 <main class="pf-page">
 
-  <!-- BANNER -->
+  <!-- Feedback general -->
+  <div class="pf-container">
+    <div *ngIf="generalError" class="pf-alert pf-alert--error">
+      {{ generalError }}
+    </div>
+
+    <div *ngIf="generalSuccess" class="pf-alert pf-alert--success">
+      {{ generalSuccess }}
+    </div>
+  </div>
+
+  <!-- Banner -->
   <div class="pf-banner">
     <div class="pf-avatar-wrap">
-      <img src="imagenes/static/Fotoperfil.jpg" class="pf-avatar" alt="foto perfil" id="foto_perfil">
+      <img
+        [src]="previewImageUrl || obtenerFotoPerfil()"
+        class="pf-avatar"
+        alt="Foto de perfil"
+        id="foto_perfil"
+      >
+
+      <label for="pfImageInput" class="pf-avatar-edit">
+        <i class="bi bi-camera-fill"></i>
+      </label>
+
+      <input
+        id="pfImageInput"
+        type="file"
+        accept="image/png,image/jpeg,image/jpg,image/webp"
+        hidden
+        (change)="onImageSelected($event)"
+      >
     </div>
   </div>
 
-  <!-- INFO -->
-  <div class="pf-info">
-    <div>
-      <h3 class="pf-name">{{usuario.username}}</h3>
-      <div class="pf-handle">@{{usuario.username}}</div>
-      <div class="pf-quote-wrap">
-        <p class="pf-quote">"{{fraseMoti.q}}"</p>
-        <div class="pf-quote-author">— {{fraseMoti.a}}</div>
-      </div>
-    </div>
-    <div class="pf-info-actions">
-      <button class="pf-btn-priv"
-        data-bs-toggle="collapse"
-        data-bs-target="#datosPrivados">
-        <i class="bi bi-lock-fill me-1"></i>Datos privados
-      </button>
-      <button class="pf-btn-edit" routerLink="/editarPerfil">
-        <i class="bi bi-pencil-fill me-1"></i>Editar perfil
-      </button>
-    </div>
-  </div>
+  <!-- Info -->
+  <div class="pf-container">
+    <div class="pf-info">
 
-  <!-- STATS FÍSICOS -->
-  <div class="pf-stats-bar">
-    <div class="pf-stat">
-      <span class="pf-stat-label">Altura</span>
-      <span class="pf-stat-val">
-        {{usuario?.height}}<span class="pf-stat-unit"> cm</span>
-      </span>
-    </div>
-    <div class="pf-stat">
-      <span class="pf-stat-label">Peso</span>
-      <span class="pf-stat-val">
-        {{usuario?.weight}}<span class="pf-stat-unit"> kg</span>
-      </span>
-    </div>
-    <div class="pf-stat">
-      <span class="pf-stat-label">Nacimiento</span>
-      <span class="pf-stat-val pf-stat-val--sm">{{usuario?.dateOfBirth}}</span>
-    </div>
-    <div class="pf-stat">
-      <span class="pf-stat-label">Sexo</span>
-      <span class="pf-stat-val pf-stat-val--sm">{{usuario?.gender}}</span>
-    </div>
-  </div>
+      <div>
+        <div *ngIf="loadingUsuario" class="pf-status">Cargando perfil...</div>
 
-  <!-- DATOS PRIVADOS COLAPSABLES -->
-  <div class="collapse" id="datosPrivados">
-    <div class="pf-priv-panel">
-      <div class="pf-priv-section-title">
-        <i class="bi bi-lock-fill me-2"></i>Información privada
-      </div>
-      <div class="pf-priv-grid">
-        <div class="pf-priv-item">
-          <span class="pf-priv-key">Nombre completo</span>
-          <span class="pf-priv-val">
-            {{usuario?.firstName}} {{usuario?.secondName}}
-            {{usuario?.lastName}} {{usuario?.secondLastName}}
-          </span>
-        </div>
-        <div class="pf-priv-item">
-          <span class="pf-priv-key">Correo</span>
-          <span class="pf-priv-val">{{usuario?.email}}</span>
-        </div>
-        <div class="pf-priv-item">
-          <span class="pf-priv-key">Apodo</span>
-          <span class="pf-priv-val">@{{usuario?.username}}</span>
-        </div>
-        <div class="pf-priv-item">
-          <span class="pf-priv-key">Fecha de nacimiento</span>
-          <span class="pf-priv-val">{{usuario?.dateOfBirth}}</span>
-        </div>
-      </div>
-    </div>
-  </div>
+        <ng-container *ngIf="!loadingUsuario">
+          <h3 class="pf-name">{{ apodo || 'Usuario' }}</h3>
+          <div class="pf-handle">@{{ apodo || 'sin-apodo' }}</div>
 
-  <!-- CONTENIDO: DATOS PÚBLICOS -->
-  <div class="pf-content">
-    <div class="pf-section">
-      <div class="pf-section-title">Datos públicos</div>
-      <div class="pf-section-line"></div>
+          <div class="pf-quote-wrap" *ngIf="fraseMoti?.q">
+            <p class="pf-quote">"{{ fraseMoti.q }}"</p>
+            <div class="pf-quote-author">— {{ fraseMoti.a || 'La Ruta' }}</div>
+          </div>
+        </ng-container>
+      </div>
+
+      <div class="pf-info-actions">
+        <button
+          class="pf-btn-priv"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#datosPrivados">
+          <i class="bi bi-lock-fill me-1"></i>Datos privados
+        </button>
+
+        <button class="pf-btn-edit" routerLink="/editarPerfil">
+          <i class="bi bi-pencil-fill me-1"></i>Editar perfil
+        </button>
+      </div>
     </div>
-    <div class="pf-data-grid">
-      <div class="pf-data-card">
-        <div class="pf-data-label">Nombre</div>
-        <div class="pf-data-val">{{usuario?.firstName}} {{usuario?.secondName}}</div>
+
+    <!-- Acciones de imagen -->
+    <div class="pf-upload-panel">
+      <div class="pf-upload-title">Foto de perfil</div>
+      <div class="pf-upload-text">
+        Sube una imagen JPG, PNG o WEBP de máximo 5 MB.
       </div>
-      <div class="pf-data-card">
-        <div class="pf-data-label">Apellido</div>
-        <div class="pf-data-val">{{usuario?.lastName}} {{usuario?.secondLastName}}</div>
+
+      <div *ngIf="imageError" class="pf-alert pf-alert--error pf-alert--compact">
+        {{ imageError }}
       </div>
-      <div class="pf-data-card">
-        <div class="pf-data-label">Apodo</div>
-        <div class="pf-data-val">@{{usuario?.username}}</div>
+
+      <div *ngIf="selectedImageName" class="pf-upload-file">
+        Archivo seleccionado: {{ selectedImageName }}
       </div>
-      <div class="pf-data-card">
-        <div class="pf-data-label">Correo</div>
-        <div class="pf-data-val">{{usuario?.email}}</div>
+
+      <div class="pf-upload-actions">
+        <label for="pfImageInput" class="pf-btn-secondary">
+          <i class="bi bi-image-fill me-1"></i>Elegir imagen
+        </label>
+
+        <button
+          type="button"
+          class="pf-btn-primary"
+          [disabled]="!selectedImageFile || uploadingImage"
+          (click)="subirImagenPerfil()">
+          <i class="bi bi-cloud-arrow-up-fill me-1"></i>
+          {{ uploadingImage ? 'Subiendo...' : 'Guardar foto' }}
+        </button>
+
+        <button
+          type="button"
+          class="pf-btn-ghost"
+          *ngIf="selectedImageFile"
+          [disabled]="uploadingImage"
+          (click)="cancelarSeleccionImagen()">
+          Cancelar
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats físicos -->
+    <div class="pf-stats-bar" *ngIf="!loadingUsuario">
+      <div class="pf-stat">
+        <span class="pf-stat-label">Altura</span>
+        <span class="pf-stat-val">
+          {{ usuario?.height || '—' }}<span class="pf-stat-unit" *ngIf="usuario?.height"> cm</span>
+        </span>
+      </div>
+
+      <div class="pf-stat">
+        <span class="pf-stat-label">Peso</span>
+        <span class="pf-stat-val">
+          {{ usuario?.weight || '—' }}<span class="pf-stat-unit" *ngIf="usuario?.weight"> kg</span>
+        </span>
+      </div>
+
+      <div class="pf-stat">
+        <span class="pf-stat-label">Nacimiento</span>
+        <span class="pf-stat-val pf-stat-val--sm">{{ formatearFecha(usuario?.dateOfBirth) }}</span>
+      </div>
+
+      <div class="pf-stat">
+        <span class="pf-stat-label">Sexo</span>
+        <span class="pf-stat-val pf-stat-val--sm">{{ usuario?.gender || '—' }}</span>
+      </div>
+    </div>
+
+    <!-- Datos privados -->
+    <div class="collapse" id="datosPrivados">
+      <div class="pf-priv-panel">
+        <div class="pf-priv-section-title">
+          <i class="bi bi-lock-fill me-2"></i>Información privada
+        </div>
+
+        <div class="pf-priv-grid">
+          <div class="pf-priv-item">
+            <span class="pf-priv-key">Nombre completo</span>
+            <span class="pf-priv-val">
+              {{ this.userStorage?.nombre + ' ' + this.userStorage?.apellido }}
+            </span>
+          </div>
+
+          <div class="pf-priv-item">
+            <span class="pf-priv-key">Correo</span>
+            <span class="pf-priv-val">{{ this.userStorage?.correo || 'No disponible' }}</span>
+          </div>
+
+          <div class="pf-priv-item">
+            <span class="pf-priv-key">Apodo</span>
+            <span class="pf-priv-val">{{ apodo || 'No disponible' }}</span>
+          </div>
+
+          <div class="pf-priv-item">
+            <span class="pf-priv-key">Fecha de nacimiento</span>
+            <span class="pf-priv-val">{{ formatearFecha(usuario?.dateOfBirth) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Datos públicos -->
+    <div class="pf-content">
+      <div class="pf-section">
+        <div class="pf-section-title">Datos públicos</div>
+        <div class="pf-section-line"></div>
+      </div>
+
+      <div class="pf-data-grid">
+        <div class="pf-data-card">
+          <div class="pf-data-label">Nombre</div>
+          <div class="pf-data-val">{{ this.userStorage?.nombre || 'No disponible' }}</div>
+        </div>
+
+        <div class="pf-data-card">
+          <div class="pf-data-label">Apellido</div>
+          <div class="pf-data-val">{{ this.userStorage?.apellido || 'No disponible' }}</div>
+        </div>
+
+        <div class="pf-data-card">
+          <div class="pf-data-label">Apodo</div>
+          <div class="pf-data-val">{{ this.apodo || 'No disponible' }}</div>
+        </div>
+
+        <div class="pf-data-card">
+          <div class="pf-data-label">Correo</div>
+          <div class="pf-data-val">{{ this.userStorage?.correo || 'No disponible' }}</div>
+        </div>
       </div>
     </div>
   </div>

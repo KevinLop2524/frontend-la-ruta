@@ -1,63 +1,235 @@
 <app-header></app-header>
 
-    <nav class="navbar navbar-expand-lg mb-4"
-        style="background:linear-gradient(90deg,var(--primary),var(--secondary));">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center text-white" href="./index.html">
-                <img src="../../resources/New_Logo_Modo_Claro.png" alt="logo">
-                <span class="ms-2 fs-5 fw-bold">La Ruta</span>
-            </a>
-            <div class="d-flex gap-2 align-items-center">
-                <input id="globalSearch" class="form-control form-control-sm search-input"
-                    placeholder="Buscar publicaciones..." style="width:220px">
-                <button id="themeToggle" class="btn btn-light btn-sm btn-theme">Modo oscuro</button>
-            </div>
-        </div>
-    </nav>
+<main class="sv-page">
 
-    <main class="container feed">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h3 class="m-0">Inicio</h3>
-            <div>
-                <button class="btn btn-outline-primary me-2"
-                    onclick="location.href='comunidades.html'">Comunidades</button>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newPostModal"><i
-                        class="bi bi-plus-lg"></i> Nueva</button>
-            </div>
+  <div class="sv-hero">
+    <a routerLink="/comunidades" class="sv-hero-back">
+      <i class="bi bi-arrow-left me-1"></i>Volver a comunidades
+    </a>
+
+    <div *ngIf="loadingComunidad" class="sv-status">Cargando comunidad...</div>
+
+    <ng-container *ngIf="!loadingComunidad">
+      <h2 class="sv-hero-title">{{ obtenerNombreComunidad() }}</h2>
+      <p class="sv-hero-desc">{{ obtenerDescripcionComunidad() }}</p>
+
+      <div class="sv-hero-meta">
+        <span class="sv-badge sv-badge--fitness"
+          *ngIf="obtenerCategoriaComunidad() === 'FITNESS'">Fitness</span>
+
+        <span class="sv-badge sv-badge--nutrition"
+          *ngIf="obtenerCategoriaComunidad() === 'NUTRITION'">Nutrición</span>
+
+        <span class="sv-badge sv-badge--dev"
+          *ngIf="obtenerCategoriaComunidad() === 'PERSONAL_DEVELOPMENT'">Desarrollo personal</span>
+
+        <span class="sv-badge sv-badge--type" *ngIf="obtenerTipoComunidad()">
+          {{ obtenerTipoComunidad() }}
+        </span>
+      </div>
+    </ng-container>
+  </div>
+
+  <div class="sv-tabs">
+    <button class="sv-tab active"
+      id="pills-home-tab"
+      data-bs-toggle="pill"
+      data-bs-target="#pills-home"
+      type="button" role="tab"
+      aria-controls="pills-home"
+      aria-selected="true">
+      <i class="bi bi-grid-fill me-2"></i>Servicios
+    </button>
+
+    <button class="sv-tab"
+      id="pills-profile-tab"
+      data-bs-toggle="pill"
+      data-bs-target="#pills-profile"
+      type="button" role="tab"
+      aria-controls="pills-profile"
+      aria-selected="false">
+      <i class="bi bi-plus-circle-fill me-2"></i>Crear servicio
+    </button>
+  </div>
+
+  <div class="sv-content">
+    <div class="tab-content" id="pills-tabContent">
+
+      <!-- TAB SERVICIOS -->
+      <div class="tab-pane fade show active" id="pills-home"
+        role="tabpanel" aria-labelledby="pills-home-tab" tabindex="0">
+
+        <div *ngIf="servicesError" class="sv-alert sv-alert--error">
+          {{ servicesError }}
         </div>
 
-        <div id="postsList" class="mb-5"></div>
-    </main>
+        <div *ngIf="servicesSuccess" class="sv-alert sv-alert--success">
+          {{ servicesSuccess }}
+        </div>
 
-    <div class="modal fade" id="newPostModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Crear publicación</h5>
-                    <button class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <input id="postTitle" class="form-control mb-2" placeholder="Título (opcional)">
-                    <textarea id="postText" class="form-control mb-2" rows="3"
-                        placeholder="¿Qué quieres compartir?"></textarea>
-                    <input id="postImg" class="form-control" placeholder="URL imagen (opcional)">
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button class="btn btn-primary" onclick="createPost()">Publicar</button>
-                </div>
-            </div>
+        <div class="sv-section">
+          <div class="sv-section-title">Servicios disponibles</div>
+          <div class="sv-section-line"></div>
+          <div class="sv-section-count">{{ servicios.length }} servicios</div>
         </div>
-        <div class="card-svc">
-            <div class="d-flex justify-content-between">
-                <h5>Kevin</h5><small class="text-muted">Kevin</small>
-            </div>
-            <p class="small text-muted">Hola a todos VLLC</p>
-            <div class="d-flex gap-2">
-                <button class="btn btn-sm btn-outline-primary" onclick='openSvc("${s.id}")'>Abrir</button>
-                <button class="btn btn-sm btn-danger" onclick='delSvc("${s.id}")'>Eliminar</button>
-            </div>
+
+        <div *ngIf="loadingServicios" class="sv-status">
+          Cargando servicios...
         </div>
+
+        <div class="sv-list" *ngIf="!loadingServicios">
+          <div *ngFor="let servicio of servicios; trackBy: trackByServicioId" class="sv-item">
+            <div class="sv-item-main">
+              <div class="sv-item-icon">{{ obtenerIconoCategoria(servicio.categoria) }}</div>
+
+              <div class="sv-item-info">
+                <div class="sv-item-name">{{ servicio.name }}</div>
+                <div class="sv-item-desc">{{ servicio.description }}</div>
+              </div>
+
+              <div class="sv-item-actions">
+                <span class="sv-badge sv-badge--fitness">
+                  {{ traducirCategoriaServicio(servicio.category) || 'General' }}
+                </span>
+
+                <button class="sv-btn sv-btn--primary"
+                  data-bs-toggle="collapse"
+                  [attr.data-bs-target]="'#sv-' + servicio.id"
+                  type="button">
+                  Ver más
+                </button>
+              </div>
+            </div>
+
+            <div class="collapse" [id]="'sv-' + servicio.id">
+              <div class="sv-item-expand">
+                {{ servicio.descripcion }}
+                <br>
+<small class="sv-item-date">
+  {{ servicio?.createdAt ? (servicio.createdAt | date:'shortDate') : 'Fecha no disponible' }}
+</small>              </div>
+            </div>
+          </div>
+
+          <div class="sv-empty" *ngIf="servicios.length === 0">
+            <div class="sv-empty-icon">🏋️</div>
+            <div class="sv-empty-text">Aún no hay servicios en esta comunidad.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB CREAR SERVICIO -->
+      <div class="tab-pane fade" id="pills-profile"
+        role="tabpanel" aria-labelledby="pills-profile-tab" tabindex="0">
+
+        <div class="sv-form">
+          <div class="sv-form-title">Nuevo servicio</div>
+
+          <div *ngIf="formError" class="sv-alert sv-alert--error">
+            {{ formError }}
+          </div>
+
+          <div *ngIf="formSuccess" class="sv-alert sv-alert--success">
+            {{ formSuccess }}
+          </div>
+
+          <div class="sv-form-grid">
+
+            <div class="sv-field sv-form-full">
+              <label for="nuevaPublicacionPersonal" class="sv-label">Nombre del servicio</label>
+              <input
+                type="text"
+                class="sv-input"
+                id="nuevaPublicacionPersonal"
+                placeholder="Ej. Plan de entrenamiento funcional"
+                [(ngModel)]="ServicioCrear.titulo"
+                name="titulo"
+                maxlength="80"
+                (ngModelChange)="limpiarFeedbackFormulario()">
+
+              <div class="sv-error" *ngIf="submitted && !ServicioCrear.titulo?.trim()">
+                El nombre del servicio es obligatorio.
+              </div>
+
+              <div class="sv-error" *ngIf="submitted && ServicioCrear.titulo?.trim() && ServicioCrear.titulo.trim().length < 4">
+                El nombre debe tener al menos 4 caracteres.
+              </div>
+            </div>
+
+            <div class="sv-field sv-form-full">
+              <label for="exampleFormControlTextarea1" class="sv-label">Descripción</label>
+              <textarea
+                class="sv-input sv-textarea"
+                id="exampleFormControlTextarea1"
+                rows="4"
+                placeholder="Describe el servicio que vas a publicar."
+                [(ngModel)]="ServicioCrear.descripcion"
+                name="descripcion"
+                maxlength="500"
+                (ngModelChange)="limpiarFeedbackFormulario()"></textarea>
+
+              <div class="sv-error" *ngIf="submitted && !ServicioCrear.descripcion?.trim()">
+                La descripción es obligatoria.
+              </div>
+
+              <div class="sv-error" *ngIf="submitted && ServicioCrear.descripcion?.trim() && ServicioCrear.descripcion.trim().length < 10">
+                La descripción debe tener al menos 10 caracteres.
+              </div>
+            </div>
+
+            <div class="sv-field">
+              <label class="sv-label">Categoría</label>
+              <select
+                class="sv-input"
+                [(ngModel)]="ServicioCrear.categoria"
+                name="categoria"
+                (ngModelChange)="limpiarFeedbackFormulario()">
+                <option value="">Seleccione</option>
+                <option value="NUTRICION">Nutrición</option>
+                <option value="ENTRENAMIENTO">Entrenamiento</option>
+                <option value="SALUD_MENTAL">Salud mental</option>
+                <option value="BIENESTAR">Bienestar general</option>
+                <option value="PRODUCTIVIDAD">Productividad</option>
+                <option value="DESARROLLO_PERSONAL">Desarrollo personal</option>
+                <option value="MOTIVACION">Motivación</option>
+              </select>
+
+              <div class="sv-error" *ngIf="submitted && !ServicioCrear.categoria">
+                Debes seleccionar una categoría.
+              </div>
+            </div>
+
+            <div class="sv-field">
+              <label for="formFileMultiple" class="sv-label">Archivos (opcional)</label>
+              <input
+                class="sv-input"
+                type="file"
+                id="formFileMultiple"
+                multiple
+                disabled>
+              <div class="sv-hint">
+                Carga de archivos pendiente de integración.
+              </div>
+            </div>
+
+          </div>
+
+          <div class="sv-form-actions">
+            <button
+              type="button"
+              class="sv-btn sv-btn--primary"
+              [disabled]="creatingServicio || loadingUsuario"
+              (click)="crearServicio()">
+              <i class="bi bi-plus-circle-fill me-2"></i>
+              {{ creatingServicio ? 'Publicando...' : 'Publicar servicio' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
     </div>
+  </div>
 
-    <app-footer></app-footer>
+</main>
+
+<app-footer></app-footer>
