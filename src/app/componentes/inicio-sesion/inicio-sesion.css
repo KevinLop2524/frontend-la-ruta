@@ -260,3 +260,48 @@
     padding: 36px 24px;
   }
 }
+
+/* Estados de inputs */
+.lr-input.ng-invalid.ng-touched {
+  border-color: #e63946;
+}
+
+.lr-input.ng-valid.ng-touched {
+  border-color: #2a9d8f;
+}
+
+/* Feedback inline */
+.lr-error {
+  font-size: 11px;
+  color: #ff6b6b;
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+/* Alertas generales */
+.lr-alert {
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 13px;
+  margin-bottom: 18px;
+  border: 1px solid transparent;
+}
+
+.lr-alert-error {
+  background: rgba(230, 57, 70, 0.12);
+  border-color: rgba(230, 57, 70, 0.35);
+  color: #ff8fa3;
+}
+
+.lr-alert-success {
+  background: rgba(42, 157, 143, 0.12);
+  border-color: rgba(42, 157, 143, 0.35);
+  color: #7ae7d8;
+}
+
+/* Botón bloqueado */
+.lr-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}

@@ -265,3 +265,61 @@
     padding: 28px 20px;
   }
 }
+
+/* Estados visuales de validación */
+.rg-input.ng-invalid.ng-touched,
+.rg-input.ng-invalid.submitted-input {
+  border-color: #e63946;
+}
+
+.rg-input.ng-valid.ng-touched {
+  border-color: #2a9d8f;
+}
+
+/* Mensajes inline */
+.rg-error {
+  font-size: 11px;
+  color: #ff6b6b;
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+.rg-alert {
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 13px;
+  margin-bottom: 18px;
+  border: 1px solid transparent;
+}
+
+.rg-alert-error {
+  background: rgba(230, 57, 70, 0.12);
+  border-color: rgba(230, 57, 70, 0.35);
+  color: #ff8fa3;
+}
+
+.rg-alert-success {
+  background: rgba(42, 157, 143, 0.12);
+  border-color: rgba(42, 157, 143, 0.35);
+  color: #7ae7d8;
+}
+
+/* Botón deshabilitado */
+.rg-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Mejor visibilidad de date input */
+.rg-input[type="date"] {
+  color-scheme: dark;
+}
+
+/* Hint más visible */
+.rg-hint {
+  font-size: 11px;
+  color: #7a7a7a;
+  margin-top: 6px;
+  line-height: 1.5;
+}

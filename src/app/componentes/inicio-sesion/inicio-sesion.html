@@ -21,18 +21,43 @@
     <h1 class="lr-title">Bienvenido</h1>
     <p class="lr-subtitle">Inicia sesión para continuar</p>
 
-    <form id="IS-FV-datos" class="lr-form">
+    <form
+      #loginForm="ngForm"
+      id="IS-FV-datos"
+      class="lr-form"
+      novalidate
+      (ngSubmit)="iniciar(loginForm)"
+    >
+
+      <div *ngIf="serverError" class="lr-alert lr-alert-error">
+        {{ serverError }}
+      </div>
+
+      <div *ngIf="serverSuccess" class="lr-alert lr-alert-success">
+        {{ serverSuccess }}
+      </div>
 
       <div class="lr-field">
-        <label class="lr-label" for="IS-FV-usuario">Apodo</label>
+        <label class="lr-label" for="IS-FV-usuario">Apodo o correo</label>
         <input
           type="text"
           id="IS-FV-usuario"
           class="lr-input"
-          placeholder="Tu apodo"
+          placeholder="Tu apodo o correo"
           [(ngModel)]="identifier"
           name="identifier"
-          required>
+          #identifierModel="ngModel"
+          required
+          minlength="3"
+          maxlength="120"
+          (ngModelChange)="limpiarErroresDeCampo()"
+        >
+
+        <div class="lr-error" *ngIf="identifierModel.invalid && (identifierModel.touched || submitted)">
+          <span *ngIf="identifierModel.errors?.['required']">Ingresa tu apodo o correo.</span>
+          <span *ngIf="identifierModel.errors?.['minlength']">Debe tener al menos 3 caracteres.</span>
+          <span *ngIf="identifierModel.errors?.['maxlength']">No puede superar 120 caracteres.</span>
+        </div>
       </div>
 
       <div class="lr-field">
@@ -44,16 +69,29 @@
           placeholder="••••••••"
           [(ngModel)]="contrasena"
           name="contrasena"
-          required>
+          #contrasenaModel="ngModel"
+          required
+          minlength="8"
+          maxlength="50"
+          (ngModelChange)="limpiarErroresDeCampo()"
+        >
+
+        <div class="lr-error" *ngIf="contrasenaModel.invalid && (contrasenaModel.touched || submitted)">
+          <span *ngIf="contrasenaModel.errors?.['required']">Ingresa tu contraseña.</span>
+          <span *ngIf="contrasenaModel.errors?.['minlength']">La contraseña debe tener al menos 8 caracteres.</span>
+          <span *ngIf="contrasenaModel.errors?.['maxlength']">La contraseña no puede superar 50 caracteres.</span>
+        </div>
       </div>
 
-      <button type="button" class="lr-btn" (click)="iniciar()">
-        Iniciar sesión
+      <button
+        type="submit"
+        class="lr-btn"
+        [disabled]="loading"
+      >
+        {{ loading ? 'Ingresando...' : 'Iniciar sesión' }}
       </button>
 
     </form>
-
-
 
     <hr class="lr-divider" />
 

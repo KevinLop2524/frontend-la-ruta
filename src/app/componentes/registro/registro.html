@@ -18,55 +18,196 @@
       <h1 class="rg-title">Crear cuenta</h1>
       <p class="rg-subtitle">Completa los datos para registrarte</p>
 
-      <form action="registro2.html" id="R-FR-Datos" method="get" class="rg-grid needs-validation" novalidate>
+      <form
+        #registroForm="ngForm"
+        id="R-FR-Datos"
+        class="rg-grid"
+        novalidate
+        (ngSubmit)="registrar(registroForm)"
+      >
 
+        <!-- Feedback general -->
+        <div *ngIf="serverError" class="rg-alert rg-alert-error full">
+          {{ serverError }}
+        </div>
+
+        <div *ngIf="serverSuccess" class="rg-alert rg-alert-success full">
+          {{ serverSuccess }}
+        </div>
+
+        <!-- Nombre -->
         <div class="rg-field">
           <label for="nombre" class="rg-label">Nombre</label>
-          <input type="text" class="rg-input" id="nombre" name="firstName"
-            placeholder="Requerido" [(ngModel)]="firstName" required>
-          <div class="invalid-feedback">Ingresa tu nombre.</div>
+          <input
+            type="text"
+            class="rg-input"
+            id="nombre"
+            name="firstName"
+            placeholder="Requerido"
+            [(ngModel)]="firstName"
+            #firstNameModel="ngModel"
+            required
+            minlength="2"
+            maxlength="50"
+            pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$"
+          >
+          <div class="rg-error" *ngIf="firstNameModel.invalid && (firstNameModel.touched || submitted)">
+            <span *ngIf="firstNameModel.errors?.['required']">Ingresa tu nombre.</span>
+            <span *ngIf="firstNameModel.errors?.['minlength']">Debe tener al menos 2 caracteres.</span>
+            <span *ngIf="firstNameModel.errors?.['maxlength']">No puede superar 50 caracteres.</span>
+            <span *ngIf="firstNameModel.errors?.['pattern']">Solo se permiten letras y espacios.</span>
+          </div>
         </div>
 
+        <!-- Apellido -->
         <div class="rg-field">
           <label for="apellido" class="rg-label">Apellido</label>
-          <input type="text" class="rg-input" id="apellido" name="lastName"
-            placeholder="Requerido" [(ngModel)]="lastName" required>
-          <div class="invalid-feedback">Ingresa tu apellido.</div>
+          <input
+            type="text"
+            class="rg-input"
+            id="apellido"
+            name="lastName"
+            placeholder="Requerido"
+            [(ngModel)]="lastName"
+            #lastNameModel="ngModel"
+            required
+            minlength="2"
+            maxlength="50"
+            pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$"
+          >
+          <div class="rg-error" *ngIf="lastNameModel.invalid && (lastNameModel.touched || submitted)">
+            <span *ngIf="lastNameModel.errors?.['required']">Ingresa tu apellido.</span>
+            <span *ngIf="lastNameModel.errors?.['minlength']">Debe tener al menos 2 caracteres.</span>
+            <span *ngIf="lastNameModel.errors?.['maxlength']">No puede superar 50 caracteres.</span>
+            <span *ngIf="lastNameModel.errors?.['pattern']">Solo se permiten letras y espacios.</span>
+          </div>
         </div>
 
+        <!-- Usuario -->
         <div class="rg-field full">
           <label for="apodo" class="rg-label">Nombre de usuario</label>
-          <input type="text" class="rg-input" id="apodo" name="username"
-            placeholder="Requerido" [(ngModel)]="username" required>
-          <div class="invalid-feedback">Ingresa un nombre de usuario.</div>
+          <input
+            type="text"
+            class="rg-input"
+            id="apodo"
+            name="username"
+            placeholder="Requerido"
+            [(ngModel)]="username"
+            #usernameModel="ngModel"
+            required
+            minlength="4"
+            maxlength="20"
+            pattern="^[a-zA-Z0-9._]+$"
+          >
+          <div class="rg-error" *ngIf="usernameModel.invalid && (usernameModel.touched || submitted)">
+            <span *ngIf="usernameModel.errors?.['required']">Ingresa un nombre de usuario.</span>
+            <span *ngIf="usernameModel.errors?.['minlength']">Debe tener al menos 4 caracteres.</span>
+            <span *ngIf="usernameModel.errors?.['maxlength']">No puede superar 20 caracteres.</span>
+            <span *ngIf="usernameModel.errors?.['pattern']">Solo se permiten letras, números, punto y guion bajo.</span>
+          </div>
         </div>
 
+        <!-- Correo -->
         <div class="rg-field full">
           <label for="correo" class="rg-label">Correo electrónico</label>
-          <input type="email" class="rg-input" id="correo" name="email"
-            placeholder="Requerido" [(ngModel)]="email" required>
-          <div class="invalid-feedback">Ingresa un correo válido.</div>
+          <input
+            type="email"
+            class="rg-input"
+            id="correo"
+            name="email"
+            placeholder="Requerido"
+            [(ngModel)]="email"
+            #emailModel="ngModel"
+            required
+            email
+            maxlength="120"
+          >
+          <div class="rg-error" *ngIf="emailModel.invalid && (emailModel.touched || submitted)">
+            <span *ngIf="emailModel.errors?.['required']">Ingresa tu correo.</span>
+            <span *ngIf="emailModel.errors?.['email']">Ingresa un correo válido.</span>
+            <span *ngIf="emailModel.errors?.['maxlength']">No puede superar 120 caracteres.</span>
+          </div>
         </div>
 
+        <!-- Fecha de nacimiento -->
+        <div class="rg-field full">
+          <label for="dateOfBirth" class="rg-label">Fecha de nacimiento</label>
+          <input
+            type="date"
+            class="rg-input"
+            id="dateOfBirth"
+            name="dateOfBirth"
+            [(ngModel)]="dateOfBirth"
+            #dateOfBirthModel="ngModel"
+            required
+            [min]="minDate"
+            [max]="maxDate"
+            (ngModelChange)="validarFechaNacimiento()"
+          >
+          <div class="rg-hint">
+            Ingresa tu fecha de nacimiento, mayores de 13 años.
+          </div>
+          <div class="rg-error" *ngIf="(dateOfBirthModel.invalid && (dateOfBirthModel.touched || submitted)) || birthDateError">
+            <span *ngIf="dateOfBirthModel.errors?.['required']">Ingresa tu fecha de nacimiento.</span>
+            <span *ngIf="birthDateError">{{ birthDateError }}</span>
+          </div>
+        </div>
+
+        <!-- Contraseña -->
         <div class="rg-field">
           <label for="contrasena" class="rg-label">Ingresa una contraseña</label>
-          <input type="password" class="rg-input" id="contrasena" name="password"
-            placeholder="Requerido" [(ngModel)]="password" required>
-          <div class="invalid-feedback">Ingresa una contraseña.</div>
-          <div id="emailHelp" class="rg-hint">La contraseña debe tener entre 10 y 15 caracteres,
-            con al menos 2 minúsculas, 1 mayúscula y 2 números.</div>
+          <input
+            type="password"
+            class="rg-input"
+            id="contrasena"
+            name="password"
+            placeholder="Requerido"
+            [(ngModel)]="password"
+            #passwordModel="ngModel"
+            required
+            minlength="10"
+            maxlength="15"
+            (ngModelChange)="validarPasswords()"
+          >
+          <div class="rg-hint">
+            La contraseña debe tener entre 10 y 15 caracteres, con al menos 2 minúsculas, 1 mayúscula y 2 números.
+          </div>
+          <div class="rg-error" *ngIf="(passwordModel.invalid && (passwordModel.touched || submitted)) || passwordError">
+            <span *ngIf="passwordModel.errors?.['required']">Ingresa una contraseña.</span>
+            <span *ngIf="passwordModel.errors?.['minlength']">Debe tener al menos 10 caracteres.</span>
+            <span *ngIf="passwordModel.errors?.['maxlength']">No puede superar 15 caracteres.</span>
+            <span *ngIf="!passwordModel.errors && passwordError">{{ passwordError }}</span>
+          </div>
         </div>
 
+        <!-- Confirmar contraseña -->
         <div class="rg-field">
           <label for="contrasenaDos" class="rg-label">Verifica la contraseña</label>
-          <input type="password" class="rg-input" id="contrasenaDos" name="password2"
-            placeholder="Requerido" [(ngModel)]="password2" required>
-          <div class="invalid-feedback">Verifica la contraseña.</div>
-        </div>
+          <input
+            type="password"
+            class="rg-input"
+            id="contrasenaDos"
+            name="password2"
+            placeholder="Requerido"
+            [(ngModel)]="password2"
+            #password2Model="ngModel"
+            required
+            (ngModelChange)="validarPasswords()"
+          >
+          <div class="rg-error" *ngIf="(password2Model.invalid && (password2Model.touched || submitted)) || password2Error">
+            <span *ngIf="password2Model.errors?.['required']">Verifica la contraseña.</span>
+            <span *ngIf="password2Error">{{ password2Error }}</span>
+          </div>
+        </div> 
 
         <div class="rg-field full">
-          <button type="button" class="rg-btn" id="button" (click)="registrar()">
-            Registrarse
+          <button
+            type="submit"
+            class="rg-btn"
+            id="button"
+            [disabled]="loading"
+          >
+            {{ loading ? 'Registrando...' : 'Registrarse' }}
           </button>
         </div>
 
