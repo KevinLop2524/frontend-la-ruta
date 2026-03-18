@@ -1,34 +1,39 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
-import { Peticion } from '../../servicios/peticion';
+import { ChangeDetectorRef, Component } from "@angular/core";
+import { Peticion } from "../../servicios/peticion";
 import { FormsModule, NgForm } from "@angular/forms";
-import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { CommonModule } from "@angular/common";
+import { Router, RouterLink } from "@angular/router";
+import { HttpErrorResponse } from "@angular/common/http";
 
 @Component({
-  selector: 'app-inicio-sesion',
+  selector: "app-inicio-sesion",
   imports: [FormsModule, CommonModule, RouterLink],
-  templateUrl: './inicio-sesion.html',
-  styleUrl: './inicio-sesion.css'
+  templateUrl: "./inicio-sesion.html",
+  styleUrl: "./inicio-sesion.css",
 })
 export class InicioSesion {
-  identifier: string = '';
-  contrasena: string = '';
+  identifier: string = "";
+  contrasena: string = "";
 
   submitted: boolean = false;
   loading: boolean = false;
 
-  serverError: string = '';
-  serverSuccess: string = '';
+  serverError: string = "";
+  serverSuccess: string = "";
 
-  constructor(private peticion: Peticion, private router: Router, private cdr: ChangeDetectorRef) { }
+  constructor(
+    private peticion: Peticion,
+    private router: Router,
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   limpiarErroresDeCampo(): void {
-    this.serverError = '';
+    this.serverError = "";
   }
 
   limpiarFeedback(): void {
-    this.serverError = '';
-    this.serverSuccess = '';
+    this.serverError = "";
+    this.serverSuccess = "";
   }
 
   formularioValido(form: NgForm): boolean {
@@ -39,8 +44,8 @@ export class InicioSesion {
     this.submitted = true;
     this.limpiarFeedback();
 
-    if (!this.formularioValido(form)) {
-      this.serverError = 'Completa correctamente los campos antes de continuar.';
+    if (form.invalid) {
+      this.handleFormErrors(form);
       return;
     }
 
@@ -48,42 +53,75 @@ export class InicioSesion {
 
     const payload = {
       identifier: this.identifier.trim(),
-      password: this.contrasena
+      password: this.contrasena,
     };
 
-    const url = this.peticion.urlReal + '/api/auth/login';
+    const url = `${this.peticion.urlReal}/api/auth/login`;
 
-    this.peticion.post(url, payload).then((res: any) => {
-      const identifierNormalizado = this.identifier.trim().toLowerCase();
-      const username = res?.username?.toLowerCase?.() || '';
-      const email = res?.email?.toLowerCase?.() || '';
+    this.peticion
+      .post(url, payload)
+      .then((res: any) => this.handleLoginSuccess(res))
+      .catch((error: HttpErrorResponse) => this.handleLoginError(error))
+      .finally(() => this.handleLoginFinally());
+  }
 
-      if (username === identifierNormalizado || email === identifierNormalizado) {
-        this.serverSuccess = `Bienvenido ${res.username}`;
+  private handleFormErrors(form: NgForm): void {
+    const firstInvalidControl = Object.keys(form.controls).find(
+      (key) => form.controls[key].invalid,
+    );
 
-        localStorage.setItem('token', res.token);
-        localStorage.setItem('apodo', res.username);
-        localStorage.setItem('role', res.role);
+    this.serverError = firstInvalidControl
+      ? `El campo ${firstInvalidControl} es requerido o inválido.`
+      : "Completa correctamente los campos antes de continuar.";
+  }
 
-        setTimeout(() => {
-          if (localStorage.getItem('role') === 'ADMIN') {
-            this.router.navigate(['BlogAdmin']);
-          } else {
-            this.router.navigate(['comunidades']);
-          }
-        }, 700);
-      } else {
-        this.serverError = 'No fue posible validar el inicio de sesión.';
-      }
-    }).catch((err: any) => {
-      if (err?.status === 400 || err?.status === 401) {
-        this.serverError = err?.error?.message || 'Usuario o contraseña incorrectos.';
-      } else {
-        this.serverError = 'No fue posible iniciar sesión. Intenta nuevamente.';
-      }
-    }).finally(() => {
-      this.loading = false;
-      this.cdr.detectChanges();
-    });
+  private handleLoginSuccess(res: any): void {
+    const identifierNormalizado = this.identifier.trim().toLowerCase();
+    const username = res.username?.toLowerCase?.() || "";
+    const email = res.email?.toLowerCase?.() || "";
+
+    if (username === identifierNormalizado || email === identifierNormalizado) {
+      this.serverSuccess = `Bienvenido ${res.username}`;
+      this.storeUserData(res);
+      this.scheduleNavigation();
+    } else {
+      this.serverError = "No fue posible validar el inicio de sesión.";
+    }
+  }
+
+  private storeUserData(res: any): void {
+    // Considerar usar un servicio de almacenamiento seguro
+    localStorage.setItem("token", res.token);
+    localStorage.setItem("apodo", res.username);
+    localStorage.setItem("role", res.role);
+    localStorage.setItem("user", JSON.stringify(res));
+  }
+
+  private scheduleNavigation(): void {
+    setTimeout(() => {
+      const role = localStorage.getItem("role");
+      const route = role === "ADMIN" ? ["BlogAdmin"] : ["comunidades"];
+      this.router.navigate(route);
+    }, 500); // 500ms es suficiente para feedback visual
+  }
+
+  private handleLoginError(error: any): void {
+    const errorMessages: Record<number, string> = {
+      400: "Solicitud inválida. Verifica tus datos.",
+      401: "Usuario o contraseña incorrectos.",
+      403: "Acceso denegado.",
+      404: "Servicio no disponible.",
+      500: "Error del servidor. Intenta más tarde.",
+    };
+
+    this.serverError =
+      errorMessages[error.status] ||
+      error.error?.message ||
+      "No fue posible iniciar sesión. Intenta nuevamente.";
+  }
+
+  private handleLoginFinally(): void {
+    this.loading = false;
+    this.cdr.detectChanges();
   }
 }

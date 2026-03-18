@@ -164,17 +164,18 @@ export class ComunidadComponent implements OnInit {
 
     try {
       user = JSON.parse(userStorage);
+      console.log(user);
     } catch (error) {
       console.error("Error parseando user del localStorage", error);
       return;
     }
 
-    if (!user?.id) {
+    if (!user?.userId) {
       console.warn("Usuario sin ID válido");
       return;
     }
 
-    const url = `${this.peticion.urlReal}/api/users/get/${user.id}`;
+    const url = `${this.peticion.urlReal}/api/users/get/${user.userId}`;
 
     this.peticion
       .get(url, token)
