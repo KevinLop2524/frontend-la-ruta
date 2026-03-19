@@ -99,27 +99,29 @@ export class Peticion {
     return promesa;
   };
 
-  delete = (url: string, payload: {}) => {
-    let promesa = new Promise((resolve, reject) => {
-      this.requestOptions = {
-        headers: new HttpHeaders({
-          //"":""
-        }),
-        withCredentials: true,
-        body: payload,
-      };
-      this.http
-        .request("delete", url, this.requestOptions)
-        .toPromise()
-        .then((res: any) => {
-          resolve(res);
-        })
-        .catch((error: any) => {
-          reject(error);
-        });
-    });
-    return promesa;
-  };
+  delete = (url: string, payload: {}, token?: string) => {
+  let promesa = new Promise((resolve, reject) => {
+    this.requestOptions = {
+      headers: new HttpHeaders({
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      }),
+      withCredentials: true,
+      body: payload,
+    };
+
+    this.http
+      .request("delete", url, this.requestOptions)
+      .toPromise()
+      .then((res: any) => {
+        resolve(res);
+      })
+      .catch((error: any) => {
+        reject(error);
+      });
+  });
+
+  return promesa;
+};
 
   UploadFile(file: File, api: string): Observable<any> {
     const formData = new FormData();

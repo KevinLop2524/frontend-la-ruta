@@ -258,3 +258,33 @@
   .fv-comm-item { flex-wrap: wrap; }
   .fv-comm-btn { width: 100%; justify-content: center; }
 }
+.fv-alert {
+  margin: 0 0 18px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  border: 1px solid;
+}
+
+.fv-alert--error {
+  background: rgba(230, 57, 70, 0.08);
+  border-color: rgba(230, 57, 70, 0.25);
+  color: #ff7b86;
+}
+
+.fv-empty {
+  width: 100%;
+  text-align: center;
+  padding: 28px 16px;
+  color: #444;
+}
+
+.fv-empty-icon {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.fv-empty-text {
+  font-size: 14px;
+  color: #555;
+}

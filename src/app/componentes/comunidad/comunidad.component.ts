@@ -6,6 +6,7 @@ import { FormsModule } from "@angular/forms";
 import { Router, RouterLink, RouterModule } from "@angular/router";
 import { Footer } from "../footer/footer";
 import { comunidadZodValidator } from "../../validators/comunidad-zod.validator";
+import { id } from "zod/v4/locales";
 
 @Component({
   selector: "app-comunidad",
@@ -72,8 +73,8 @@ export class ComunidadComponent implements OnInit {
       this.rol = [roleUnico];
     }
 
-    this.cargarComunidades();
     this.buscarUsuario();
+    this.cargarComunidades();
   }
 
   esAdmin(): boolean {
@@ -116,8 +117,9 @@ export class ComunidadComponent implements OnInit {
   cargarComunidades(): void {
     this.loadingComunidades = true;
     this.limpiarFeedbackGeneral();
-
-    const url = `${this.peticion.urlReal}/api/communities/active`;
+    const idUsuario = JSON.parse(localStorage.getItem("user") || "{}")?.userId;
+    console.log(idUsuario);
+    const url = `${this.peticion.urlReal}/api/communities/active/not-joined/${idUsuario}`;
 
     this.peticion
       .get(url)
@@ -180,6 +182,7 @@ export class ComunidadComponent implements OnInit {
     this.peticion
       .get(url, token)
       .then((res: any) => {
+        console.log(res);
         this.usuario = res?.data || res;
         this.nuevaComunidad.creatorId = this.usuario.id;
         this.cdr.markForCheck();
@@ -364,7 +367,8 @@ export class ComunidadComponent implements OnInit {
         console.error("Error al unirse a la comunidad", err);
         this.generalError =
           err?.error?.message || "No fue posible unirse a la comunidad.";
-      });
+          this.cdr.detectChanges();
+      }) ; 
   }
 
   toggleEditar(comunidad: any): void {

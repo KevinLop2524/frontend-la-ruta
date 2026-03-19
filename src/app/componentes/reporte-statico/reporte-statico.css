@@ -352,3 +352,24 @@
 @media (max-width: 480px) {
   .rs-filters-grid { grid-template-columns: 1fr; }
 }
+
+.rs-alert {
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  border: 1px solid;
+}
+
+.rs-alert--error {
+  background: rgba(230, 57, 70, 0.08);
+  border-color: rgba(230, 57, 70, 0.25);
+  color: #ff7b86;
+}
+
+.rs-btn-report:disabled,
+.rs-btn:disabled,
+.td-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

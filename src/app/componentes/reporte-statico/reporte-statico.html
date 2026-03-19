@@ -3,33 +3,41 @@
 <main class="rs-page">
   <div class="container">
 
-    <!-- HEADER -->
     <div class="rs-header">
       <div>
         <h2 class="rs-title">Gestión de usuarios</h2>
         <p class="rs-subtitle">Filtra, visualiza y genera reportes del sistema</p>
       </div>
-      <button class="rs-btn-report" type="button" (click)="reporte()">
-        <i class="bi bi-file-earmark-arrow-down-fill me-2"></i>Generar reporte PDF
+
+      <button
+        class="rs-btn-report"
+        type="button"
+        (click)="reporte()"
+        [disabled]="descargandoPdf || cargando">
+        <i class="bi bi-file-earmark-arrow-down-fill me-2"></i>
+        {{ descargandoPdf ? 'Generando PDF...' : 'Generar reporte PDF' }}
       </button>
     </div>
 
-    <!-- FILTROS -->
     <div class="rs-filters">
       <div class="rs-filters-grid">
 
         <div>
           <label class="rs-label">Nombre</label>
-          <input type="text" class="rs-input"
-            [(ngModel)]="filtros.fullName"
-            placeholder="Buscar nombre...">
+          <input
+            type="text"
+            class="rs-input"
+            [(ngModel)]="filtros.name"
+            placeholder="Buscar nombre..." />
         </div>
 
         <div>
           <label class="rs-label">Correo</label>
-          <input type="text" class="rs-input"
+          <input
+            type="text"
+            class="rs-input"
             [(ngModel)]="filtros.email"
-            placeholder="Buscar correo...">
+            placeholder="Buscar correo..." />
         </div>
 
         <div>
@@ -53,33 +61,50 @@
 
         <div>
           <label class="rs-label">Fecha inicio</label>
-          <input type="date" class="rs-input"
-            [(ngModel)]="filtros.fechaInicio">
+          <input
+            type="date"
+            class="rs-input"
+            [(ngModel)]="filtros.fechaInicioRegistro" />
         </div>
 
         <div>
           <label class="rs-label">Fecha fin</label>
-          <input type="date" class="rs-input"
-            [(ngModel)]="filtros.fechaFin">
+          <input
+            type="date"
+            class="rs-input"
+            [(ngModel)]="filtros.fechaFinRegistro" />
         </div>
 
       </div>
+
       <div class="rs-filter-actions">
-        <button class="rs-btn rs-btn--ghost" (click)="limpiarFiltros()">
+        <button
+          class="rs-btn rs-btn--ghost"
+          type="button"
+          (click)="limpiarFiltros()"
+          [disabled]="cargando">
           <i class="bi bi-x-circle me-1"></i>Limpiar
         </button>
-        <button class="rs-btn rs-btn--primary" (click)="aplicarFiltros()">
-          <i class="bi bi-search me-1"></i>Aplicar filtros
+
+        <button
+          class="rs-btn rs-btn--primary"
+          type="button"
+          (click)="aplicarFiltros()"
+          [disabled]="cargando">
+          <i class="bi bi-search me-1"></i>
+          {{ cargando ? 'Buscando...' : 'Aplicar filtros' }}
         </button>
       </div>
     </div>
 
-    <!-- CONTADOR -->
+    <div *ngIf="errorMessage" class="rs-alert rs-alert--error">
+      {{ errorMessage }}
+    </div>
+
     <p class="rs-count">
-      Mostrando <span>{{usuarios.length}}</span> usuarios
+      Mostrando <span>{{ usuarios.length }}</span> usuarios
     </p>
 
-    <!-- TABLA -->
     <div class="rs-table-wrap">
       <div class="table-responsive">
         <table class="table table-hover align-middle">
@@ -92,27 +117,35 @@
               <th>Acciones</th>
             </tr>
           </thead>
-          <tbody id="tablaComunidades">
-            <tr *ngFor="let item of usuarios">
+
+          <tbody>
+            <tr *ngFor="let item of usuarios; trackBy: trackByUsuario">
               <td>
-                <div class="td-name">{{item.fullName}}</div>
-                <div class="td-email">{{item.email}}</div>
+                <div class="td-name">{{ item.fullName || 'Sin nombre' }}</div>
+                <div class="td-email">{{ item.email || 'Sin correo' }}</div>
               </td>
+
               <td>
-                <span class="rs-badge rs-badge--apodo">@{{item.username}}</span>
+                <span class="rs-badge rs-badge--apodo">
+                  @{{ item.username || 'sin-usuario' }}
+                </span>
               </td>
+
               <td>
-                <span class="rs-badge"
+                <span
+                  class="rs-badge"
                   [ngClass]="{
                     'rs-badge--admin': item.role === 'ADMIN',
                     'rs-badge--asesor': item.role === 'ASESOR',
                     'rs-badge--client': item.role === 'CLIENT'
                   }">
-                  {{item.role}}
+                  {{ item.role || 'Sin rol' }}
                 </span>
               </td>
+
               <td>
-                <span class="rs-badge"
+                <span
+                  class="rs-badge"
                   [ngClass]="{
                     'rs-badge--active': item.active === true,
                     'rs-badge--inactive': item.active === false
@@ -120,26 +153,37 @@
                   {{ item.active ? '● Activo' : '● Inactivo' }}
                 </span>
               </td>
+
               <td>
                 <div class="td-actions">
-                  <button class="td-btn">
+                  <button class="td-btn" type="button" (click)="verUsuario(item)">
                     <i class="bi bi-eye me-1"></i>Ver
                   </button>
-                  <button class="td-btn td-btn--danger">
+
+                  <button class="td-btn td-btn--danger" type="button" (click)="eliminarUsuario(item)">
                     <i class="bi bi-trash me-1"></i>Eliminar
                   </button>
                 </div>
               </td>
             </tr>
 
-            <!-- ESTADO VACÍO -->
-            <tr *ngIf="usuarios.length === 0">
+            <tr *ngIf="!cargando && usuarios.length === 0">
               <td colspan="5" class="rs-empty">
                 <div class="rs-empty-icon">👤</div>
-                <div class="rs-empty-text">No se encontraron usuarios con los filtros aplicados.</div>
+                <div class="rs-empty-text">
+                  No se encontraron usuarios con los filtros aplicados.
+                </div>
               </td>
             </tr>
 
+            <tr *ngIf="cargando">
+              <td colspan="5" class="rs-empty">
+                <div class="rs-empty-icon">⏳</div>
+                <div class="rs-empty-text">
+                  Cargando usuarios...
+                </div>
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>

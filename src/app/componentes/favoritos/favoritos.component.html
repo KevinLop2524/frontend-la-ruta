@@ -3,186 +3,108 @@
 <main class="fv-page">
   <div class="container">
 
-    <!-- HEADER -->
     <div class="fv-header">
       <h2 class="fv-title">Mis favoritos</h2>
       <p class="fv-subtitle">Comunidades y servicios que guardaste</p>
+
       <div class="fv-search-wrap">
-        <input type="text" class="fv-search"
+        <input
+          type="text"
+          class="fv-search"
           placeholder="Buscar comunidades o servicios favoritos"
           aria-label="Buscar"
-          aria-describedby="addon-wrapping">
-        <input class="fv-search-btn" type="submit" value="Buscar">
+          [(ngModel)]="searchTerm"
+          (input)="aplicarBusqueda()"
+          (keyup.enter)="buscar()"
+        />
+        <input
+          class="fv-search-btn"
+          type="button"
+          value="Buscar"
+          (click)="buscar()"
+        />
       </div>
     </div>
 
-    <!-- COMUNIDADES -->
-    <div class="fv-section">
-      <div class="fv-section-title">Comunidades</div>
-      <div class="fv-section-line"></div>
-    </div>
-    <div class="fv-list" id="seccion-comunidades">
-      <div class="fv-comm-item">
-        <div class="fv-comm-avatar">C1</div>
-        <div class="fv-comm-info">
-          <div class="fv-comm-name">Comunidad fitness 1</div>
-          <div class="fv-comm-meta">
-            <span>💪 Únete a nuestra comunidad y entrena con personas que comparten tu pasión por el fitness.</span>
-          </div>
-        </div>
-        <a href="#" class="fv-comm-btn">
-          <i class="bi bi-arrow-right-circle-fill me-1"></i>Ir
-        </a>
-      </div>
-      <div class="fv-comm-item">
-        <div class="fv-comm-avatar fv-comm-avatar--green">C2</div>
-        <div class="fv-comm-info">
-          <div class="fv-comm-name">Comunidad fitness 2</div>
-          <div class="fv-comm-meta">
-            <span>🏋️‍♀️ Cambia tu estilo de vida con apoyo y motivación de otros deportistas como tú.</span>
-          </div>
-        </div>
-        <a href="#" class="fv-comm-btn">
-          <i class="bi bi-arrow-right-circle-fill me-1"></i>Ir
-        </a>
-      </div>
-      <div class="fv-comm-item">
-        <div class="fv-comm-avatar fv-comm-avatar--blue">C3</div>
-        <div class="fv-comm-info">
-          <div class="fv-comm-name">Comunidad fitness 3</div>
-          <div class="fv-comm-meta">
-            <span>🚴 Comparte tus logros y retos diarios con otros amantes del ejercicio.</span>
-          </div>
-        </div>
-        <a href="#" class="fv-comm-btn">
-          <i class="bi bi-arrow-right-circle-fill me-1"></i>Ir
-        </a>
-      </div>
+    <div *ngIf="errorMessage" class="fv-alert fv-alert--error">
+      {{ errorMessage }}
     </div>
 
-    <!-- SERVICIOS -->
-    <div class="fv-section">
-      <div class="fv-section-title">Servicios</div>
-      <div class="fv-section-line"></div>
-    </div>
-    <div class="row g-3 justify-content-center" id="seccion-servicios">
-      <div class="col-12 col-sm-6 col-md-4">
-        <div class="fv-serv-card">
-          <img src="/imagenes/static/imgGymUno.jpg" class="fv-serv-img" alt="Pérdida de peso">
-          <div class="fv-serv-body">
-            <div class="fv-serv-title">Pérdida de peso</div>
-            <p class="fv-serv-desc">Plan personalizado para quemar grasa y mejorar tu alimentación con apoyo.</p>
-            <a href="#" class="fv-serv-btn">
-              <i class="bi bi-arrow-right-circle-fill me-1"></i>Ir
-            </a>
-          </div>
-        </div>
-      </div>
-      <div class="col-12 col-sm-6 col-md-4">
-        <div class="fv-serv-card">
-          <img src="/imagenes/static/imgGymDos.jpg" class="fv-serv-img" alt="Aumento de masa muscular">
-          <div class="fv-serv-body">
-            <div class="fv-serv-title">Aumento de masa muscular</div>
-            <p class="fv-serv-desc">Rutinas y dieta para ganar músculo de forma efectiva y sostenida.</p>
-            <a href="#" class="fv-serv-btn">
-              <i class="bi bi-arrow-right-circle-fill me-1"></i>Ir
-            </a>
-          </div>
-        </div>
-      </div>
-      <div class="col-12 col-sm-6 col-md-4">
-        <div class="fv-serv-card">
-          <img src="/imagenes/static/imgGymTres.jpg" class="fv-serv-img" alt="Entrenamiento en casa">
-          <div class="fv-serv-body">
-            <div class="fv-serv-title">Entrenamiento en casa</div>
-            <p class="fv-serv-desc">Clases y ejercicios prácticos para entrenar sin necesidad de equipo.</p>
-            <a href="#" class="fv-serv-btn">
-              <i class="bi bi-arrow-right-circle-fill me-1"></i>Ir
-            </a>
-          </div>
-        </div>
-      </div>
+    <div *ngIf="cargando" class="fv-empty">
+      <div class="fv-empty-icon">⏳</div>
+      <div class="fv-empty-text">Cargando favoritos...</div>
     </div>
 
-    <!-- TOP SERVICIOS Y COMUNIDADES -->
-    <div class="fv-section">
-      <div class="fv-section-title">Top servicios y comunidades</div>
-      <div class="fv-section-line"></div>
-    </div>
-    <div class="row g-3 justify-content-center" id="top-servicios-comunidades">
-      <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-        <div class="fv-serv-card">
-          <img src="/imagenes/static/imgGymUno.jpg" class="fv-serv-img" alt="Pérdida de peso">
-          <div class="fv-serv-body">
-            <div class="fv-serv-title">Pérdida de peso</div>
-            <p class="fv-serv-desc">Plan personalizado para quemar grasa y mejorar tu alimentación con apoyo.</p>
-            <a href="#" class="fv-serv-btn">
-              <i class="bi bi-arrow-right-circle-fill me-1"></i>Ir
-            </a>
-          </div>
-        </div>
-      </div>
-      <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-        <div class="fv-serv-card">
-          <img src="/imagenes/static/imgGymDos.jpg" class="fv-serv-img" alt="Aumento de masa muscular">
-          <div class="fv-serv-body">
-            <div class="fv-serv-title">Aumento de masa muscular</div>
-            <p class="fv-serv-desc">Rutinas y dieta para ganar músculo.</p>
-            <a href="#" class="fv-serv-btn">
-              <i class="bi bi-arrow-right-circle-fill me-1"></i>Ir
-            </a>
-          </div>
-        </div>
-      </div>
-      <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-        <div class="fv-serv-card">
-          <img src="/imagenes/static/imgGymTres.jpg" class="fv-serv-img" alt="Entrenamiento en casa">
-          <div class="fv-serv-body">
-            <div class="fv-serv-title">Entrenamiento en casa</div>
-            <p class="fv-serv-desc">Clases y ejercicios prácticos para entrenar sin necesidad de equipo.</p>
-            <a href="#" class="fv-serv-btn">
-              <i class="bi bi-arrow-right-circle-fill me-1"></i>Ir
-            </a>
-          </div>
-        </div>
-      </div>
-      <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-        <div class="fv-serv-card">
-          <img src="/imagenes/static/imgGymUno.jpg" class="fv-serv-img" alt="Asesoría nutricional">
-          <div class="fv-serv-body">
-            <div class="fv-serv-title">Asesoría nutricional</div>
-            <p class="fv-serv-desc">Planes alimenticios adaptados a tus metas y estilo de vida con expertos.</p>
-            <a href="#" class="fv-serv-btn">
-              <i class="bi bi-arrow-right-circle-fill me-1"></i>Ir
-            </a>
-          </div>
-        </div>
-      </div>
-      <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-        <div class="fv-serv-card">
-          <img src="/imagenes/static/imgGymDos.jpg" class="fv-serv-img" alt="Comunidad fitness">
-          <div class="fv-serv-body">
-            <div class="fv-serv-title">Comunidad fitness</div>
-            <p class="fv-serv-desc">Un espacio para compartir logros y motivarte con otros.</p>
-            <a href="#" class="fv-serv-btn">
-              <i class="bi bi-arrow-right-circle-fill me-1"></i>Ir
-            </a>
-          </div>
-        </div>
-      </div>
-      <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-        <div class="fv-serv-card">
-          <img src="/imagenes/static/imgGymTres.jpg" class="fv-serv-img" alt="Comunidad fitness">
-          <div class="fv-serv-body">
-            <div class="fv-serv-title">Comunidad fitness</div>
-            <p class="fv-serv-desc">Entrena, comparte y crece junto a tu comunidad.</p>
-            <a href="#" class="fv-serv-btn">
-              <i class="bi bi-arrow-right-circle-fill me-1"></i>Ir
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
+    <ng-container *ngIf="!cargando">
 
+      <div class="fv-section">
+        <div class="fv-section-title">Comunidades</div>
+        <div class="fv-section-line"></div>
+      </div>
+
+      <div class="fv-list" id="seccion-comunidades">
+        <div
+          class="fv-comm-item"
+          *ngFor="let item of comunidadesFiltradas; let i = index; trackBy: trackById"
+        >
+          <div class="fv-comm-avatar" [ngClass]="obtenerClaseAvatar(i)">
+            {{ obtenerIniciales(item.nombre) }}
+          </div>
+
+          <div class="fv-comm-info">
+            <div class="fv-comm-name">{{ item.nombre }}</div>
+            <div class="fv-comm-meta">
+              <span>{{ item.descripcion }}</span>
+            </div>
+          </div>
+
+          <button type="button" class="fv-comm-btn" (click)="irAComunidad(item)">
+            <i class="bi bi-arrow-right-circle-fill me-1"></i>Ir
+          </button>
+        </div>
+
+        <div *ngIf="comunidadesFiltradas.length === 0" class="fv-empty">
+          <div class="fv-empty-icon">👥</div>
+          <div class="fv-empty-text">No tienes comunidades favoritas para mostrar.</div>
+        </div>
+      </div>
+
+      <div class="fv-section">
+        <div class="fv-section-title">Servicios</div>
+        <div class="fv-section-line"></div>
+      </div>
+
+      <div class="row g-3 justify-content-center" id="seccion-servicios">
+        <div
+          class="col-12 col-sm-6 col-md-4"
+          *ngFor="let item of serviciosFiltrados; trackBy: trackById"
+        >
+          <div class="fv-serv-card">
+            <img
+              [src]="item.imagenUrl || imagenPorDefectoServicio()"
+              class="fv-serv-img"
+              [alt]="item.nombre"
+            />
+
+            <div class="fv-serv-body">
+              <div class="fv-serv-title">{{ item.nombre }}</div>
+              <p class="fv-serv-desc">{{ item.descripcion }}</p>
+
+              <button type="button" class="fv-serv-btn" (click)="irAServicio(item)">
+                <i class="bi bi-arrow-right-circle-fill me-1"></i>Ir
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="serviciosFiltrados.length === 0" class="fv-empty">
+          <div class="fv-empty-icon">🏷️</div>
+          <div class="fv-empty-text">No tienes servicios favoritos para mostrar.</div>
+        </div>
+      </div>
+
+    </ng-container>
   </div>
 </main>
+
+<app-footer></app-footer>

@@ -15,7 +15,7 @@ import { Footer } from "../footer/footer";
 })
 export class Perfil implements OnInit {
   usuario: any = {};
-  fraseMoti: any = {};
+  // fraseMoti: any = {};
 
   loadingUsuario: boolean = false;
   uploadingImage: boolean = false;
@@ -38,7 +38,7 @@ export class Perfil implements OnInit {
 
   ngOnInit(): void {
     this.buscarUsuario();
-    this.obtenerFraseMotivacional();
+    // this.obtenerFraseMotivacional();
   }
 
   limpiarFeedbackGeneral(): void {
@@ -46,27 +46,27 @@ export class Perfil implements OnInit {
     this.generalSuccess = "";
   }
 
-  obtenerFraseMotivacional(): void {
-    const token = localStorage.getItem("token") || undefined;
-    const url = `${this.peticion.urlReal}/api/frase`;
+  // obtenerFraseMotivacional(): void {
+  //   const token = localStorage.getItem("token") || undefined;
+  //   const url = `${this.peticion.urlReal}/api/frase`;
 
-    this.peticion
-      .get(url, token)
-      .then((res: any) => {
-        this.fraseMoti = Array.isArray(res) ? res[0] || {} : res || {};
-        this.cdr.detectChanges();
-      })
-      .catch((err: any) => {
-        console.error("Error al obtener frase motivacional", err);
-      });
-  }
+  //   this.peticion
+  //     .get(url, token)
+  //     .then((res: any) => {
+  //       this.fraseMoti = Array.isArray(res) ? res[0] || {} : res || {};
+  //       this.cdr.detectChanges();
+  //     })
+  //     .catch((err: any) => {
+  //       console.error("Error al obtener frase motivacional", err);
+  //     });
+  // }
 
   buscarUsuario(): void {
     this.loadingUsuario = true;
     this.limpiarFeedbackGeneral();
 
-    const userStorage2 = localStorage.getItem("user") || "";
-
+    const userStorage2 = JSON.parse(localStorage.getItem("user") || "");
+    console.log(userStorage2);
     if (localStorage.getItem("user"))
       this.userStorage = JSON.parse(localStorage.getItem("user") || "");
 
@@ -83,7 +83,7 @@ export class Perfil implements OnInit {
     let user;
 
     try {
-      user = JSON.parse(userStorage2);
+      user = userStorage2;
     } catch (error) {
       console.error("Error parseando user del localStorage", error);
       this.generalError = "No se pudo leer la información del usuario actual.";
@@ -91,13 +91,13 @@ export class Perfil implements OnInit {
       return;
     }
 
-    if (!user?.id) {
+    if (!user?.userId) {
       this.generalError = "El usuario actual no tiene un identificador válido.";
       this.loadingUsuario = false;
       return;
     }
 
-    const url = `${this.peticion.urlReal}/api/users/get/${user.id}`;
+    const url = `${this.peticion.urlReal}/api/users/get/${user.userId}`;
 
     this.peticion
       .get(url, token)
@@ -229,10 +229,7 @@ export class Perfil implements OnInit {
 
   obtenerFotoPerfil(): string {
     return (
-      this.usuario?.profileImageUrl ||
-      this.usuario?.photoUrl ||
-      this.usuario?.avatarUrl ||
-      "imagenes/static/Fotoperfil.jpg"
+    `https://res.cloudinary.com/dwdapfmo6/image/upload/v1773894096/fitnessapp/users/${this.usuario?.id}/fitnessapp/users/${this.usuario?.id}/avatar.png`
     );
   }
 
