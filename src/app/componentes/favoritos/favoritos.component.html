@@ -30,6 +30,10 @@
       {{ errorMessage }}
     </div>
 
+    <div *ngIf="generalSuccess" class="fv-alert fv-alert--success">
+      {{ generalSuccess }}
+    </div>
+
     <div *ngIf="cargando" class="fv-empty">
       <div class="fv-empty-icon">⏳</div>
       <div class="fv-empty-text">Cargando favoritos...</div>
@@ -37,16 +41,19 @@
 
     <ng-container *ngIf="!cargando">
 
+      <!-- ── COMUNIDADES ── -->
       <div class="fv-section">
         <div class="fv-section-title">Comunidades</div>
         <div class="fv-section-line"></div>
       </div>
 
       <div class="fv-list" id="seccion-comunidades">
+
         <div
           class="fv-comm-item"
           *ngFor="let item of comunidadesFiltradas; let i = index; trackBy: trackById"
-        >
+          [class.fv-comm-item--leaving]="confirmandoSalidaId === item.id">
+
           <div class="fv-comm-avatar" [ngClass]="obtenerClaseAvatar(i)">
             {{ obtenerIniciales(item.nombre) }}
           </div>
@@ -58,9 +65,47 @@
             </div>
           </div>
 
-          <button type="button" class="fv-comm-btn" (click)="irAComunidad(item)">
-            <i class="bi bi-arrow-right-circle-fill me-1"></i>Ir
-          </button>
+          <!-- Confirmación inline de salida -->
+          <div class="fv-leave-confirm" *ngIf="confirmandoSalidaId === item.id">
+            <span class="fv-leave-text">¿Salir de esta comunidad?</span>
+            <button class="fv-confirm-yes" type="button"
+              [disabled]="saliedoDeId === item.id"
+              (click)="salirDeComunidad(item)">
+              {{ saliedoDeId === item.id ? 'Saliendo...' : 'Confirmar' }}
+            </button>
+            <button class="fv-confirm-no" type="button"
+              [disabled]="saliedoDeId === item.id"
+              (click)="cancelarSalida()">
+              Cancelar
+            </button>
+          </div>
+
+          <!-- Botones normales -->
+          <div class="fv-comm-actions" *ngIf="confirmandoSalidaId !== item.id">
+
+            <!-- Botón IR -->
+            <button type="button" class="fv-comm-btn" (click)="irAComunidad(item)">
+              <i class="bi bi-arrow-right-circle-fill"></i> Ir
+            </button>
+
+            <!-- Menú desplegable -->
+            <div class="fv-dropdown" [class.open]="menuAbiertoPara === item.id">
+              <button type="button" class="fv-dropdown-trigger"
+                (click)="toggleMenu(item.id)"
+                title="Más opciones">
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
+
+              <div class="fv-dropdown-menu">
+                <button type="button" class="fv-dropdown-item fv-dropdown-item--danger"
+                  (click)="pedirConfirmacionSalida(item)">
+                  <i class="bi bi-box-arrow-right"></i>
+                  Salir de la comunidad
+                </button>
+              </div>
+            </div>
+
+          </div>
         </div>
 
         <div *ngIf="comunidadesFiltradas.length === 0" class="fv-empty">
@@ -69,6 +114,7 @@
         </div>
       </div>
 
+      <!-- ── SERVICIOS ── -->
       <div class="fv-section">
         <div class="fv-section-title">Servicios</div>
         <div class="fv-section-line"></div>
@@ -85,11 +131,9 @@
               class="fv-serv-img"
               [alt]="item.nombre"
             />
-
             <div class="fv-serv-body">
               <div class="fv-serv-title">{{ item.nombre }}</div>
               <p class="fv-serv-desc">{{ item.descripcion }}</p>
-
               <button type="button" class="fv-serv-btn" (click)="irAServicio(item)">
                 <i class="bi bi-arrow-right-circle-fill me-1"></i>Ir
               </button>

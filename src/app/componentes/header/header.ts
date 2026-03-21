@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 
@@ -8,9 +8,13 @@ import { Router, RouterLink } from '@angular/router';
   templateUrl: './header.html',
   styleUrl: './header.css'
 })
-export class Header {
-
+export class Header implements OnInit {
+  role: string | null = null;
   constructor(private router: Router){}
+
+  ngOnInit(): void {
+    this.role = localStorage.getItem('role');
+  }
 
   logOut(){
     localStorage.clear();

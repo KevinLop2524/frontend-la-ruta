@@ -29,36 +29,19 @@
         type="text"
         placeholder="Buscar comunidades..."
         [(ngModel)]="searchTerm"
-        (ngModelChange)="aplicarFiltros()"
-      >
+        (ngModelChange)="aplicarFiltros()">
 
-      <button
-        class="cm-filter"
-        [class.active]="categoriaActiva === 'ALL'"
-        (click)="seleccionarCategoria('ALL')">
-        Todas
-      </button>
+      <button class="cm-filter" [class.active]="categoriaActiva === 'ALL'"
+        (click)="seleccionarCategoria('ALL')">Todas</button>
 
-      <button
-        class="cm-filter"
-        [class.active]="categoriaActiva === 'FITNESS'"
-        (click)="seleccionarCategoria('FITNESS')">
-        Fitness
-      </button>
+      <button class="cm-filter" [class.active]="categoriaActiva === 'FITNESS'"
+        (click)="seleccionarCategoria('FITNESS')">Fitness</button>
 
-      <button
-        class="cm-filter"
-        [class.active]="categoriaActiva === 'NUTRITION'"
-        (click)="seleccionarCategoria('NUTRITION')">
-        Nutrición
-      </button>
+      <button class="cm-filter" [class.active]="categoriaActiva === 'NUTRITION'"
+        (click)="seleccionarCategoria('NUTRITION')">Nutrición</button>
 
-      <button
-        class="cm-filter"
-        [class.active]="categoriaActiva === 'PERSONAL_DEVELOPMENT'"
-        (click)="seleccionarCategoria('PERSONAL_DEVELOPMENT')">
-        Desarrollo
-      </button>
+      <button class="cm-filter" [class.active]="categoriaActiva === 'PERSONAL_DEVELOPMENT'"
+        (click)="seleccionarCategoria('PERSONAL_DEVELOPMENT')">Desarrollo</button>
     </div>
 
     <!-- Estado de carga -->
@@ -71,7 +54,8 @@
 
       <div *ngFor="let comunidad of comunidadesFiltradas; trackBy: trackByComunidadId"
         class="cm-item-wrap"
-        [class.editing]="comunidadEditar?.id === comunidad.id">
+        [class.editing]="comunidadEditar?.id === comunidad.id"
+        [class.cm-item-wrap--joined]="esMiembro(comunidad.id)">
 
         <div class="cm-item">
           <div class="cm-avatar cm-avatar--default">
@@ -79,13 +63,19 @@
           </div>
 
           <div class="cm-info">
-            <div class="cm-name">{{ comunidad.name }}</div>
+            <div class="cm-name-row">
+              <div class="cm-name">{{ comunidad.name }}</div>
+              <!-- Indicador visual de membresía activa -->
+              <span class="cm-member-indicator" *ngIf="esMiembro(comunidad.id)">
+                <i class="bi bi-check-circle-fill"></i> Miembro
+              </span>
+            </div>
 
             <div class="cm-meta">
               <span class="cm-badge"
                 [ngClass]="{
-                  'cm-badge--fitness': comunidad.category === 'FITNESS',
-                  'cm-badge--nutrition': comunidad.category === 'NUTRITION',
+                  'cm-badge--fitness':     comunidad.category === 'FITNESS',
+                  'cm-badge--nutrition':   comunidad.category === 'NUTRITION',
                   'cm-badge--development': comunidad.category === 'PERSONAL_DEVELOPMENT'
                 }">
                 {{ traductiCategoria(comunidad.category) }}
@@ -98,14 +88,29 @@
           </div>
 
           <div class="cm-actions">
+
+            <!-- ── Ya es miembro: botón IR ── -->
             <button
+              *ngIf="esMiembro(comunidad.id)"
+              class="cm-btn cm-btn--go"
+              type="button"
+              [disabled]="joiningCommunityId === comunidad.id"
+              (click)="accionComunidad(comunidad)">
+              <i class="bi bi-arrow-right-circle-fill"></i>
+              {{ joiningCommunityId === comunidad.id ? 'Cargando...' : 'Ir' }}
+            </button>
+
+            <!-- ── No es miembro: botón UNIRSE ── -->
+            <button
+              *ngIf="!esMiembro(comunidad.id)"
               class="cm-btn cm-btn--join"
               type="button"
               [disabled]="joiningCommunityId === comunidad.id"
-              (click)="verificarMembresia(comunidad)">
+              (click)="accionComunidad(comunidad)">
               {{ joiningCommunityId === comunidad.id ? 'Procesando...' : 'Unirse' }}
             </button>
 
+            <!-- ── Solo admin: engranaje ── -->
             <button
               class="cm-btn cm-btn--settings"
               type="button"
@@ -113,10 +118,11 @@
               (click)="toggleEditar(comunidad)">
               <i class="bi bi-gear-fill"></i>
             </button>
+
           </div>
         </div>
 
-        <!-- Panel edición inline -->
+        <!-- Panel edición inline (admin) -->
         <div class="cm-edit" *ngIf="esAdmin() && comunidadEditar?.id === comunidad.id">
           <div class="cm-edit-title">Editar comunidad</div>
 
@@ -131,8 +137,7 @@
           <div class="cm-edit-grid">
             <div>
               <label class="cm-edit-label">Nombre</label>
-              <input
-                class="cm-edit-input"
+              <input class="cm-edit-input"
                 [(ngModel)]="comunidadEditar.name"
                 name="nombre"
                 maxlength="60"
@@ -144,8 +149,7 @@
 
             <div>
               <label class="cm-edit-label">Descripción</label>
-              <input
-                class="cm-edit-input"
+              <input class="cm-edit-input"
                 [(ngModel)]="comunidadEditar.description"
                 name="descripcion"
                 maxlength="160"
@@ -157,8 +161,7 @@
 
             <div>
               <label class="cm-edit-label">Categoría</label>
-              <select
-                class="cm-edit-input"
+              <select class="cm-edit-input"
                 [(ngModel)]="comunidadEditar.category"
                 name="category"
                 (ngModelChange)="limpiarFeedbackEdicion()">
@@ -174,26 +177,20 @@
           </div>
 
           <div class="cm-edit-actions">
-            <button
-              class="cm-edit-save"
-              type="button"
+            <button class="cm-edit-save" type="button"
               [disabled]="savingEdit"
               (click)="actualizarComunidad(comunidadEditar)">
               <i class="bi bi-check-lg me-1"></i>
               {{ savingEdit ? 'Guardando...' : 'Guardar' }}
             </button>
 
-            <button
-              class="cm-edit-cancel"
-              type="button"
+            <button class="cm-edit-cancel" type="button"
               [disabled]="savingEdit || deletingCommunity"
               (click)="cerrarEditar()">
               Cancelar
             </button>
 
-            <button
-              class="cm-edit-delete"
-              type="button"
+            <button class="cm-edit-delete" type="button"
               [disabled]="deletingCommunity"
               (click)="eliminarComunidad()">
               <i class="bi bi-trash me-1"></i>

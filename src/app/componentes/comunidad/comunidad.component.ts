@@ -3,10 +3,9 @@ import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
 import { Peticion } from "../../servicios/peticion";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
-import { Router, RouterLink, RouterModule } from "@angular/router";
+import { Router, RouterModule } from "@angular/router";
 import { Footer } from "../footer/footer";
 import { comunidadZodValidator } from "../../validators/comunidad-zod.validator";
-import { id } from "zod/v4/locales";
 
 @Component({
   selector: "app-comunidad",
@@ -17,11 +16,13 @@ import { id } from "zod/v4/locales";
 })
 export class ComunidadComponent implements OnInit {
   rol: string[] = [];
-  apodo: string | null = null;
   comunidadseleccionada: any = null;
   comunidades: any[] = [];
   comunidadesFiltradas: any[] = [];
   usuario: any = {};
+
+  // IDs de comunidades a las que ya pertenece el usuario
+  idsUnidas: Set<number> = new Set();
 
   searchTerm: string = "";
   categoriaActiva: string = "ALL";
@@ -64,11 +65,7 @@ export class ComunidadComponent implements OnInit {
     const roleUnico = localStorage.getItem("role");
 
     if (rolesGuardados) {
-      try {
-        this.rol = JSON.parse(rolesGuardados);
-      } catch {
-        this.rol = [];
-      }
+      try { this.rol = JSON.parse(rolesGuardados); } catch { this.rol = []; }
     } else if (roleUnico) {
       this.rol = [roleUnico];
     }
@@ -79,6 +76,11 @@ export class ComunidadComponent implements OnInit {
 
   esAdmin(): boolean {
     return this.rol.includes("ROLE_ADMIN") || this.rol.includes("ADMIN");
+  }
+
+  // ── Comprueba si el usuario ya pertenece a una comunidad ─────────────────
+  esMiembro(comunidadId: number): boolean {
+    return this.idsUnidas.has(comunidadId);
   }
 
   limpiarFeedbackGeneral(): void {
@@ -94,16 +96,15 @@ export class ComunidadComponent implements OnInit {
   aplicarFiltros(): void {
     const termino = this.searchTerm.trim().toLowerCase();
 
-    this.comunidadesFiltradas = this.comunidades.filter((comunidad) => {
+    this.comunidadesFiltradas = this.comunidades.filter((c) => {
       const coincideTexto =
         !termino ||
-        comunidad?.name?.toLowerCase().includes(termino) ||
-        comunidad?.description?.toLowerCase().includes(termino) ||
-        this.traductiCategoria(comunidad?.category).toLowerCase().includes(termino);
+        c?.name?.toLowerCase().includes(termino) ||
+        c?.description?.toLowerCase().includes(termino) ||
+        this.traductiCategoria(c?.category).toLowerCase().includes(termino);
 
       const coincideCategoria =
-        this.categoriaActiva === "ALL" ||
-        comunidad?.category === this.categoriaActiva;
+        this.categoriaActiva === "ALL" || c?.category === this.categoriaActiva;
 
       return coincideTexto && coincideCategoria;
     });
@@ -114,17 +115,42 @@ export class ComunidadComponent implements OnInit {
     this.aplicarFiltros();
   }
 
+  // ── Carga todas las comunidades activas + detecta cuáles ya unió ─────────
   cargarComunidades(): void {
     this.loadingComunidades = true;
     this.limpiarFeedbackGeneral();
-    const idUsuario = JSON.parse(localStorage.getItem("user") || "{}")?.userId;
-    console.log(idUsuario);
-    const url = `${this.peticion.urlReal}/api/communities/active/not-joined/${idUsuario}`;
 
-    this.peticion
-      .get(url)
-      .then((res: any) => {
-        this.comunidades = Array.isArray(res) ? res : [];
+    const userStorage = localStorage.getItem("user");
+    const idUsuario = userStorage ? JSON.parse(userStorage)?.userId ?? JSON.parse(userStorage)?.id : null;
+
+    // Llamadas en paralelo: todas las activas + las que ya se unió el usuario
+    const urlTodas  = `${this.peticion.urlReal}/api/communities/all`;
+    const urlUnidas = idUsuario
+      ? `${this.peticion.urlReal}/api/communities/user/${idUsuario}/communities`
+      : null;
+
+    const promesaTodas  = this.peticion.get(urlTodas);
+    const promesaUnidas = urlUnidas
+      ? this.peticion.get(urlUnidas).catch(() => [])   // si el endpoint no existe aún, silencioso
+      : Promise.resolve([]);
+
+    Promise.all([promesaTodas, promesaUnidas])
+      .then(([todas, unidas]: any) => {
+        this.comunidades = Array.isArray(todas) ? todas : [];
+
+        // Construye el set de IDs unidas para consulta O(1)
+        const listaUnidas: any[] = Array.isArray(unidas) ? unidas : [];
+        this.idsUnidas = new Set(listaUnidas.map((c: any) => c.id));
+
+        // Si el creador también debe ver "Ir", agrégalo al set
+        if (this.usuario?.id) {
+          this.comunidades.forEach((c: any) => {
+            if (c.creatorId === this.usuario.id) {
+              this.idsUnidas.add(c.id);
+            }
+          });
+        }
+
         this.aplicarFiltros();
         this.cdr.detectChanges();
       })
@@ -142,168 +168,52 @@ export class ComunidadComponent implements OnInit {
 
   traductiCategoria(categoria: string): string {
     switch (categoria) {
-      case "NUTRITION":
-        return "NUTRICIÓN";
-      case "FITNESS":
-        return "FITNESS";
-      case "PERSONAL_DEVELOPMENT":
-        return "DESARROLLO PERSONAL";
-      default:
-        return categoria || "";
+      case "NUTRITION":        return "NUTRICIÓN";
+      case "FITNESS":          return "FITNESS";
+      case "PERSONAL_DEVELOPMENT": return "DESARROLLO PERSONAL";
+      default:                 return categoria || "";
     }
   }
 
   buscarUsuario(): void {
     const userStorage = localStorage.getItem("user");
-    const token = localStorage.getItem("token");
+    const token       = localStorage.getItem("token");
 
-    if (!userStorage || !token) {
-      console.warn("No hay usuario o token");
-      return;
-    }
+    if (!userStorage || !token) return;
 
     let user;
+    try { user = JSON.parse(userStorage); } catch { return; }
 
-    try {
-      user = JSON.parse(userStorage);
-      console.log(user);
-    } catch (error) {
-      console.error("Error parseando user del localStorage", error);
-      return;
-    }
+    const userId = user?.userId ?? user?.id;
+    if (!userId) return;
 
-    if (!user?.userId) {
-      console.warn("Usuario sin ID válido");
-      return;
-    }
+    const url = `${this.peticion.urlReal}/api/users/get/${userId}`;
 
-    const url = `${this.peticion.urlReal}/api/users/get/${user.userId}`;
-
-    this.peticion
-      .get(url, token)
+    this.peticion.get(url, token)
       .then((res: any) => {
-        console.log(res);
         this.usuario = res?.data || res;
         this.nuevaComunidad.creatorId = this.usuario.id;
-        this.cdr.markForCheck();
-      })
-      .catch((err: any) => {
-        console.error("Error al encontrar usuario:", err);
-      });
-  }
 
-  abrirModal(comunidad: any): void {
-    this.comunidadseleccionada = comunidad;
-    this.comunidadEditar = { ...comunidad };
-    this.limpiarFeedbackEdicion();
-    this.submittedEdit = false;
-  }
+        // Una vez que tenemos el usuario, marcamos sus comunidades creadas
+        this.comunidades.forEach((c: any) => {
+          if (c.creatorId === this.usuario.id) this.idsUnidas.add(c.id);
+        });
 
-  validarEdicionLocal(): boolean {
-    this.submittedEdit = true;
-    this.limpiarFeedbackEdicion();
-
-    if (!this.comunidadEditar?.name?.trim()) {
-      this.editError = "El nombre es obligatorio.";
-      return false;
-    }
-
-    if (!this.comunidadEditar?.description?.trim()) {
-      this.editError = "La descripción es obligatoria.";
-      return false;
-    }
-
-    if (!this.comunidadEditar?.category) {
-      this.editError = "La categoría es obligatoria.";
-      return false;
-    }
-
-    return true;
-  }
-
-  actualizarComunidad(comunidad: any): void {
-    if (!this.validarEdicionLocal()) {
-      return;
-    }
-
-    const resultado = this.validar.validar({
-      ...this.comunidadEditar,
-      name: this.comunidadEditar.name?.trim(),
-      description: this.comunidadEditar.description?.trim(),
-    });
-
-    if (!resultado.ok) {
-      this.editError = resultado.error || "Error al guardar la comunidad.";
-      return;
-    }
-
-    this.savingEdit = true;
-    this.limpiarFeedbackEdicion();
-
-    const token = localStorage.getItem("token") || undefined;
-
-    const act = {
-      host: this.peticion.urlReal,
-      path: "/api/communities/update/" + comunidad.id,
-      payload: {
-        category: this.comunidadEditar.category,
-        name: this.comunidadEditar.name.trim(),
-        description: this.comunidadEditar.description.trim(),
-      },
-    };
-
-    this.peticion
-      .patch(act.host + act.path, act.payload, token)
-      .then(() => {
-        this.editSuccess = "La comunidad fue actualizada correctamente.";
-        this.generalSuccess = "Cambios guardados correctamente.";
-        this.cargarComunidades();
-
-        setTimeout(() => {
-          this.cerrarEditar();
-        }, 700);
-      })
-      .catch((err: any) => {
-        console.error("Error al actualizar la comunidad", err);
-        this.editError =
-          err?.error?.message || "No fue posible actualizar la comunidad.";
-      })
-      .finally(() => {
-        this.savingEdit = false;
-      });
-  }
-
-  eliminarComunidad(): void {
-    if (!this.comunidadseleccionada?.id) {
-      this.editError = "No hay una comunidad seleccionada para eliminar.";
-      return;
-    }
-
-    this.deletingCommunity = true;
-    this.limpiarFeedbackEdicion();
-    this.limpiarFeedbackGeneral();
-
-    const del = {
-      host: this.peticion.urlReal,
-      path: "/api/communities/delete/" + this.comunidadseleccionada.id,
-    };
-
-    this.peticion
-      .delete(del.host + del.path, {})
-      .then(() => {
-        this.generalSuccess = "La comunidad fue eliminada correctamente.";
-        this.cerrarEditar();
-        this.cargarComunidades();
-      })
-      .catch((err: any) => {
-        console.error("Error al eliminar la comunidad", err);
-        this.editError =
-          err?.error?.message || "No fue posible eliminar la comunidad.";
-      })
-      .finally(() => {
-        this.deletingCommunity = false;
         this.cdr.detectChanges();
-      });
+      })
+      .catch((err: any) => console.error("Error al encontrar usuario:", err));
+  }
+
+  // ── Acción del botón principal de cada comunidad ─────────────────────────
+  accionComunidad(comunidad: any): void {
+    // Si ya es miembro o creador → navegar directo
+    if (this.esMiembro(comunidad.id)) {
+      this.router.navigate(["servicios/", comunidad.id]);
+      return;
+    }
+
+    // Si no es miembro → verificar y mostrar modal de unirse
+    this.verificarMembresia(comunidad);
   }
 
   verificarMembresia(comunidad: any): void {
@@ -319,12 +229,8 @@ export class ComunidadComponent implements OnInit {
 
     this.peticion.get(url)
       .then((res: any) => {
-        if (comunidad.creatorId === this.usuario.id) {
-          this.router.navigate(["servicios/", comunidad.id]);
-          return;
-        }
-
-        if (res?.isMember) {
+        if (comunidad.creatorId === this.usuario.id || res?.isMember) {
+          this.idsUnidas.add(comunidad.id);
           this.router.navigate(["servicios/", comunidad.id]);
           return;
         }
@@ -338,6 +244,7 @@ export class ComunidadComponent implements OnInit {
       })
       .finally(() => {
         this.joiningCommunityId = null;
+        this.cdr.detectChanges();
       });
   }
 
@@ -349,26 +256,111 @@ export class ComunidadComponent implements OnInit {
 
     this.limpiarFeedbackGeneral();
 
-    const post = {
-      host: this.peticion.urlReal,
-      path: "/api/communities/" + comunidadId + "/join",
-      payload: {
-        userId: this.usuario.id,
-      },
-    };
+    const url     = `${this.peticion.urlReal}/api/communities/${comunidadId}/join`;
+    const payload = { userId: this.usuario.id };
 
-    this.peticion
-      .post(post.host + post.path, post.payload)
+    this.peticion.post(url, payload)
       .then(() => {
-        this.generalSuccess = "Te uniste a la comunidad correctamente.";
-        this.cargarComunidades();
+        this.generalSuccess = "¡Te uniste a la comunidad correctamente!";
+        // Actualiza el set localmente, sin recargar toda la lista
+        this.idsUnidas.add(comunidadId);
+        this.cdr.detectChanges();
       })
       .catch((err: any) => {
         console.error("Error al unirse a la comunidad", err);
-        this.generalError =
-          err?.error?.message || "No fue posible unirse a la comunidad.";
-          this.cdr.detectChanges();
-      }) ; 
+        this.generalError = err?.error?.message || "No fue posible unirse a la comunidad.";
+        this.cdr.detectChanges();
+      });
+  }
+
+  // ── Edición / eliminación (solo admin) ───────────────────────────────────
+
+  abrirModal(comunidad: any): void {
+    this.comunidadseleccionada = comunidad;
+    this.comunidadEditar = { ...comunidad };
+    this.limpiarFeedbackEdicion();
+    this.submittedEdit = false;
+  }
+
+  validarEdicionLocal(): boolean {
+    this.submittedEdit = true;
+    this.limpiarFeedbackEdicion();
+
+    if (!this.comunidadEditar?.name?.trim()) {
+      this.editError = "El nombre es obligatorio."; return false;
+    }
+    if (!this.comunidadEditar?.description?.trim()) {
+      this.editError = "La descripción es obligatoria."; return false;
+    }
+    if (!this.comunidadEditar?.category) {
+      this.editError = "La categoría es obligatoria."; return false;
+    }
+    return true;
+  }
+
+  actualizarComunidad(comunidad: any): void {
+    if (!this.validarEdicionLocal()) return;
+
+    const resultado = this.validar.validar({
+      ...this.comunidadEditar,
+      name:        this.comunidadEditar.name?.trim(),
+      description: this.comunidadEditar.description?.trim(),
+    });
+
+    if (!resultado.ok) {
+      this.editError = resultado.error || "Error al guardar la comunidad.";
+      return;
+    }
+
+    this.savingEdit = true;
+    this.limpiarFeedbackEdicion();
+
+    const token = localStorage.getItem("token") || undefined;
+    const url   = `${this.peticion.urlReal}/api/communities/update/${comunidad.id}`;
+    const payload = {
+      category:    this.comunidadEditar.category,
+      name:        this.comunidadEditar.name.trim(),
+      description: this.comunidadEditar.description.trim(),
+    };
+
+    this.peticion.patch(url, payload, token)
+      .then(() => {
+        this.editSuccess    = "La comunidad fue actualizada correctamente.";
+        this.generalSuccess = "Cambios guardados correctamente.";
+        this.cargarComunidades();
+        setTimeout(() => this.cerrarEditar(), 700);
+      })
+      .catch((err: any) => {
+        this.editError = err?.error?.message || "No fue posible actualizar la comunidad.";
+      })
+      .finally(() => { this.savingEdit = false; });
+  }
+
+  eliminarComunidad(): void {
+    if (!this.comunidadseleccionada?.id) {
+      this.editError = "No hay una comunidad seleccionada para eliminar.";
+      return;
+    }
+
+    this.deletingCommunity = true;
+    this.limpiarFeedbackEdicion();
+    this.limpiarFeedbackGeneral();
+
+    const url = `${this.peticion.urlReal}/api/communities/delete/${this.comunidadseleccionada.id}`;
+
+    this.peticion.delete(url, {})
+      .then(() => {
+        this.generalSuccess = "La comunidad fue eliminada correctamente.";
+        this.cerrarEditar();
+        this.cargarComunidades();
+      })
+      .catch((err: any) => {
+        this.editError = err?.error?.message || "No fue posible eliminar la comunidad.";
+      })
+      .finally(() => {
+        this.deletingCommunity = false;
+        this.cdr.detectChanges();
+      });
   }
 
   toggleEditar(comunidad: any): void {
@@ -383,12 +375,7 @@ export class ComunidadComponent implements OnInit {
   }
 
   cerrarEditar(): void {
-    this.comunidadEditar = {
-      id: null,
-      category: "",
-      name: "",
-      description: "",
-    };
+    this.comunidadEditar = { id: null, category: "", name: "", description: "" };
     this.comunidadseleccionada = null;
     this.submittedEdit = false;
     this.limpiarFeedbackEdicion();
