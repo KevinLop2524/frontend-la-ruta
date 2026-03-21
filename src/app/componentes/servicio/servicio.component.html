@@ -3,233 +3,258 @@
 <main class="sv-page">
 
   <div class="sv-hero">
-    <a routerLink="/comunidades" class="sv-hero-back">
-      <i class="bi bi-arrow-left me-1"></i>Volver a comunidades
+    <a routerLink="/perfil" class="sv-hero-back">
+      <i class="bi bi-arrow-left me-1"></i>Volver al perfil
     </a>
 
-    <div *ngIf="loadingComunidad" class="sv-status">Cargando comunidad...</div>
+    <h2 class="sv-hero-title">Histórico Fitness</h2>
+    <p class="sv-hero-desc">
+      Registra tus medidas corporales y visualiza tu progreso en gráficas.
+    </p>
 
-    <ng-container *ngIf="!loadingComunidad">
-      <h2 class="sv-hero-title">{{ obtenerNombreComunidad() }}</h2>
-      <p class="sv-hero-desc">{{ obtenerDescripcionComunidad() }}</p>
-
-      <div class="sv-hero-meta">
-        <span class="sv-badge sv-badge--fitness"
-          *ngIf="obtenerCategoriaComunidad() === 'FITNESS'">Fitness</span>
-
-        <span class="sv-badge sv-badge--nutrition"
-          *ngIf="obtenerCategoriaComunidad() === 'NUTRITION'">Nutrición</span>
-
-        <span class="sv-badge sv-badge--dev"
-          *ngIf="obtenerCategoriaComunidad() === 'PERSONAL_DEVELOPMENT'">Desarrollo personal</span>
-
-        <span class="sv-badge sv-badge--type" *ngIf="obtenerTipoComunidad()">
-          {{ obtenerTipoComunidad() }}
-        </span>
-      </div>
-    </ng-container>
+    <div class="sv-hero-meta">
+      <span class="sv-badge sv-badge--fitness">Seguimiento corporal</span>
+      <span class="sv-badge sv-badge--type">Progreso personal</span>
+    </div>
   </div>
 
   <div class="sv-tabs">
-    <button class="sv-tab active"
-      id="pills-home-tab"
-      data-bs-toggle="pill"
-      data-bs-target="#pills-home"
-      type="button" role="tab"
-      aria-controls="pills-home"
-      aria-selected="true">
-      <i class="bi bi-grid-fill me-2"></i>Servicios
+    <button
+      type="button"
+      class="sv-tab"
+      [class.active]="activeTab === 'history'"
+      (click)="setActiveTab('history')">
+      <i class="bi bi-clock-history me-2"></i>Historial
     </button>
 
-    <button class="sv-tab"
-      id="pills-profile-tab"
-      data-bs-toggle="pill"
-      data-bs-target="#pills-profile"
-      type="button" role="tab"
-      aria-controls="pills-profile"
-      aria-selected="false">
-      <i class="bi bi-plus-circle-fill me-2"></i>Crear servicio
+    <button
+      type="button"
+      class="sv-tab"
+      [class.active]="activeTab === 'create'"
+      (click)="setActiveTab('create')">
+      <i class="bi bi-plus-circle-fill me-2"></i>Nuevo registro
+    </button>
+
+    <button
+      type="button"
+      class="sv-tab"
+      [class.active]="activeTab === 'charts'"
+      (click)="setActiveTab('charts')">
+      <i class="bi bi-bar-chart-line-fill me-2"></i>Gráficas
     </button>
   </div>
 
   <div class="sv-content">
-    <div class="tab-content" id="pills-tabContent">
 
-      <!-- TAB SERVICIOS -->
-      <div class="tab-pane fade show active" id="pills-home"
-        role="tabpanel" aria-labelledby="pills-home-tab" tabindex="0">
+    <!-- TAB HISTORIAL -->
+    <div *ngIf="activeTab === 'history'">
 
-        <div *ngIf="servicesError" class="sv-alert sv-alert--error">
-          {{ servicesError }}
-        </div>
-
-        <div *ngIf="servicesSuccess" class="sv-alert sv-alert--success">
-          {{ servicesSuccess }}
-        </div>
-
-        <div class="sv-section">
-          <div class="sv-section-title">Servicios disponibles</div>
-          <div class="sv-section-line"></div>
-          <div class="sv-section-count">{{ servicios.length }} servicios</div>
-        </div>
-
-        <div *ngIf="loadingServicios" class="sv-status">
-          Cargando servicios...
-        </div>
-
-        <div class="sv-list" *ngIf="!loadingServicios">
-          <div *ngFor="let servicio of servicios; trackBy: trackByServicioId" class="sv-item">
-            <div class="sv-item-main">
-              <div class="sv-item-icon">{{ obtenerIconoCategoria(servicio.categoria) }}</div>
-
-              <div class="sv-item-info">
-                <div class="sv-item-name">{{ servicio.name }}</div>
-                <div class="sv-item-desc">{{ servicio.description }}</div>
-              </div>
-
-              <div class="sv-item-actions">
-                <span class="sv-badge sv-badge--fitness">
-                  {{ traducirCategoriaServicio(servicio.category) || 'General' }}
-                </span>
-
-                <button class="sv-btn sv-btn--primary"
-                  data-bs-toggle="collapse"
-                  [attr.data-bs-target]="'#sv-' + servicio.id"
-                  type="button">
-                  Ver más
-                </button>
-              </div>
-            </div>
-
-            <div class="collapse" [id]="'sv-' + servicio.id">
-              <div class="sv-item-expand">
-                {{ servicio.descripcion }}
-                <br>
-<small class="sv-item-date">
-  {{ servicio?.createdAt ? (servicio.createdAt | date:'shortDate') : 'Fecha no disponible' }}
-</small>              </div>
-            </div>
-          </div>
-
-          <div class="sv-empty" *ngIf="servicios.length === 0">
-            <div class="sv-empty-icon">🏋️</div>
-            <div class="sv-empty-text">Aún no hay servicios en esta comunidad.</div>
-          </div>
-        </div>
+      <div *ngIf="errorMessage" class="sv-alert sv-alert--error">
+        {{ errorMessage }}
       </div>
 
-      <!-- TAB CREAR SERVICIO -->
-      <div class="tab-pane fade" id="pills-profile"
-        role="tabpanel" aria-labelledby="pills-profile-tab" tabindex="0">
-
-        <div class="sv-form">
-          <div class="sv-form-title">Nuevo servicio</div>
-
-          <div *ngIf="formError" class="sv-alert sv-alert--error">
-            {{ formError }}
-          </div>
-
-          <div *ngIf="formSuccess" class="sv-alert sv-alert--success">
-            {{ formSuccess }}
-          </div>
-
-          <div class="sv-form-grid">
-
-            <div class="sv-field sv-form-full">
-              <label for="nuevaPublicacionPersonal" class="sv-label">Nombre del servicio</label>
-              <input
-                type="text"
-                class="sv-input"
-                id="nuevaPublicacionPersonal"
-                placeholder="Ej. Plan de entrenamiento funcional"
-                [(ngModel)]="ServicioCrear.titulo"
-                name="titulo"
-                maxlength="80"
-                (ngModelChange)="limpiarFeedbackFormulario()">
-
-              <div class="sv-error" *ngIf="submitted && !ServicioCrear.titulo?.trim()">
-                El nombre del servicio es obligatorio.
-              </div>
-
-              <div class="sv-error" *ngIf="submitted && ServicioCrear.titulo?.trim() && ServicioCrear.titulo.trim().length < 4">
-                El nombre debe tener al menos 4 caracteres.
-              </div>
-            </div>
-
-            <div class="sv-field sv-form-full">
-              <label for="exampleFormControlTextarea1" class="sv-label">Descripción</label>
-              <textarea
-                class="sv-input sv-textarea"
-                id="exampleFormControlTextarea1"
-                rows="4"
-                placeholder="Describe el servicio que vas a publicar."
-                [(ngModel)]="ServicioCrear.descripcion"
-                name="descripcion"
-                maxlength="500"
-                (ngModelChange)="limpiarFeedbackFormulario()"></textarea>
-
-              <div class="sv-error" *ngIf="submitted && !ServicioCrear.descripcion?.trim()">
-                La descripción es obligatoria.
-              </div>
-
-              <div class="sv-error" *ngIf="submitted && ServicioCrear.descripcion?.trim() && ServicioCrear.descripcion.trim().length < 10">
-                La descripción debe tener al menos 10 caracteres.
-              </div>
-            </div>
-
-            <div class="sv-field">
-              <label class="sv-label">Categoría</label>
-              <select
-                class="sv-input"
-                [(ngModel)]="ServicioCrear.categoria"
-                name="categoria"
-                (ngModelChange)="limpiarFeedbackFormulario()">
-                <option value="">Seleccione</option>
-                <option value="NUTRICION">Nutrición</option>
-                <option value="ENTRENAMIENTO">Entrenamiento</option>
-                <option value="SALUD_MENTAL">Salud mental</option>
-                <option value="BIENESTAR">Bienestar general</option>
-                <option value="PRODUCTIVIDAD">Productividad</option>
-                <option value="DESARROLLO_PERSONAL">Desarrollo personal</option>
-                <option value="MOTIVACION">Motivación</option>
-              </select>
-
-              <div class="sv-error" *ngIf="submitted && !ServicioCrear.categoria">
-                Debes seleccionar una categoría.
-              </div>
-            </div>
-
-            <div class="sv-field">
-              <label for="formFileMultiple" class="sv-label">Archivos (opcional)</label>
-              <input
-                class="sv-input"
-                type="file"
-                id="formFileMultiple"
-                multiple
-                disabled>
-              <div class="sv-hint">
-                Carga de archivos pendiente de integración.
-              </div>
-            </div>
-
-          </div>
-
-          <div class="sv-form-actions">
-            <button
-              type="button"
-              class="sv-btn sv-btn--primary"
-              [disabled]="creatingServicio || loadingUsuario"
-              (click)="crearServicio()">
-              <i class="bi bi-plus-circle-fill me-2"></i>
-              {{ creatingServicio ? 'Publicando...' : 'Publicar servicio' }}
-            </button>
-          </div>
-        </div>
+      <div *ngIf="successMessage" class="sv-alert sv-alert--success">
+        {{ successMessage }}
       </div>
 
+      <div class="sv-section">
+        <div class="sv-section-title">Registros guardados</div>
+        <div class="sv-section-line"></div>
+        <div class="sv-section-count">{{ fitnessHistory.length }} registros</div>
+      </div>
+
+      <div *ngIf="loadingHistory" class="sv-status">
+        Cargando histórico...
+      </div>
+
+      <div class="sv-list" *ngIf="!loadingHistory">
+        <div *ngFor="let record of fitnessHistory; trackBy: trackByRecordId" class="sv-item">
+          <div class="sv-item-main">
+            <div class="sv-item-icon">📏</div>
+
+            <div class="sv-item-info">
+              <div class="sv-item-name">
+                {{ record.recordDate ? (record.recordDate | date:'longDate') : 'Sin fecha' }}
+              </div>
+              <div class="sv-item-desc">
+                Peso: {{ record.weight }} kg ·
+                Grasa: {{ record.bodyFatPercentage }}% ·
+                Cintura: {{ record.waistMeasurement }} cm
+              </div>
+            </div>
+
+            <div class="sv-item-actions">
+              <button
+                class="sv-btn sv-btn--primary"
+                type="button"
+                (click)="toggleExpanded(record.id || 0)">
+                {{ isExpanded(record.id || 0) ? 'Ocultar' : 'Ver más' }}
+              </button>
+            </div>
+          </div>
+
+          <div class="sv-item-expand" *ngIf="isExpanded(record.id || 0)">
+            <div class="fit-grid">
+              <div><strong>Pecho:</strong> {{ record.chestMeasurement }} cm</div>
+              <div><strong>Cintura:</strong> {{ record.waistMeasurement }} cm</div>
+              <div><strong>Cadera:</strong> {{ record.hipMeasurement }} cm</div>
+              <div><strong>Brazo:</strong> {{ record.armMeasurement }} cm</div>
+              <div><strong>Muslo:</strong> {{ record.thighMeasurement }} cm</div>
+              <div><strong>Grasa corporal:</strong> {{ record.bodyFatPercentage }} %</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sv-empty" *ngIf="fitnessHistory.length === 0">
+          <div class="sv-empty-icon">📉</div>
+          <div class="sv-empty-text">Aún no tienes registros fitness guardados.</div>
+        </div>
+      </div>
     </div>
-  </div>
 
+    <!-- TAB NUEVO REGISTRO -->
+    <div *ngIf="activeTab === 'create'">
+      <div class="sv-form">
+        <div class="sv-form-title">Nuevo registro fitness</div>
+
+        <div *ngIf="formError" class="sv-alert sv-alert--error">
+          {{ formError }}
+        </div>
+
+        <div *ngIf="formSuccess" class="sv-alert sv-alert--success">
+          {{ formSuccess }}
+        </div>
+
+        <div class="sv-form-grid">
+
+          <div class="sv-field">
+            <label class="sv-label">Peso (kg)</label>
+            <input
+              type="number"
+              class="sv-input"
+              [(ngModel)]="fitnessForm.weight"
+              name="weight"
+              min="0"
+              step="0.1">
+          </div>
+
+          <div class="sv-field">
+            <label class="sv-label">Grasa corporal (%)</label>
+            <input
+              type="number"
+              class="sv-input"
+              [(ngModel)]="fitnessForm.bodyFatPercentage"
+              name="bodyFatPercentage"
+              min="0"
+              step="0.1">
+          </div>
+
+          <div class="sv-field">
+            <label class="sv-label">Pecho (cm)</label>
+            <input
+              type="number"
+              class="sv-input"
+              [(ngModel)]="fitnessForm.chestMeasurement"
+              name="chestMeasurement"
+              min="0"
+              step="0.1">
+          </div>
+
+          <div class="sv-field">
+            <label class="sv-label">Cintura (cm)</label>
+            <input
+              type="number"
+              class="sv-input"
+              [(ngModel)]="fitnessForm.waistMeasurement"
+              name="waistMeasurement"
+              min="0"
+              step="0.1">
+          </div>
+
+          <div class="sv-field">
+            <label class="sv-label">Cadera (cm)</label>
+            <input
+              type="number"
+              class="sv-input"
+              [(ngModel)]="fitnessForm.hipMeasurement"
+              name="hipMeasurement"
+              min="0"
+              step="0.1">
+          </div>
+
+          <div class="sv-field">
+            <label class="sv-label">Brazo (cm)</label>
+            <input
+              type="number"
+              class="sv-input"
+              [(ngModel)]="fitnessForm.armMeasurement"
+              name="armMeasurement"
+              min="0"
+              step="0.1">
+          </div>
+
+          <div class="sv-field">
+            <label class="sv-label">Muslo (cm)</label>
+            <input
+              type="number"
+              class="sv-input"
+              [(ngModel)]="fitnessForm.thighMeasurement"
+              name="thighMeasurement"
+              min="0"
+              step="0.1">
+          </div>
+
+        </div>
+
+        <div class="sv-form-actions">
+          <button
+            type="button"
+            class="sv-btn sv-btn--primary"
+            [disabled]="creatingRecord || loadingUser"
+            (click)="createFitnessRecord()">
+            <i class="bi bi-save2-fill me-2"></i>
+            {{ creatingRecord ? 'Guardando...' : 'Guardar registro' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB GRAFICAS -->
+    <div *ngIf="activeTab === 'charts'">
+      <div *ngIf="errorMessage" class="sv-alert sv-alert--error">
+        {{ errorMessage }}
+      </div>
+
+      <div class="sv-section">
+        <div class="sv-section-title">Evolución</div>
+        <div class="sv-section-line"></div>
+        <div class="sv-section-count">Comparativo por fecha</div>
+      </div>
+
+      <div *ngIf="fitnessHistory.length === 0" class="sv-empty">
+        <div class="sv-empty-icon">📊</div>
+        <div class="sv-empty-text">No hay registros suficientes para generar gráficas.</div>
+      </div>
+
+      <ng-container *ngIf="fitnessHistory.length > 0">
+        <div class="chart-card">
+          <h4 class="chart-title">Peso</h4>
+          <canvas #weightChartCanvas></canvas>
+        </div>
+
+        <div class="chart-card">
+          <h4 class="chart-title">Grasa corporal</h4>
+          <canvas #bodyFatChartCanvas></canvas>
+        </div>
+
+        <div class="chart-card">
+          <h4 class="chart-title">Medidas corporales</h4>
+          <canvas #measurementsChartCanvas></canvas>
+        </div>
+      </ng-container>
+    </div>
+
+  </div>
 </main>
 
 <app-footer></app-footer>
