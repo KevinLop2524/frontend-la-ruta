@@ -512,3 +512,73 @@
   opacity: 0.7;
   cursor: not-allowed;
 }
+
+/* ── Botón IR (usuario ya miembro) ── */
+.cm-btn--go {
+  background: transparent;
+  color: #FF5A00;
+  border: 1px solid #FF5A00;
+  padding: 8px 18px;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: 'Barlow Condensed', sans-serif;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.cm-btn--go:hover {
+  background: #FF5A00;
+  color: #0d0d0d;
+}
+
+.cm-btn--go:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── Fila nombre + badge de miembro ── */
+.cm-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+/* el .cm-name ya no necesita margin-bottom propio aquí */
+.cm-name-row .cm-name { margin: 0; }
+
+/* ── Indicador "Miembro" ── */
+.cm-member-indicator {
+  font-size: 10px;
+  font-weight: 700;
+  font-family: 'Barlow Condensed', sans-serif;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #19c864;
+  background: rgba(25, 200, 100, 0.1);
+  border: 1px solid rgba(25, 200, 100, 0.25);
+  padding: 2px 7px;
+  border-radius: 3px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cm-member-indicator i { font-size: 9px; }
+
+/* ── Item wrap con borde verde sutil cuando ya eres miembro ── */
+.cm-item-wrap--joined {
+  border-color: rgba(25, 200, 100, 0.15);
+}
+
+.cm-item-wrap--joined:hover {
+  border-color: rgba(25, 200, 100, 0.3);
+}

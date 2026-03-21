@@ -58,7 +58,7 @@ export class ServicioComponent implements OnInit {
     this.idComunidad = +id;
     this.ServicioCrear.comunidad_id = this.idComunidad;
 
-    this.cargarServicios();
+    // this.cargarServicios();
     this.buscarUsuario();
     this.buscarComunidad();
   }
@@ -97,18 +97,18 @@ export class ServicioComponent implements OnInit {
       return;
     }
 
-    if (!user?.id) {
+    if (!user?.userId) {
       this.loadingUsuario = false;
       this.formError = 'El usuario actual no tiene un identificador válido.';
       return;
     }
 
-    const url = `${this.peticion.urlReal}/api/users/get/${user.id}`;
+    const url = `${this.peticion.urlReal}/api/users/get/${user.userId}`;
 
     this.peticion.get(url, token)
       .then((res: any) => {
         this.usuario = res?.data || res;
-        this.ServicioCrear.id_creador = this.usuario.id;
+        this.ServicioCrear.id_creador = this.usuario.userId;
         this.cdr.detectChanges();
       })
       .catch((err: any) => {
@@ -142,28 +142,28 @@ export class ServicioComponent implements OnInit {
       });
   }
 
-  cargarServicios(): void {
-    this.loadingServicios = true;
-    this.limpiarFeedbackServicios();
+  // cargarServicios(): void {
+  //   this.loadingServicios = true;
+  //   this.limpiarFeedbackServicios();
 
-    const url = `${this.peticion.urlReal}/api/services/community/${this.idComunidad}/all?userId=${this.idComunidad}`;
+  //   const url = `${this.peticion.urlReal}/api/services/${this.user.userId}`;
 
-    this.peticion.get(url)
-      .then((res: any) => {
-        this.servicios = Array.isArray(res) ? res : [];
-        console.log(this.servicios);
-        this.cdr.detectChanges();
-      })
-      .catch((err: any) => {
-        console.error('Error al obtener servicios', err);
-        this.servicesError = 'No fue posible cargar los servicios.';
-        this.servicios = [];
-      })
-      .finally(() => {
-        this.loadingServicios = false;
-        this.cdr.detectChanges();
-      });
-  }
+  //   this.peticion.get(url)
+  //     .then((res: any) => {
+  //       this.servicios = Array.isArray(res) ? res : [];
+  //       console.log(this.servicios);
+  //       this.cdr.detectChanges();
+  //     })
+  //     .catch((err: any) => {
+  //       console.error('Error al obtener servicios', err);
+  //       this.servicesError = 'No fue posible cargar los servicios.';
+  //       this.servicios = [];
+  //     })
+  //     .finally(() => {
+  //       this.loadingServicios = false;
+  //       this.cdr.detectChanges();
+  //     });
+  // }
 
   validarFormularioServicio(): boolean {
     this.submitted = true;
@@ -253,7 +253,7 @@ export class ServicioComponent implements OnInit {
         };
 
         this.submitted = false;
-        this.cargarServicios();
+        // this.cargarServicios();
       })
       .catch((err: any) => {
         console.error('Error al crear servicio', err);

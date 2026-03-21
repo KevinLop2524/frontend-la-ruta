@@ -37,25 +37,6 @@
         </div>
 
         <div class="bp-create-form">
-          <div class="bp-field-row">
-            <div>
-              <label class="bp-label">Tipo</label>
-              <input class="bp-input" type="text" [value]="nuevaPublicacion.tipo" disabled>
-            </div>
-
-            <div>
-              <label class="bp-label">Comunidad</label>
-              <input class="bp-input" type="text"
-                placeholder="ID o nombre de comunidad"
-                [(ngModel)]="nuevaPublicacion.comunidadId"
-                name="comunidadId"
-                (ngModelChange)="limpiarFeedbackCrear()">
-              <div class="bp-error" *ngIf="submittedCreate && !nuevaPublicacion.comunidadId">
-                La comunidad es obligatoria.
-              </div>
-            </div>
-          </div>
-
           <div>
             <label class="bp-label">Contenido</label>
             <textarea class="bp-input bp-textarea"
@@ -274,7 +255,7 @@
           <!-- Confirmación eliminar -->
           <div class="bp-confirm" *ngIf="confirmandoId === pub.id">
             <span class="bp-confirm-text">
-              ⚠️ ¿Confirmas eliminar esta publicación? Esta acción no se puede deshacer.
+              ¿Confirmas eliminar esta publicación? Esta acción no se puede deshacer.
             </span>
 
             <button class="bp-confirm-yes" type="button"

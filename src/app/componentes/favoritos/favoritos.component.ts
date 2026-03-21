@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
+import { ChangeDetectorRef, Component, OnInit, HostListener } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
@@ -35,13 +35,14 @@ interface TopItem {
   imports: [Header, Footer, CommonModule, FormsModule],
   templateUrl: "./favoritos.component.html",
   styleUrl: "./favoritos.component.css",
-})  
+})
 export class FavoritosComponent implements OnInit {
   tokenLog: string = "";
   userId: number | null = null;
 
   cargando = false;
   errorMessage = "";
+  generalSuccess = "";
   searchTerm = "";
 
   comunidades: ComunidadFavorita[] = [];
@@ -51,6 +52,13 @@ export class FavoritosComponent implements OnInit {
   comunidadesFiltradas: ComunidadFavorita[] = [];
   serviciosFiltrados: ServicioFavorito[] = [];
   topItemsFiltrados: TopItem[] = [];
+
+  // ── Estado del menú desplegable ──────────────────────────────
+  menuAbiertoPara: number | null = null;
+
+  // ── Estado de confirmación / salida ──────────────────────────
+  confirmandoSalidaId: number | null = null;
+  saliedoDeId: number | null = null;
 
   constructor(
     private peticion: Peticion,
@@ -72,6 +80,65 @@ export class FavoritosComponent implements OnInit {
     this.cargarFavoritos();
   }
 
+  // ── Cierra el menú si el usuario hace clic fuera ─────────────
+  @HostListener("document:click", ["$event"])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest(".fv-dropdown")) {
+      this.menuAbiertoPara = null;
+      this.cdr.detectChanges();
+    }
+  }
+
+  // ── Menú desplegable ─────────────────────────────────────────
+  toggleMenu(id: number): void {
+    this.menuAbiertoPara = this.menuAbiertoPara === id ? null : id;
+  }
+
+  // ── Flujo de salida de comunidad ─────────────────────────────
+
+  pedirConfirmacionSalida(item: ComunidadFavorita): void {
+    this.menuAbiertoPara   = null;
+    this.confirmandoSalidaId = item.id;
+    this.generalSuccess    = "";
+    this.errorMessage      = "";
+  }
+
+  cancelarSalida(): void {
+    this.confirmandoSalidaId = null;
+  }
+
+  salirDeComunidad(item: ComunidadFavorita): void {
+    if (!this.userId) return;
+
+    this.saliedoDeId = item.id;
+    this.generalSuccess = "";
+    this.errorMessage   = "";
+
+    const url     = `${this.peticion.urlReal}/api/communities/${item.id}/members/${this.userId}`;
+
+    this.peticion.delete(url, this.tokenLog)
+      .then((res) => {
+        console.log(res)
+        // Elimina la comunidad de la lista localmente, sin recargar
+        this.comunidades          = this.comunidades.filter(c => c.id !== item.id);
+        this.comunidadesFiltradas = this.comunidadesFiltradas.filter(c => c.id !== item.id);
+        this.confirmandoSalidaId  = null;
+        this.generalSuccess       = `Saliste de "${item.nombre}" correctamente.`;
+      })
+      .catch((err: any) => {
+        console.error("Error al salir de la comunidad", err);
+        this.errorMessage = err?.error?.message || "No fue posible salir de la comunidad.";
+        this.confirmandoSalidaId = null;
+      })
+      .finally(() => {
+        this.saliedoDeId = null;
+        this.cdr.detectChanges();
+      });
+  }
+
+  // ── Carga de datos ───────────────────────────────────────────
+
   async cargarFavoritos(): Promise<void> {
     this.cargando = true;
     this.errorMessage = "";
@@ -85,11 +152,11 @@ export class FavoritosComponent implements OnInit {
         this.peticion.get(
           `${this.peticion.urlReal}/api/services/${this.userId}/active`,
           this.tokenLog,
-        )
+        ),
       ]);
 
       this.comunidades = this.normalizarComunidades(comunidadesRes);
-      this.servicios = this.normalizarServicios(serviciosRes);
+      this.servicios   = this.normalizarServicios(serviciosRes);
 
       this.aplicarBusqueda();
     } catch (err: any) {
@@ -105,52 +172,46 @@ export class FavoritosComponent implements OnInit {
   normalizarComunidades(res: any): ComunidadFavorita[] {
     const data = Array.isArray(res)
       ? res
-      : Array.isArray(res?.data)
-      ? res.data
-      : Array.isArray(res?.comunidades)
-      ? res.comunidades
+      : Array.isArray(res?.data)       ? res.data
+      : Array.isArray(res?.comunidades) ? res.comunidades
       : [];
 
     return data.map((item: any) => ({
-      id: item.id,
-      nombre: item.nombre || item.name || "Comunidad",
+      id:          item.id,
+      nombre:      item.nombre || item.name        || "Comunidad",
       descripcion: item.descripcion || item.description || "Sin descripción",
-      avatarUrl: item.avatarUrl || item.imageUrl || null,
+      avatarUrl:   item.avatarUrl || item.imageUrl  || null,
     }));
   }
 
   normalizarServicios(res: any): ServicioFavorito[] {
     const data = Array.isArray(res)
       ? res
-      : Array.isArray(res?.data)
-      ? res.data
-      : Array.isArray(res?.servicios)
-      ? res.servicios
+      : Array.isArray(res?.data)     ? res.data
+      : Array.isArray(res?.servicios) ? res.servicios
       : [];
 
     return data.map((item: any) => ({
-      id: item.id,
-      nombre: item.nombre || item.name || "Servicio",
+      id:          item.id,
+      nombre:      item.nombre || item.name        || "Servicio",
       descripcion: item.descripcion || item.description || "Sin descripción",
-      imagenUrl: item.imagenUrl || item.imageUrl || item.coverUrl || null,
+      imagenUrl:   item.imagenUrl || item.imageUrl  || item.coverUrl || null,
     }));
   }
 
   normalizarTop(res: any): TopItem[] {
     const data = Array.isArray(res)
       ? res
-      : Array.isArray(res?.data)
-      ? res.data
-      : Array.isArray(res?.top)
-      ? res.top
+      : Array.isArray(res?.data) ? res.data
+      : Array.isArray(res?.top)  ? res.top
       : [];
 
     return data.map((item: any) => ({
-      id: item.id,
-      tipo: item.tipo || item.type || "SERVICIO",
-      nombre: item.nombre || item.name || "Elemento",
+      id:          item.id,
+      tipo:        item.tipo || item.type           || "SERVICIO",
+      nombre:      item.nombre || item.name         || "Elemento",
       descripcion: item.descripcion || item.description || "Sin descripción",
-      imagenUrl: item.imagenUrl || item.imageUrl || item.coverUrl || null,
+      imagenUrl:   item.imagenUrl || item.imageUrl  || item.coverUrl || null,
     }));
   }
 
@@ -159,30 +220,28 @@ export class FavoritosComponent implements OnInit {
 
     if (!texto) {
       this.comunidadesFiltradas = [...this.comunidades];
-      this.serviciosFiltrados = [...this.servicios];
-      this.topItemsFiltrados = [...this.topItems];
+      this.serviciosFiltrados   = [...this.servicios];
+      this.topItemsFiltrados    = [...this.topItems];
       return;
     }
 
-    this.comunidadesFiltradas = this.comunidades.filter((item) =>
+    this.comunidadesFiltradas = this.comunidades.filter(item =>
       `${item.nombre} ${item.descripcion}`.toLowerCase().includes(texto),
     );
 
-    this.serviciosFiltrados = this.servicios.filter((item) =>
+    this.serviciosFiltrados = this.servicios.filter(item =>
       `${item.nombre} ${item.descripcion}`.toLowerCase().includes(texto),
     );
 
-    this.topItemsFiltrados = this.topItems.filter((item) =>
+    this.topItemsFiltrados = this.topItems.filter(item =>
       `${item.nombre} ${item.descripcion}`.toLowerCase().includes(texto),
     );
   }
 
-  buscar(): void {
-    this.aplicarBusqueda();
-  }
+  buscar(): void { this.aplicarBusqueda(); }
 
   irAComunidad(item: ComunidadFavorita): void {
-    this.router.navigate([`/comunidad/${item.id}`]);
+    this.router.navigate([`/servicios/${item.id}`]);
   }
 
   irAServicio(item: ServicioFavorito): void {
@@ -190,30 +249,18 @@ export class FavoritosComponent implements OnInit {
   }
 
   irATop(item: TopItem): void {
-    const ruta =
-      item.tipo === "COMUNIDAD"
-        ? `/comunidad/${item.id}`
-        : `/servicio/${item.id}`;
-
+    const ruta = item.tipo === "COMUNIDAD"
+      ? `/servicios/${item.id}`
+      : `/servicio/${item.id}`;
     this.router.navigate([ruta]);
   }
 
   obtenerIniciales(nombre: string): string {
-    return nombre
-      .split(" ")
-      .slice(0, 2)
-      .map((p) => p.charAt(0))
-      .join("")
-      .toUpperCase();
+    return nombre.split(" ").slice(0, 2).map(p => p.charAt(0)).join("").toUpperCase();
   }
 
   obtenerClaseAvatar(index: number): string {
-    const clases = [
-      "",
-      "fv-comm-avatar--green",
-      "fv-comm-avatar--blue",
-    ];
-
+    const clases = ["", "fv-comm-avatar--green", "fv-comm-avatar--blue"];
     return clases[index % clases.length];
   }
 
