@@ -146,7 +146,7 @@
                   <!-- Confirmar eliminación -->
                   <ng-container *ngIf="accionActiva === 'eliminar'">
                     <span class="rs-action-label rs-action-label--danger">
-                      ⚠️ ¿Eliminar a {{ item.fullName }}?
+                       ¿Eliminar a {{ item.fullName }}?
                     </span>
                     <button class="td-btn td-btn--confirm-danger"
                       [disabled]="procesandoId === item.id"
@@ -191,9 +191,9 @@
                 <!-- Botones normales -->
                 <div *ngIf="accionExpandidaId !== item.id" class="td-actions">
 
-                  <button class="td-btn" type="button" (click)="verUsuario(item)">
+                  <!-- <button class="td-btn" type="button" (click)="verUsuario(item)">
                     <i class="bi bi-eye me-1"></i>Ver
-                  </button>
+                  </button> -->
 
                   <!-- Dropdown de acciones -->
                   <div class="rs-dropdown" [class.open]="menuAbiertoPara === item.id">

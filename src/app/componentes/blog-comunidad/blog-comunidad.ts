@@ -6,14 +6,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Footer } from '../footer/footer';
 import { z } from 'zod';
- 
+
 const publicacionSchema = z.object({
-  contenido: z.string().min(1, 'Contenido requerido').regex(/[a-zA-ZÁÉÍÓÚáéíóúÑñ0-9]/, 'El contenido es inválido'),
-  tipo: z.string().min(1, 'El tipo es requerido'),
-  authorId: z.number(),
-  comunidadId: z.number()
+  contenido: z.string().min(1, 'Contenido requerido'),
+  tipo: z.string().min(1)
 });
- 
+
 @Component({
   selector: 'app-comunidad-vista',
   imports: [Header, CommonModule, FormsModule, Footer, RouterModule],
@@ -21,7 +19,7 @@ const publicacionSchema = z.object({
   styleUrls: ['./blog-comunidad.css']
 })
 export class BlogComunidad implements OnInit {
- 
+
   // ── Estado general ──────────────────────────────
   comunidadId: number | null = null;
   comunidad: any = null;
@@ -29,10 +27,10 @@ export class BlogComunidad implements OnInit {
   rol: string[] = [];
   esMiembro: boolean = false;
   totalMiembros: number = 0;
- 
+
   // ── Tabs ──────────────────────────────────────
   tabActivo: string = 'feed';
- 
+
   // ── Loading flags ──────────────────────────────
   loadingComunidad: boolean = false;
   loadingPosts: boolean = false;
@@ -45,13 +43,13 @@ export class BlogComunidad implements OnInit {
   leavingCommunity: boolean = false;
   savingComunidad: boolean = false;
   deletingComunidad: boolean = false;
- 
+
   // ── Datos ──────────────────────────────────────
   publicaciones: any[] = [];
   miembros: any[] = [];
   miembrosFiltrados: any[] = [];
   servicios: any[] = [];
- 
+
   // ── Feed: crear post ──────────────────────────
   createOpen: boolean = false;
   submittedCreate: boolean = false;
@@ -68,7 +66,7 @@ export class BlogComunidad implements OnInit {
   selectedImageName: string = '';
   imagePreview: string | null = null;
   imageError: string = '';
- 
+
   // ── Feed: editar post ─────────────────────────
   editMode: boolean = false;
   confirmandoId: number | null = null;
@@ -83,29 +81,29 @@ export class BlogComunidad implements OnInit {
     comunidadId: null,
     imageUrl: null
   };
- 
+
   // ── Miembros ──────────────────────────────────
   memberSearch: string = '';
- 
+
   // ── Servicios (placeholder data) ─────────────
   // Cuando el backend esté disponible, reemplaza esto con la llamada real
- 
+
   // ── Info / editar comunidad ───────────────────
   comunidadEditar: any = { name: '', description: '', category: '' };
   editComunidadError: string = '';
   editComunidadSuccess: string = '';
- 
+
   // ── Alerts globales ───────────────────────────
   generalError: string = '';
   generalSuccess: string = '';
- 
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private peticion: Peticion,
     private cdr: ChangeDetectorRef
-  ) {}
- 
+  ) { }
+
   ngOnInit(): void {
     // Leer roles del localStorage
     const rolesGuardados = localStorage.getItem('roles');
@@ -115,7 +113,7 @@ export class BlogComunidad implements OnInit {
     } else if (roleUnico) {
       this.rol = [roleUnico];
     }
- 
+
     // Obtener ID de comunidad desde la URL
     this.route.params.subscribe(params => {
       this.comunidadId = Number(params['id']);
@@ -123,7 +121,7 @@ export class BlogComunidad implements OnInit {
       this.inicializar();
     });
   }
- 
+
   inicializar(): void {
     this.buscarUsuario();
     this.cargarComunidad();
@@ -131,15 +129,15 @@ export class BlogComunidad implements OnInit {
     this.cargarMiembros();
     this.cargarServicios();
   }
- 
+
   // ────────────────────────────────────────────
   // HELPERS
   // ────────────────────────────────────────────
- 
+
   esAdmin(): boolean {
     return this.rol.includes('ROLE_ADMIN') || this.rol.includes('ADMIN');
   }
- 
+
   traducirCategoria(categoria: string): string {
     switch (categoria) {
       case 'NUTRITION': return 'Nutrición';
@@ -148,46 +146,46 @@ export class BlogComunidad implements OnInit {
       default: return categoria || '';
     }
   }
- 
+
   setTab(tab: string): void {
     this.tabActivo = tab;
     this.limpiarFeedbackGeneral();
   }
- 
+
   limpiarFeedbackGeneral(): void {
     this.generalError = '';
     this.generalSuccess = '';
   }
- 
+
   limpiarFeedbackCrear(): void {
     this.createError = '';
     this.createSuccess = '';
   }
- 
+
   limpiarFeedbackEdicion(): void {
     this.editError = '';
     this.editSuccess = '';
   }
- 
+
   trackById(index: number, item: any): number {
     return item.id;
   }
- 
+
   // ────────────────────────────────────────────
   // CARGA DE DATOS
   // ────────────────────────────────────────────
- 
+
   buscarUsuario(): void {
     const userStorage = localStorage.getItem('user');
     const token = localStorage.getItem('token');
     if (!userStorage || !token) return;
- 
+
     let user;
     try { user = JSON.parse(userStorage); } catch { return; }
- 
+
     const userId = user?.id || user?.userId;
     if (!userId) return;
- 
+
     const url = `${this.peticion.urlReal}/api/users/get/${userId}`;
     this.peticion.get(url, token)
       .then((res: any) => {
@@ -200,11 +198,11 @@ export class BlogComunidad implements OnInit {
         console.error('Error al cargar usuario', err);
       });
   }
- 
+
   cargarComunidad(): void {
     this.loadingComunidad = true;
     const url = `${this.peticion.urlReal}/api/communities/get/${this.comunidadId}`;
- 
+
     this.peticion.get(url)
       .then((res: any) => {
         this.comunidad = res?.data || res || null;
@@ -227,11 +225,11 @@ export class BlogComunidad implements OnInit {
         this.cdr.detectChanges();
       });
   }
- 
+
   cargarPublicaciones(): void {
     this.loadingPosts = true;
     const url = `${this.peticion.urlReal}/api/posts/community/${this.comunidadId}`;
- 
+
     this.peticion.get(url)
       .then((res: any) => {
         this.publicaciones = Array.isArray(res) ? res : (res?.data || []);
@@ -246,11 +244,11 @@ export class BlogComunidad implements OnInit {
         this.cdr.detectChanges();
       });
   }
- 
+
   cargarMiembros(): void {
     this.loadingMiembros = true;
     const url = `${this.peticion.urlReal}/api/communities/${this.comunidadId}/members`;
- 
+
     this.peticion.get(url)
       .then((res: any) => {
         this.miembros = Array.isArray(res) ? res : (res?.data || []);
@@ -268,11 +266,11 @@ export class BlogComunidad implements OnInit {
         this.cdr.detectChanges();
       });
   }
- 
+
   cargarServicios(): void {
     this.loadingServicios = true;
     const url = `${this.peticion.urlReal}/api/services/${this.comunidadId}/active`;
- 
+
     this.peticion.get(url)
       .then((res: any) => {
         this.servicios = Array.isArray(res) ? res : (res?.data || []);
@@ -288,14 +286,14 @@ export class BlogComunidad implements OnInit {
         this.cdr.detectChanges();
       });
   }
- 
+
   // ────────────────────────────────────────────
   // MEMBRESÍA
   // ────────────────────────────────────────────
- 
+
   verificarMembresia(): void {
     if (!this.usuario?.id || !this.comunidadId) return;
- 
+
     const url = `${this.peticion.urlReal}/api/communities/${this.comunidadId}/is-member/${this.usuario.id}`;
     this.peticion.get(url)
       .then((res: any) => {
@@ -306,16 +304,16 @@ export class BlogComunidad implements OnInit {
         this.esMiembro = false;
       });
   }
- 
+
   unirse(): void {
     if (!this.usuario?.id) {
       this.generalError = 'No se pudo identificar el usuario actual.';
       return;
     }
- 
+
     this.joiningCommunity = true;
     this.limpiarFeedbackGeneral();
- 
+
     const url = `${this.peticion.urlReal}/api/communities/${this.comunidadId}/join`;
     this.peticion.post(url, { userId: this.usuario.id })
       .then(() => {
@@ -331,13 +329,13 @@ export class BlogComunidad implements OnInit {
         this.cdr.detectChanges();
       });
   }
- 
+
   salirComunidad(): void {
     if (!this.usuario?.id) return;
- 
+
     this.leavingCommunity = true;
     this.limpiarFeedbackGeneral();
- 
+
     const url = `${this.peticion.urlReal}/api/communities/${this.comunidadId}/leave`;
     this.peticion.post(url, { userId: this.usuario.id })
       .then(() => {
@@ -353,13 +351,13 @@ export class BlogComunidad implements OnInit {
         this.cdr.detectChanges();
       });
   }
- 
+
   expulsarMiembro(miembro: any): void {
     if (!this.esAdmin()) return;
- 
+
     const token = localStorage.getItem('token') || undefined;
     const url = `${this.peticion.urlReal}/api/communities/${this.comunidadId}/remove-member/${miembro.id}`;
- 
+
     this.peticion.delete(url, token ? { token } : {})
       .then(() => {
         this.generalSuccess = `${miembro.username} fue expulsado de la comunidad.`;
@@ -372,7 +370,7 @@ export class BlogComunidad implements OnInit {
         this.cdr.detectChanges();
       });
   }
- 
+
   filtrarMiembros(): void {
     const termino = this.memberSearch.trim().toLowerCase();
     this.miembrosFiltrados = this.miembros.filter(m =>
@@ -381,16 +379,16 @@ export class BlogComunidad implements OnInit {
       m.email?.toLowerCase().includes(termino)
     );
   }
- 
+
   // ────────────────────────────────────────────
   // PUBLICACIONES: CREAR
   // ────────────────────────────────────────────
- 
+
   openCreate(): void {
     this.createOpen = true;
     this.limpiarFeedbackCrear();
   }
- 
+
   closeCreate(): void {
     if (this.creatingPost) return;
     this.createOpen = false;
@@ -408,7 +406,7 @@ export class BlogComunidad implements OnInit {
       imageUrl: null
     };
   }
- 
+
   validarArchivoImagen(file: File | null): string {
     if (!file) return '';
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
@@ -417,13 +415,13 @@ export class BlogComunidad implements OnInit {
     if (file.size > maxSizeBytes) return 'La imagen no puede superar 5 MB.';
     return '';
   }
- 
+
   onImageSelected(event: Event): void {
     this.imageError = '';
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0] || null;
     const error = this.validarArchivoImagen(file);
- 
+
     if (error) {
       this.imageError = error;
       this.selectedImageFile = null;
@@ -432,12 +430,12 @@ export class BlogComunidad implements OnInit {
       input.value = '';
       return;
     }
- 
+
     if (!file) return;
- 
+
     this.selectedImageFile = file;
     this.selectedImageName = file.name;
- 
+
     const reader = new FileReader();
     reader.onload = () => {
       this.imagePreview = reader.result as string;
@@ -445,49 +443,64 @@ export class BlogComunidad implements OnInit {
     };
     reader.readAsDataURL(file);
   }
- 
-  crearPublicacion(): void {
+
+  async crearPublicacion(): Promise<void> {
     this.submittedCreate = true;
     this.limpiarFeedbackCrear();
- 
-    const payload = {
-      contenido: this.nuevaPublicacion.contenido?.trim(),
-      tipo: 'COMMUNITY',
-      authorId: this.usuario.id,
-      comunidadId: Number(this.comunidadId),
-      imageUrl: this.imagePreview
-    };
- 
-    const resultado = publicacionSchema.safeParse(payload);
-    if (!resultado.success) {
-      this.createError = resultado.error.errors[0]?.message || 'Datos inválidos.';
+
+    if (!this.nuevaPublicacion.contenido?.trim()) {
+      this.createError = 'El contenido es obligatorio.';
       return;
     }
- 
+
+    if (!this.comunidadId) {
+      this.createError = 'No se pudo identificar la comunidad.';
+      return;
+    }
+
     this.creatingPost = true;
-    const token = localStorage.getItem('token') || undefined;
-    const url = `${this.peticion.urlReal}/api/publicaciones`;
- 
-    this.peticion.post(url, payload, token)
-      .then(() => {
-        this.createSuccess = 'Publicación creada correctamente.';
-        this.cargarPublicaciones();
-        this.closeCreate();
-      })
-      .catch((err: any) => {
-        this.createError =
-          err?.error?.mensaje || err?.error?.message || 'No fue posible crear la publicación.';
-      })
-      .finally(() => {
-        this.creatingPost = false;
-        this.cdr.detectChanges();
-      });
+
+    try {
+      const token = localStorage.getItem('token') || undefined;
+
+      const url = `${this.peticion.urlReal}/api/posts/communities/${this.comunidadId}`;
+
+      const formData = new FormData();
+
+      formData.append(
+        'data',
+        new Blob(
+          [JSON.stringify({
+            contenido: this.nuevaPublicacion.contenido.trim()
+          })],
+          { type: 'application/json' }
+        )
+      );
+
+      if (this.selectedImageFile) {
+        formData.append('media', this.selectedImageFile);
+      }
+      const postCreado: any = await this.peticion.post(url, formData, token);
+
+      this.createSuccess = 'Publicación creada correctamente.';
+      this.cargarPublicaciones();
+      this.closeCreate();
+
+    } catch (err: any) {
+      console.error("ERROR BACKEND:", err);
+      this.createError =
+        err?.error?.message ||
+        'No fue posible crear la publicación.';
+    } finally {
+      this.creatingPost = false;
+      this.cdr.detectChanges();
+    }
   }
- 
+
   // ────────────────────────────────────────────
   // PUBLICACIONES: EDITAR / ELIMINAR
   // ────────────────────────────────────────────
- 
+
   toggleEditar(pub: any): void {
     if (this.publicacionEditar?.id === pub.id && this.editMode) {
       this.cerrarEditar();
@@ -506,18 +519,18 @@ export class BlogComunidad implements OnInit {
       this.cdr.detectChanges();
     }
   }
- 
+
   cerrarEditar(): void {
     this.editMode = false;
     this.publicacionEditar = { id: null, contenido: '', tipo: 'COMMUNITY', authorId: null, comunidadId: null, imageUrl: null };
     this.submittedEdit = false;
     this.limpiarFeedbackEdicion();
   }
- 
+
   actualizarPublicacion(publicacion: any): void {
     this.submittedEdit = true;
     this.limpiarFeedbackEdicion();
- 
+
     const payload = {
       contenido: this.publicacionEditar.contenido?.trim(),
       tipo: this.publicacionEditar.tipo || 'COMMUNITY',
@@ -525,17 +538,17 @@ export class BlogComunidad implements OnInit {
       comunidadId: Number(this.publicacionEditar.comunidadId),
       imageUrl: this.publicacionEditar.imageUrl
     };
- 
+
     const resultado = publicacionSchema.safeParse(payload);
     if (!resultado.success) {
       this.editError = resultado.error.errors[0]?.message || 'Datos inválidos.';
       return;
     }
- 
+
     this.updatingPost = true;
     const token = localStorage.getItem('token') || undefined;
     const url = `${this.peticion.urlReal}/api/publicaciones/${publicacion.id}`;
- 
+
     this.peticion.put(url, payload, token)
       .then(() => {
         this.editSuccess = 'Publicación actualizada correctamente.';
@@ -551,16 +564,16 @@ export class BlogComunidad implements OnInit {
         this.cdr.detectChanges();
       });
   }
- 
+
   toggleConfirmar(id: number | null): void {
     this.confirmandoId = this.confirmandoId === id ? null : id;
   }
- 
+
   eliminarPublicacion(id: number): void {
     this.deletingPostId = id;
     const token = localStorage.getItem('token') || undefined;
     const url = `${this.peticion.urlReal}/api/publicaciones/${id}`;
- 
+
     this.peticion.delete(url, token ? { token } : {})
       .then(() => {
         this.generalSuccess = 'Publicación eliminada correctamente.';
@@ -576,40 +589,40 @@ export class BlogComunidad implements OnInit {
         this.cdr.detectChanges();
       });
   }
- 
+
   darLike(pub: any): void {
     pub.likeado = !pub.likeado;
     pub.likes = pub.likeado ? (pub.likes || 0) + 1 : Math.max((pub.likes || 1) - 1, 0);
     this.cdr.detectChanges();
   }
- 
+
   mostrarMensajeComentarios(): void {
     this.generalError = 'La integración de comentarios está pendiente con el backend.';
   }
- 
+
   // ────────────────────────────────────────────
   // COMUNIDAD: EDITAR / ELIMINAR (Admin)
   // ────────────────────────────────────────────
- 
+
   actualizarComunidad(): void {
     if (!this.comunidadEditar.name?.trim() || !this.comunidadEditar.description?.trim() || !this.comunidadEditar.category) {
       this.editComunidadError = 'Todos los campos son obligatorios.';
       return;
     }
- 
+
     this.savingComunidad = true;
     this.editComunidadError = '';
     this.editComunidadSuccess = '';
- 
+
     const token = localStorage.getItem('token') || undefined;
     const url = `${this.peticion.urlReal}/api/communities/update/${this.comunidadId}`;
- 
+
     const payload = {
       name: this.comunidadEditar.name.trim(),
       description: this.comunidadEditar.description.trim(),
       category: this.comunidadEditar.category
     };
- 
+
     this.peticion.patch(url, payload, token)
       .then(() => {
         this.editComunidadSuccess = 'Comunidad actualizada correctamente.';
@@ -623,14 +636,14 @@ export class BlogComunidad implements OnInit {
         this.cdr.detectChanges();
       });
   }
- 
+
   confirmarEliminarComunidad(): void {
     if (!confirm('¿Seguro que deseas eliminar esta comunidad? Esta acción no se puede deshacer.')) return;
- 
+
     this.deletingComunidad = true;
     this.editComunidadError = '';
     const url = `${this.peticion.urlReal}/api/communities/delete/${this.comunidadId}`;
- 
+
     this.peticion.delete(url, {})
       .then(() => {
         this.generalSuccess = 'La comunidad fue eliminada correctamente.';
@@ -646,11 +659,11 @@ export class BlogComunidad implements OnInit {
         this.cdr.detectChanges();
       });
   }
- 
+
   // ────────────────────────────────────────────
   // SERVICIOS: placeholder para cuando exista el backend
   // ────────────────────────────────────────────
- 
+
   openCrearServicio(): void {
     this.generalError = 'La gestión de servicios estará disponible próximamente.';
   }

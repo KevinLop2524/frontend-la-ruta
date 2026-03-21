@@ -208,7 +208,7 @@ export class ComunidadComponent implements OnInit {
   accionComunidad(comunidad: any): void {
     // Si ya es miembro o creador → navegar directo
     if (this.esMiembro(comunidad.id)) {
-      this.router.navigate(["servicios/", comunidad.id]);
+      this.router.navigate(["comunidad/", comunidad.id]);
       return;
     }
 

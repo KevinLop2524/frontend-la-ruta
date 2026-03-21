@@ -271,51 +271,77 @@ export class BlogPrincipal implements OnInit {
   }
 
   async crearPublicacion(): Promise<void> {
-    this.submittedCreate = true;
-    this.limpiarFeedbackCrear();
+  this.submittedCreate = true;
+  this.limpiarFeedbackCrear();
 
-    if (!this.nuevaPublicacion.contenido?.trim()) {
-      this.createError = 'El contenido es obligatorio.';
-      return;
-    }
+  if (!this.nuevaPublicacion.contenido?.trim()) {
+    this.createError = 'El contenido es obligatorio.';
+    return;
+  }
 
-    this.creatingPost = true;
+  this.creatingPost = true;
 
-    try {
-      const token = localStorage.getItem('token') || undefined;
+  try {
+    const token = localStorage.getItem('token') || undefined;
 
+    let url = `${this.peticion.urlReal}/api/posts`;
+    let postCreado: any;
+
+    // 🔹 CASO: PUBLICACIÓN EN COMUNIDAD
+    if (this.nuevaPublicacion.tipo === 'COMMUNITY') {
+      const comunidadId = Number(this.nuevaPublicacion.comunidadId);
+
+      if (!comunidadId) {
+        this.createError = 'Debes seleccionar una comunidad.';
+        this.creatingPost = false;
+        return;
+      }
+
+      const formData = new FormData();
+
+      formData.append('data', JSON.stringify({
+        contenido: this.nuevaPublicacion.contenido.trim()
+      }));
+
+      if (this.selectedCreateImageFile) {
+        formData.append('media', this.selectedCreateImageFile);
+      }
+
+      url = `${this.peticion.urlReal}/api/posts/communities/${comunidadId}`;
+
+      postCreado = await this.peticion.post(url, formData, token);
+
+    } 
+    // 🔹 CASO: PUBLICACIÓN NORMAL
+    else {
       const payload: any = {
         contenido: this.nuevaPublicacion.contenido.trim(),
         type: this.nuevaPublicacion.tipo
       };
 
-      if (this.nuevaPublicacion.tipo === 'COMMUNITY') {
-        payload.comunidadId = Number(this.nuevaPublicacion.comunidadId);
-      }
-
-      const url = `${this.peticion.urlReal}/api/posts`;
-      const postCreado: any = await this.peticion.post(url, payload, token);
-
-      if (this.selectedCreateImageFile) {
-        await this.subirImagenPost(postCreado.id);
-      }
-
-      this.createSuccess = 'Publicación creada correctamente.';
-      this.generalSuccess = 'Tu publicación se agregó al feed.';
-
-      this.cargarPublicaciones();
-      this.closeCreate();
-
-    } catch (err: any) {
-      console.error(err);
-      this.createError =
-        err?.error?.message ||
-        'Error al crear publicación';
-    } finally {
-      this.creatingPost = false;
-      this.cdr.detectChanges();
+      postCreado = await this.peticion.post(url, payload, token);
     }
+
+    if (this.selectedCreateImageFile) {
+      await this.subirImagenPost(postCreado.id);
+    }
+
+    this.createSuccess = 'Publicación creada correctamente.';
+    this.generalSuccess = 'Tu publicación se agregó al feed.';
+
+    this.cargarPublicaciones();
+    this.closeCreate();
+
+  } catch (err: any) {
+    console.error(err);
+    this.createError =
+      err?.error?.message ||
+      'Error al crear publicación';
+  } finally {
+    this.creatingPost = false;
+    this.cdr.detectChanges();
   }
+}
 
   eliminarPublicacion(idSeleccionado: number): void {
     this.deletingPostId = idSeleccionado;
