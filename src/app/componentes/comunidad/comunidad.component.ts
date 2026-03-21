@@ -231,7 +231,7 @@ export class ComunidadComponent implements OnInit {
       .then((res: any) => {
         if (comunidad.creatorId === this.usuario.id || res?.isMember) {
           this.idsUnidas.add(comunidad.id);
-          this.router.navigate(["servicios/", comunidad.id]);
+          this.router.navigate(["comunidad/", comunidad.id]);
           return;
         }
 

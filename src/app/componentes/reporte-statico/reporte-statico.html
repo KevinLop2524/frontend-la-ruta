@@ -19,25 +19,18 @@
       </button>
     </div>
 
+    <!-- Filtros -->
     <div class="rs-filters">
       <div class="rs-filters-grid">
 
         <div>
           <label class="rs-label">Nombre</label>
-          <input
-            type="text"
-            class="rs-input"
-            [(ngModel)]="filtros.name"
-            placeholder="Buscar nombre..." />
+          <input type="text" class="rs-input" [(ngModel)]="filtros.name" placeholder="Buscar nombre..." />
         </div>
 
         <div>
           <label class="rs-label">Correo</label>
-          <input
-            type="text"
-            class="rs-input"
-            [(ngModel)]="filtros.email"
-            placeholder="Buscar correo..." />
+          <input type="text" class="rs-input" [(ngModel)]="filtros.email" placeholder="Buscar correo..." />
         </div>
 
         <div>
@@ -61,45 +54,30 @@
 
         <div>
           <label class="rs-label">Fecha inicio</label>
-          <input
-            type="date"
-            class="rs-input"
-            [(ngModel)]="filtros.fechaInicioRegistro" />
+          <input type="date" class="rs-input" [(ngModel)]="filtros.fechaInicioRegistro" />
         </div>
 
         <div>
           <label class="rs-label">Fecha fin</label>
-          <input
-            type="date"
-            class="rs-input"
-            [(ngModel)]="filtros.fechaFinRegistro" />
+          <input type="date" class="rs-input" [(ngModel)]="filtros.fechaFinRegistro" />
         </div>
 
       </div>
 
       <div class="rs-filter-actions">
-        <button
-          class="rs-btn rs-btn--ghost"
-          type="button"
-          (click)="limpiarFiltros()"
-          [disabled]="cargando">
+        <button class="rs-btn rs-btn--ghost" type="button" (click)="limpiarFiltros()" [disabled]="cargando">
           <i class="bi bi-x-circle me-1"></i>Limpiar
         </button>
-
-        <button
-          class="rs-btn rs-btn--primary"
-          type="button"
-          (click)="aplicarFiltros()"
-          [disabled]="cargando">
+        <button class="rs-btn rs-btn--primary" type="button" (click)="aplicarFiltros()" [disabled]="cargando">
           <i class="bi bi-search me-1"></i>
           {{ cargando ? 'Buscando...' : 'Aplicar filtros' }}
         </button>
       </div>
     </div>
 
-    <div *ngIf="errorMessage" class="rs-alert rs-alert--error">
-      {{ errorMessage }}
-    </div>
+    <!-- Alerts -->
+    <div *ngIf="errorMessage" class="rs-alert rs-alert--error">{{ errorMessage }}</div>
+    <div *ngIf="successMessage" class="rs-alert rs-alert--success">{{ successMessage }}</div>
 
     <p class="rs-count">
       Mostrando <span>{{ usuarios.length }}</span> usuarios
@@ -119,23 +97,31 @@
           </thead>
 
           <tbody>
-            <tr *ngFor="let item of usuarios; trackBy: trackByUsuario">
+            <tr *ngFor="let item of usuarios; trackBy: trackByUsuario"
+              [class.rs-row--expanded]="accionExpandidaId === item.id">
+
               <td>
                 <div class="td-name">{{ item.fullName || 'Sin nombre' }}</div>
                 <div class="td-email">{{ item.email || 'Sin correo' }}</div>
               </td>
 
               <td>
-                <span class="rs-badge rs-badge--apodo">
-                  @{{ item.username || 'sin-usuario' }}
-                </span>
+                <span class="rs-badge rs-badge--apodo">@{{ item.username || 'sin-usuario' }}</span>
               </td>
 
               <td>
-                <span
+                <!-- Selector de rol inline cuando está en modo cambio-rol -->
+                <div *ngIf="accionExpandidaId === item.id && accionActiva === 'rol'" class="rs-inline-rol">
+                  <select class="rs-input rs-input--sm" [(ngModel)]="rolNuevo">
+                    <option value="ADMIN">Admin</option>
+                    <option value="ASESOR">Asesor</option>
+                    <option value="CLIENT">Cliente</option>
+                  </select>
+                </div>
+                <span *ngIf="!(accionExpandidaId === item.id && accionActiva === 'rol')"
                   class="rs-badge"
                   [ngClass]="{
-                    'rs-badge--admin': item.role === 'ADMIN',
+                    'rs-badge--admin':  item.role === 'ADMIN',
                     'rs-badge--asesor': item.role === 'ASESOR',
                     'rs-badge--client': item.role === 'CLIENT'
                   }">
@@ -144,10 +130,9 @@
               </td>
 
               <td>
-                <span
-                  class="rs-badge"
+                <span class="rs-badge"
                   [ngClass]="{
-                    'rs-badge--active': item.active === true,
+                    'rs-badge--active':   item.active === true,
                     'rs-badge--inactive': item.active === false
                   }">
                   {{ item.active ? '● Activo' : '● Inactivo' }}
@@ -155,14 +140,100 @@
               </td>
 
               <td>
-                <div class="td-actions">
+                <!-- Panel de confirmación expandido -->
+                <div *ngIf="accionExpandidaId === item.id" class="rs-action-panel">
+
+                  <!-- Confirmar eliminación -->
+                  <ng-container *ngIf="accionActiva === 'eliminar'">
+                    <span class="rs-action-label rs-action-label--danger">
+                      ⚠️ ¿Eliminar a {{ item.fullName }}?
+                    </span>
+                    <button class="td-btn td-btn--confirm-danger"
+                      [disabled]="procesandoId === item.id"
+                      (click)="confirmarEliminacion(item)">
+                      {{ procesandoId === item.id ? 'Eliminando...' : 'Confirmar' }}
+                    </button>
+                    <button class="td-btn" [disabled]="procesandoId === item.id" (click)="cerrarAccion()">
+                      Cancelar
+                    </button>
+                  </ng-container>
+
+                  <!-- Confirmar activación -->
+                  <ng-container *ngIf="accionActiva === 'activar'">
+                    <span class="rs-action-label rs-action-label--success">
+                      ¿Activar a {{ item.fullName }}?
+                    </span>
+                    <button class="td-btn td-btn--confirm-success"
+                      [disabled]="procesandoId === item.id"
+                      (click)="confirmarActivacion(item)">
+                      {{ procesandoId === item.id ? 'Activando...' : 'Confirmar' }}
+                    </button>
+                    <button class="td-btn" [disabled]="procesandoId === item.id" (click)="cerrarAccion()">
+                      Cancelar
+                    </button>
+                  </ng-container>
+
+                  <!-- Confirmar cambio de rol -->
+                  <ng-container *ngIf="accionActiva === 'rol'">
+                    <span class="rs-action-label">Nuevo rol:</span>
+                    <button class="td-btn td-btn--confirm-primary"
+                      [disabled]="procesandoId === item.id"
+                      (click)="confirmarCambioRol(item)">
+                      {{ procesandoId === item.id ? 'Guardando...' : 'Aplicar' }}
+                    </button>
+                    <button class="td-btn" [disabled]="procesandoId === item.id" (click)="cerrarAccion()">
+                      Cancelar
+                    </button>
+                  </ng-container>
+
+                </div>
+
+                <!-- Botones normales -->
+                <div *ngIf="accionExpandidaId !== item.id" class="td-actions">
+
                   <button class="td-btn" type="button" (click)="verUsuario(item)">
                     <i class="bi bi-eye me-1"></i>Ver
                   </button>
 
-                  <button class="td-btn td-btn--danger" type="button" (click)="eliminarUsuario(item)">
-                    <i class="bi bi-trash me-1"></i>Eliminar
-                  </button>
+                  <!-- Dropdown de acciones -->
+                  <div class="rs-dropdown" [class.open]="menuAbiertoPara === item.id">
+                    <button class="td-btn rs-dropdown-trigger" type="button"
+                      (click)="toggleMenu(item.id)">
+                      Acciones <i class="bi bi-chevron-down ms-1"></i>
+                    </button>
+
+                    <div class="rs-dropdown-menu">
+
+                      <!-- Activar: solo si está inactivo -->
+                      <button class="rs-dropdown-item rs-dropdown-item--success"
+                        *ngIf="!item.active"
+                        type="button"
+                        (click)="abrirAccion(item, 'activar')">
+                        <i class="bi bi-check-circle-fill"></i>
+                        Activar usuario
+                      </button>
+
+                      <!-- Cambiar rol: siempre disponible -->
+                      <button class="rs-dropdown-item"
+                        type="button"
+                        (click)="abrirAccion(item, 'rol')">
+                        <i class="bi bi-person-gear"></i>
+                        Cambiar rol
+                      </button>
+
+                      <div class="rs-dropdown-divider"></div>
+
+                      <!-- Eliminar: siempre disponible -->
+                      <button class="rs-dropdown-item rs-dropdown-item--danger"
+                        type="button"
+                        (click)="abrirAccion(item, 'eliminar')">
+                        <i class="bi bi-trash-fill"></i>
+                        Eliminar usuario
+                      </button>
+
+                    </div>
+                  </div>
+
                 </div>
               </td>
             </tr>
@@ -170,18 +241,14 @@
             <tr *ngIf="!cargando && usuarios.length === 0">
               <td colspan="5" class="rs-empty">
                 <div class="rs-empty-icon">👤</div>
-                <div class="rs-empty-text">
-                  No se encontraron usuarios con los filtros aplicados.
-                </div>
+                <div class="rs-empty-text">No se encontraron usuarios con los filtros aplicados.</div>
               </td>
             </tr>
 
             <tr *ngIf="cargando">
               <td colspan="5" class="rs-empty">
                 <div class="rs-empty-icon">⏳</div>
-                <div class="rs-empty-text">
-                  Cargando usuarios...
-                </div>
+                <div class="rs-empty-text">Cargando usuarios...</div>
               </td>
             </tr>
           </tbody>
