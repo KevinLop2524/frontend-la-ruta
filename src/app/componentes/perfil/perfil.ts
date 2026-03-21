@@ -84,9 +84,9 @@ export class Perfil implements OnInit {
     this.peticion
       .get(url, token)
       .then((res: any) => {
-        console.log(res)
+        console.log(res);
         this.usuario = res?.data || res || {};
-        console.log(this.usuario)
+        console.log(this.usuario);
         this.avatarVersion = Date.now();
         this.cdr.detectChanges();
       })
@@ -144,7 +144,9 @@ export class Perfil implements OnInit {
     this.previewImageUrl = null;
     this.imageError = "";
 
-    const input = document.getElementById("pfImageInput") as HTMLInputElement | null;
+    const input = document.getElementById(
+      "pfImageInput",
+    ) as HTMLInputElement | null;
     if (input) {
       input.value = "";
     }
@@ -207,7 +209,6 @@ export class Perfil implements OnInit {
         this.cdr.detectChanges();
       },
       error: (err: any) => {
-        
         console.error("Error al subir la imagen de perfil", err);
 
         this.generalError =
@@ -222,7 +223,6 @@ export class Perfil implements OnInit {
   }
 
   obtenerFotoPerfil(): string {
-    
     console.log(this.usuario.avatar_url);
     console.log(this.usuario);
 
@@ -230,9 +230,7 @@ export class Perfil implements OnInit {
       return `${this.usuario.avatar_url}?t=${this.avatarVersion}`;
     }
 
-
     return "/imagenes/static/imgGymUno.jpg";
-
   }
 
   onImageError(event: Event): void {

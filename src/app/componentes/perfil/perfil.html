@@ -16,7 +16,7 @@
   <!-- Banner -->
   <div class="pf-banner">
     <div class="pf-avatar-wrap">
-      <img [src]="previewImageUrl || obtenerFotoPerfil()" class="pf-avatar" alt="Foto de perfil"
+      <img [src]="obtenerFotoPerfil()" class="pf-avatar" alt="Foto de perfil"
         (error)="onImageError($event)">
 
       <label for="pfImageInput" class="pf-avatar-edit">
