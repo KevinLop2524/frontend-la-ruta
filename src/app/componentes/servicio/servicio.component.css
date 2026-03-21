@@ -408,3 +408,38 @@
   opacity: 0.7;
   cursor: not-allowed;
 }
+
+.fit-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px 18px;
+  color: #cfcfcf;
+}
+
+.chart-card {
+  background: #161616;
+  border: 1px solid #222;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  min-height: 320px;
+}
+
+.chart-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 22px;
+  color: #fff;
+  margin: 0 0 14px;
+  text-transform: uppercase;
+}
+
+.chart-card canvas {
+  width: 100% !important;
+  height: 240px !important;
+}
+
+@media (max-width: 768px) {
+  .fit-grid {
+    grid-template-columns: 1fr;
+  }
+}
