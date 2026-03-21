@@ -8,10 +8,11 @@ import { RouterModule } from '@angular/router';
 import { z } from 'zod';
 
 const publicacionSchema = z.object({
-  contenido: z.string().min(1, 'Contenido requerido').regex(/[a-zA-ZÁÉÍÓÚáéíóúÑñ0-9]/, 'El contenido es inválido'),
-  tipo: z.string().min(1, 'El tipo es requerido'),
-  authorId: z.number(),
-  comunidadId: z.number()
+  contenido: z.string()
+    .min(1, 'Contenido requerido')
+    .regex(/[a-zA-ZÁÉÍÓÚáéíóúÑñ0-9]/, 'El contenido es inválido'),
+  type: z.string().min(1, 'El tipo es requerido'),
+  comunidadId: z.number().optional()
 });
 
 @Component({
@@ -57,7 +58,7 @@ export class BlogPrincipal implements OnInit {
 
   nuevaPublicacion: any = {
     contenido: '',
-    tipo: 'COMMUNITY',
+    tipo: 'USER',
     authorId: null,
     comunidadId: null,
     imageUrl: null
@@ -74,8 +75,9 @@ export class BlogPrincipal implements OnInit {
 
   constructor(
     private peticion: Peticion,
-    private cdr: ChangeDetectorRef
-  ) {}
+    private cdr: ChangeDetectorRef,
+    private uploadService: Peticion
+  ) { }
 
   ngOnInit(): void {
     this.buscarUsuario();
@@ -107,7 +109,7 @@ export class BlogPrincipal implements OnInit {
     if (!userStorage || !token) {
       this.generalError = 'No se pudo identificar el usuario actual.';
       this.loadingUsuario = false;
-          this.cdr.detectChanges();
+      this.cdr.detectChanges();
 
       return;
     }
@@ -120,7 +122,7 @@ export class BlogPrincipal implements OnInit {
       console.error('Error parseando user del localStorage', error);
       this.generalError = 'No se pudo leer la sesión actual.';
       this.loadingUsuario = false;
-          this.cdr.detectChanges();
+      this.cdr.detectChanges();
 
       return;
     }
@@ -128,7 +130,7 @@ export class BlogPrincipal implements OnInit {
     if (!user?.userId) {
       this.generalError = 'El usuario actual no tiene un identificador válido.';
       this.loadingUsuario = false;
-          this.cdr.detectChanges();
+      this.cdr.detectChanges();
 
       return;
     }
@@ -147,7 +149,7 @@ export class BlogPrincipal implements OnInit {
       })
       .finally(() => {
         this.loadingUsuario = false;
-            this.cdr.detectChanges();
+        this.cdr.detectChanges();
 
       });
   }
@@ -159,14 +161,14 @@ export class BlogPrincipal implements OnInit {
     this.peticion.get(url)
       .then((res: any) => {
         this.peticion.get(url)
-  .then((res: any) => {
-    const data = Array.isArray(res) ? res : [];
+          .then((res: any) => {
+            const data = Array.isArray(res) ? res : [];
 
-    this.publicaciones = data.slice(0, 10);
+            this.publicaciones = data.slice(0, 10);
 
-    console.log(this.publicaciones);
-    this.cdr.detectChanges();
-  })
+            console.log(this.publicaciones);
+            this.cdr.detectChanges();
+          })
         console.log(this.publicaciones)
         this.cdr.detectChanges();
       })
@@ -177,7 +179,7 @@ export class BlogPrincipal implements OnInit {
       })
       .finally(() => {
         this.loadingPosts = false;
-            this.cdr.detectChanges();
+        this.cdr.detectChanges();
 
       });
   }
@@ -268,63 +270,51 @@ export class BlogPrincipal implements OnInit {
     return '';
   }
 
-  crearPublicacion(): void {
+  async crearPublicacion(): Promise<void> {
     this.submittedCreate = true;
     this.limpiarFeedbackCrear();
 
-    const comunidadId = Number(this.nuevaPublicacion.comunidadId);
-
-    const payload = {
-      contenido: this.nuevaPublicacion.contenido?.trim(),
-      tipo: 'COMMUNITY',
-      authorId: this.usuario.id,
-      comunidadId,
-      imageUrl: this.createImagePreview
-    };
-
-    const error = this.validarPayloadPublicacion(payload);
-    if (error) {
-      this.createError = error;
+    if (!this.nuevaPublicacion.contenido?.trim()) {
+      this.createError = 'El contenido es obligatorio.';
       return;
     }
 
     this.creatingPost = true;
-    const token = localStorage.getItem('token') || undefined;
-    const url = `${this.peticion.urlReal}/api/publicaciones`;
 
-    this.peticion.post(url, payload, token)
-      .then(() => {
-        this.createSuccess = 'Publicación creada correctamente.';
-        this.generalSuccess = 'Tu publicación se agregó al feed.';
-        this.cargarPublicaciones();
+    try {
+      const token = localStorage.getItem('token') || undefined;
 
-        this.nuevaPublicacion = {
-          contenido: '',
-          tipo: 'COMMUNITY',
-          authorId: this.usuario.id,
-          comunidadId: null,
-          imageUrl: null
-        };
+      const payload: any = {
+        contenido: this.nuevaPublicacion.contenido.trim(),
+        type: this.nuevaPublicacion.tipo
+      };
 
-        this.selectedCreateImageFile = null;
-        this.selectedCreateImageName = '';
-        this.createImagePreview = null;
-        this.createImageError = '';
-        this.submittedCreate = false;
-        this.createOpen = false;
-      })
-      .catch((err: any) => {
-        console.error('Error al crear la publicación', err);
-        this.createError =
-          err?.error?.mensaje ||
-          err?.error?.message ||
-          'No fue posible crear la publicación.';
-      })
-      .finally(() => {
-        this.creatingPost = false;
-            this.cdr.detectChanges();
+      if (this.nuevaPublicacion.tipo === 'COMMUNITY') {
+        payload.comunidadId = Number(this.nuevaPublicacion.comunidadId);
+      }
 
-      });
+      const url = `${this.peticion.urlReal}/api/posts`;
+      const postCreado: any = await this.peticion.post(url, payload, token);
+
+      if (this.selectedCreateImageFile) {
+        await this.subirImagenPost(postCreado.id);
+      }
+
+      this.createSuccess = 'Publicación creada correctamente.';
+      this.generalSuccess = 'Tu publicación se agregó al feed.';
+
+      this.cargarPublicaciones();
+      this.closeCreate();
+
+    } catch (err: any) {
+      console.error(err);
+      this.createError =
+        err?.error?.message ||
+        'Error al crear publicación';
+    } finally {
+      this.creatingPost = false;
+      this.cdr.detectChanges();
+    }
   }
 
   eliminarPublicacion(idSeleccionado: number): void {
@@ -418,7 +408,7 @@ export class BlogPrincipal implements OnInit {
       })
       .finally(() => {
         this.updatingPost = false;
-            this.cdr.detectChanges();
+        this.cdr.detectChanges();
 
       });
   }
@@ -442,7 +432,7 @@ export class BlogPrincipal implements OnInit {
 
     this.nuevaPublicacion = {
       contenido: '',
-      tipo: 'COMMUNITY',
+      tipo: 'USER',
       authorId: this.usuario.id || null,
       comunidadId: null,
       imageUrl: null
@@ -494,5 +484,28 @@ export class BlogPrincipal implements OnInit {
 
   trackByPublicacionId(index: number, pub: any): number {
     return pub.id;
+  }
+  subirImagenPost(postId: number): Promise<void> {
+    return new Promise((resolve, reject) => {
+
+      if (!this.selectedCreateImageFile) {
+        resolve();
+        return;
+      }
+
+      const url = `${this.peticion.urlReal}/api/posts/${postId}/images`;
+      this.uploadService.UploadFile(this.selectedCreateImageFile, url)
+        .subscribe({
+          next: (res: any) => {
+            console.log('Imagen subida', res);
+            resolve();
+          },
+          error: (err: any) => {
+            console.error('Error subiendo imagen', err);
+            this.createImageError = 'No se pudo subir la imagen.';
+            reject(err);
+          }
+        });
+    });
   }
 }
