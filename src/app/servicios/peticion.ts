@@ -123,6 +123,20 @@ export class Peticion {
   return promesa;
 };
 
+downloadPdfGet(url: string, token?: string): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    this.http.get(url, {
+      headers: {
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+      },
+      responseType: 'blob'
+    }).subscribe({
+      next: (res: Blob) => resolve(res),
+      error: (err) => reject(err)
+    });
+  });
+}
+
   UploadFile(file: File, api: string): Observable<any> {
     const formData = new FormData();
     formData.append("file", file); // 👈 EXACTAMENTE como Postman

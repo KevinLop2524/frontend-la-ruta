@@ -242,6 +242,35 @@ export class ReporteStatico implements OnInit {
     }
   }
 
+  async reporteComunidades(): Promise<void> {
+  this.descargandoPdf = true;
+  this.errorMessage = '';
+
+  try {
+    const blob = await this.peticion.downloadPdfGet(
+      `${this.peticion.urlReal}/api/admin/reports/communities`,
+      this.tokenLog
+    );
+
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'reporte_comunidades.pdf';
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (err: any) {
+    console.error('Error al descargar reporte de comunidades', err);
+    this.errorMessage =
+      err?.error?.message ||
+      err?.message ||
+      'No se pudo generar el reporte PDF.';
+  } finally {
+    this.descargandoPdf = false;
+    this.cdr.detectChanges();
+  }
+}
+
   // ── Ver usuario ──────────────────────────────────────────────
 
   verUsuario(usuario: any): void {

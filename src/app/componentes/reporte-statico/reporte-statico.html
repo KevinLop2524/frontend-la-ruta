@@ -12,6 +12,15 @@
       <button
         class="rs-btn-report"
         type="button"
+        (click)="reporteComunidades()"
+        [disabled]="descargandoPdf || cargando">
+        <i class="bi bi-file-earmark-arrow-down-fill me-2"></i>
+        {{ descargandoPdf ? 'Generando PDF...' : 'Generar reporte Comunidades' }}
+      </button>
+
+      <button
+        class="rs-btn-report"
+        type="button"
         (click)="reporte()"
         [disabled]="descargandoPdf || cargando">
         <i class="bi bi-file-earmark-arrow-down-fill me-2"></i>
