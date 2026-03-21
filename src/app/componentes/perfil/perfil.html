@@ -16,24 +16,15 @@
   <!-- Banner -->
   <div class="pf-banner">
     <div class="pf-avatar-wrap">
-      <img
-        [src]="previewImageUrl || obtenerFotoPerfil()"
-        class="pf-avatar"
-        alt="Foto de perfil"
-        id="foto_perfil"
-      >
+      <img [src]="previewImageUrl || obtenerFotoPerfil()" class="pf-avatar" alt="Foto de perfil"
+        (error)="onImageError($event)">
 
       <label for="pfImageInput" class="pf-avatar-edit">
         <i class="bi bi-camera-fill"></i>
       </label>
 
-      <input
-        id="pfImageInput"
-        type="file"
-        accept="image/png,image/jpeg,image/jpg,image/webp"
-        hidden
-        (change)="onImageSelected($event)"
-      >
+      <input id="pfImageInput" type="file" accept="image/png,image/jpeg,image/jpg,image/webp" hidden
+        (change)="onImageSelected($event)">
     </div>
   </div>
 
@@ -56,11 +47,7 @@
       </div>
 
       <div class="pf-info-actions">
-        <button
-          class="pf-btn-priv"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#datosPrivados">
+        <button class="pf-btn-priv" type="button" data-bs-toggle="collapse" data-bs-target="#datosPrivados">
           <i class="bi bi-lock-fill me-1"></i>Datos privados
         </button>
 
@@ -90,20 +77,13 @@
           <i class="bi bi-image-fill me-1"></i>Elegir imagen
         </label>
 
-        <button
-          type="button"
-          class="pf-btn-primary"
-          [disabled]="!selectedImageFile || uploadingImage"
+        <button type="button" class="pf-btn-primary" [disabled]="!selectedImageFile || uploadingImage"
           (click)="subirImagenPerfil()">
           <i class="bi bi-cloud-arrow-up-fill me-1"></i>
           {{ uploadingImage ? 'Subiendo...' : 'Guardar foto' }}
         </button>
 
-        <button
-          type="button"
-          class="pf-btn-ghost"
-          *ngIf="selectedImageFile"
-          [disabled]="uploadingImage"
+        <button type="button" class="pf-btn-ghost" *ngIf="selectedImageFile" [disabled]="uploadingImage"
           (click)="cancelarSeleccionImagen()">
           Cancelar
         </button>
@@ -148,18 +128,18 @@
           <div class="pf-priv-item">
             <span class="pf-priv-key">Nombre completo</span>
             <span class="pf-priv-val">
-              {{ this.userStorage?.nombre + ' ' + this.userStorage?.apellido }}
+              {{ this.usuario.firstName + ' ' + this.usuario.lastName}}
             </span>
           </div>
 
           <div class="pf-priv-item">
             <span class="pf-priv-key">Correo</span>
-            <span class="pf-priv-val">{{ this.userStorage?.correo || 'No disponible' }}</span>
+            <span class="pf-priv-val">{{ this.usuario.email || 'No disponible' }}</span>
           </div>
 
           <div class="pf-priv-item">
             <span class="pf-priv-key">Apodo</span>
-            <span class="pf-priv-val">{{ apodo || 'No disponible' }}</span>
+            <span class="pf-priv-val">{{ this.usuario.username || 'No disponible' }}</span>
           </div>
 
           <div class="pf-priv-item">
@@ -179,23 +159,23 @@
 
       <div class="pf-data-grid">
         <div class="pf-data-card">
-          <div class="pf-data-label">Nombre</div>
-          <div class="pf-data-val">{{ this.userStorage?.nombre || 'No disponible' }}</div>
+          <div class="pf-data-label">Nombres</div>
+          <div class="pf-data-val">{{ this.usuario.firstName || 'No disponible' }}</div>
         </div>
 
         <div class="pf-data-card">
-          <div class="pf-data-label">Apellido</div>
-          <div class="pf-data-val">{{ this.userStorage?.apellido || 'No disponible' }}</div>
+          <div class="pf-data-label">Apellidos</div>
+          <div class="pf-data-val">{{ this.usuario.lastName || 'No disponible' }}</div>
         </div>
 
         <div class="pf-data-card">
           <div class="pf-data-label">Apodo</div>
-          <div class="pf-data-val">{{ this.apodo || 'No disponible' }}</div>
+          <div class="pf-data-val">{{ this.usuario.username || 'No disponible' }}</div>
         </div>
 
         <div class="pf-data-card">
           <div class="pf-data-label">Correo</div>
-          <div class="pf-data-val">{{ this.userStorage?.correo || 'No disponible' }}</div>
+          <div class="pf-data-val">{{ this.usuario.email || 'No disponible' }}</div>
         </div>
       </div>
     </div>

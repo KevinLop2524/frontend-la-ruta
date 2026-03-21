@@ -14,6 +14,11 @@ export class Header {
 
   logOut(){
     localStorage.clear();
+    localStorage.removeItem('token');
+    localStorage.removeItem('apodo');
+    localStorage.removeItem('role');
+    localStorage.removeItem('user');
+    
     this.router.navigate(["login"])
   }
 }

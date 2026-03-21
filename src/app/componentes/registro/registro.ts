@@ -35,7 +35,7 @@ export class Registro {
   constructor(
     private peticion: Peticion,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {
     this.configurarLimitesFecha();
   }
@@ -164,26 +164,32 @@ export class Registro {
     this.peticion
       .post(url, payload)
       .then((res: any) => {
+        console.log(res);
         if (res?.role === "CLIENT") {
           this.serverSuccess =
             "Registro exitoso. Activa tu cuenta e inicia sesión.";
           form.resetForm();
           this.submitted = false;
+          this.cdr.detectChanges();
 
           setTimeout(() => {
             this.router.navigate(["/"]);
-          }, 1200);
+          }, 2200);
         } else {
           this.serverSuccess = "Registro exitoso.";
+          this.cdr.detectChanges();
+
           setTimeout(() => {
             this.router.navigate(["/"]);
-          }, 1200);
+          }, 2200);
         }
       })
       .catch((err: any) => {
+        console.log(err);
         this.serverError =
           err?.error?.message ||
           "No fue posible completar el registro. Intenta nuevamente.";
+        this.cdr.detectChanges();
       })
       .finally(() => {
         this.loading = false;

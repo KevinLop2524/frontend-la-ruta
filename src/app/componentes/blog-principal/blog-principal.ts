@@ -125,7 +125,7 @@ export class BlogPrincipal implements OnInit {
       return;
     }
 
-    if (!user?.id) {
+    if (!user?.userId) {
       this.generalError = 'El usuario actual no tiene un identificador válido.';
       this.loadingUsuario = false;
           this.cdr.detectChanges();
@@ -133,7 +133,7 @@ export class BlogPrincipal implements OnInit {
       return;
     }
 
-    const url = `${this.peticion.urlReal}/api/users/get/${user.id}`;
+    const url = `${this.peticion.urlReal}/api/users/get/${user.userId}`;
 
     this.peticion.get(url, token)
       .then((res: any) => {

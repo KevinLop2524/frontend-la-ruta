@@ -1,0 +1,506 @@
+<app-header></app-header>
+ 
+<main class="cv-page">
+ 
+  <!-- ══════════════════════════════════
+       HERO / BANNER
+  ══════════════════════════════════ -->
+  <div class="cv-hero">
+    <div class="cv-banner">
+      <div class="cv-banner-gradient"></div>
+      <div class="cv-banner-noise"></div>
+    </div>
+ 
+    <div class="container">
+      <div class="cv-hero-inner">
+ 
+        <!-- Avatar de comunidad -->
+        <div class="cv-community-avatar">
+          <span>{{ comunidad?.name?.charAt(0)?.toUpperCase() }}</span>
+        </div>
+ 
+        <!-- Info principal -->
+        <div class="cv-hero-info">
+          <div class="cv-hero-top">
+            <div>
+              <h1 class="cv-community-name">{{ comunidad?.name || 'Cargando...' }}</h1>
+              <div class="cv-hero-meta">
+                <span class="cv-badge"
+                  [ngClass]="{
+                    'cv-badge--fitness': comunidad?.category === 'FITNESS',
+                    'cv-badge--nutrition': comunidad?.category === 'NUTRITION',
+                    'cv-badge--development': comunidad?.category === 'PERSONAL_DEVELOPMENT'
+                  }">
+                  {{ traducirCategoria(comunidad?.category) }}
+                </span>
+                <span class="cv-meta-sep">·</span>
+                <span class="cv-meta-text">🌐 Comunidad pública</span>
+                <span class="cv-meta-sep">·</span>
+                <span class="cv-meta-text">👥 {{ totalMiembros }} miembros</span>
+              </div>
+            </div>
+ 
+            <div class="cv-hero-actions">
+              <button class="cv-btn cv-btn--ghost" *ngIf="esMiembro && !esAdmin()">
+                <i class="bi bi-bell"></i> Notificaciones
+              </button> 
+              <button class="cv-btn cv-btn--danger-ghost"
+                *ngIf="esMiembro && !esAdmin()"
+                [disabled]="leavingCommunity"
+                (click)="salirComunidad()">
+                <i class="bi bi-box-arrow-right"></i>
+                {{ leavingCommunity ? 'Saliendo...' : 'Salir' }}
+              </button>
+              <button class="cv-btn cv-btn--primary"
+                *ngIf="!esMiembro && !esAdmin()"
+                [disabled]="joiningCommunity"
+                (click)="unirse()">
+                <i class="bi bi-plus-lg"></i>
+                {{ joiningCommunity ? 'Uniéndote...' : 'Unirse' }}
+              </button>
+              <span class="cv-admin-badge" *ngIf="esAdmin()">
+                <i class="bi bi-shield-fill-check"></i> Admin
+              </span>
+            </div>
+          </div>
+ 
+          <!-- Tabs de navegación -->
+          <nav class="cv-tabs">
+            <button class="cv-tab" [class.active]="tabActivo === 'feed'" (click)="setTab('feed')">
+              <i class="bi bi-grid-3x3-gap-fill"></i> Publicaciones
+            </button>
+            <button class="cv-tab" [class.active]="tabActivo === 'servicios'" (click)="setTab('servicios')">
+              <i class="bi bi-lightning-charge-fill"></i> Servicios
+            </button>
+            <button class="cv-tab" [class.active]="tabActivo === 'miembros'" (click)="setTab('miembros')">
+              <i class="bi bi-people-fill"></i> Miembros
+            </button>
+            <button class="cv-tab" [class.active]="tabActivo === 'info'" (click)="setTab('info')">
+              <i class="bi bi-info-circle-fill"></i> Info
+            </button>
+          </nav>
+        </div>
+ 
+      </div>
+    </div>
+  </div>
+ 
+  <!-- ══════════════════════════════════
+       CUERPO PRINCIPAL
+  ══════════════════════════════════ -->
+  <div class="container cv-body">
+ 
+    <!-- Alerts globales -->
+    <div *ngIf="generalError" class="cv-alert cv-alert--error">{{ generalError }}</div>
+    <div *ngIf="generalSuccess" class="cv-alert cv-alert--success">{{ generalSuccess }}</div>
+ 
+    <!-- ── TAB: FEED ── -->
+    <div *ngIf="tabActivo === 'feed'" class="cv-layout">
+ 
+      <!-- Columna izquierda: sidebar info rápida -->
+      <aside class="cv-sidebar">
+ 
+        <div class="cv-card">
+          <div class="cv-card-title">Sobre la comunidad</div>
+          <p class="cv-card-text">{{ comunidad?.description || 'Sin descripción disponible.' }}</p>
+          <div class="cv-card-stat">
+            <i class="bi bi-people-fill"></i>
+            <span>{{ totalMiembros }} miembros</span>
+          </div>
+          <div class="cv-card-stat">
+            <i class="bi bi-calendar3"></i>
+            <span>Creada el {{ comunidad?.createdAt | date:'MMMM yyyy' }}</span>
+          </div>
+          <div class="cv-card-stat">
+            <i class="bi bi-tag-fill"></i>
+            <span>{{ traducirCategoria(comunidad?.category) }}</span>
+          </div>
+        </div>
+ 
+        <!-- Miembros destacados -->
+        <div class="cv-card">
+          <div class="cv-card-title">Miembros recientes</div>
+          <div class="cv-member-mini" *ngFor="let m of miembros | slice:0:5">
+            <div class="cv-member-av cv-av-sm">{{ m.username?.charAt(0)?.toUpperCase() }}</div>
+            <span class="cv-member-mini-name">{{ m.username }}</span>
+            <span class="cv-member-role-badge" *ngIf="m.role === 'ADMIN'">Admin</span>
+          </div>
+          <button class="cv-see-all" (click)="setTab('miembros')">
+            Ver todos los miembros →
+          </button>
+        </div>
+ 
+      </aside>
+ 
+      <!-- Columna derecha: feed -->
+      <section class="cv-feed-col">
+ 
+        <!-- Crear publicación -->
+        <div class="cv-create-collapsed" *ngIf="!createOpen && esMiembro" (click)="openCreate()">
+          <div class="cv-avatar-sm">{{ usuario?.username?.charAt(0)?.toUpperCase() }}</div>
+          <div class="cv-create-placeholder">Comparte algo con la comunidad...</div>
+          <span class="cv-create-icon">📝</span>
+        </div>
+ 
+        <!-- Formulario expandido -->
+        <div class="cv-create-expanded" *ngIf="createOpen">
+          <div class="cv-create-top">
+            <div class="cv-avatar-sm">{{ usuario?.username?.charAt(0)?.toUpperCase() }}</div>
+            <span class="cv-create-title">Nueva publicación</span>
+          </div>
+ 
+          <div *ngIf="createError" class="cv-alert cv-alert--error cv-alert--compact">{{ createError }}</div>
+          <div *ngIf="createSuccess" class="cv-alert cv-alert--success cv-alert--compact">{{ createSuccess }}</div>
+ 
+          <textarea class="cv-textarea"
+            placeholder="¿Qué quieres compartir con la comunidad?"
+            [(ngModel)]="nuevaPublicacion.contenido"
+            rows="3"
+            maxlength="500"
+            (ngModelChange)="limpiarFeedbackCrear()">
+          </textarea>
+          <div class="cv-char-count">{{ nuevaPublicacion.contenido?.length || 0 }}/500</div>
+ 
+          <div class="cv-error" *ngIf="submittedCreate && !nuevaPublicacion.contenido?.trim()">
+            El contenido es obligatorio.
+          </div>
+ 
+          <!-- Imagen -->
+          <label class="cv-img-zone" for="cvImagenInput">
+            <span *ngIf="!selectedImageName">📷 Añadir imagen</span>
+            <span *ngIf="selectedImageName">{{ selectedImageName }}</span>
+          </label>
+          <input id="cvImagenInput" type="file" accept="image/png,image/jpeg,image/jpg,image/webp"
+            hidden (change)="onImageSelected($event)">
+          <div class="cv-hint">JPG, PNG o WEBP · Máx. 5 MB</div>
+          <div class="cv-error" *ngIf="imageError">{{ imageError }}</div>
+ 
+          <div class="cv-image-preview" *ngIf="imagePreview">
+            <img [src]="imagePreview" alt="Vista previa" class="cv-preview-img">
+          </div>
+ 
+          <div class="cv-create-actions">
+            <button class="cv-btn cv-btn--ghost" type="button" [disabled]="creatingPost" (click)="closeCreate()">
+              Cancelar
+            </button>
+            <button class="cv-btn cv-btn--primary" type="button"
+              [disabled]="creatingPost"
+              (click)="crearPublicacion()">
+              <i class="bi bi-send-fill me-1"></i>
+              {{ creatingPost ? 'Publicando...' : 'Publicar' }}
+            </button>
+          </div>
+        </div>
+ 
+        <!-- Loading posts -->
+        <div *ngIf="loadingPosts" class="cv-status">Cargando publicaciones...</div>
+ 
+        <!-- Posts -->
+        <div *ngFor="let pub of publicaciones; trackBy: trackById" class="cv-post"
+          [class.editing]="publicacionEditar?.id === pub.id && editMode"
+          [class.confirming]="confirmandoId === pub.id">
+ 
+          <div class="cv-post-header">
+            <div class="cv-post-av">{{ pub.authorName?.charAt(0)?.toUpperCase() }}</div>
+            <div class="cv-post-meta">
+              <div class="cv-post-name">{{ pub.authorName || 'Usuario' }}</div>
+              <div class="cv-post-date">{{ pub.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</div>
+            </div>
+            <div class="cv-owner-actions" *ngIf="pub.authorId === usuario?.id || esAdmin()">
+              <button class="cv-icon-btn" (click)="toggleEditar(pub)" title="Editar">
+                <i class="bi bi-pencil-fill"></i>
+              </button>
+              <button class="cv-icon-btn cv-icon-btn--danger"
+                [disabled]="deletingPostId === pub.id"
+                (click)="toggleConfirmar(pub.id)" title="Eliminar">
+                <i class="bi bi-trash-fill"></i>
+              </button>
+            </div>
+          </div>
+ 
+          <div class="cv-post-body">{{ pub.contenido }}</div>
+ 
+          <img *ngIf="pub.imageUrl" [src]="pub.imageUrl" class="cv-post-img" alt="imagen">
+ 
+          <div class="cv-post-stats">
+            <span>❤️ {{ pub.likes || 0 }}</span>
+            <span>💬 {{ pub.comentarios || 0 }}</span>
+            <span>🔁 {{ pub.compartidos || 0 }}</span>
+          </div>
+ 
+          <div class="cv-post-footer">
+            <button class="cv-react-btn" [class.liked]="pub.likeado" (click)="darLike(pub)">
+              ❤️ Me gusta
+            </button>
+            <button class="cv-react-btn cv-react-btn--c" (click)="mostrarMensajeComentarios()">
+              💬 Comentar
+            </button>
+          </div>
+ 
+          <!-- Edición inline -->
+          <div class="cv-edit-panel" *ngIf="publicacionEditar?.id === pub.id && editMode">
+            <div class="cv-edit-label-s">Editar publicación</div>
+            <div *ngIf="editError" class="cv-alert cv-alert--error cv-alert--compact">{{ editError }}</div>
+            <div *ngIf="editSuccess" class="cv-alert cv-alert--success cv-alert--compact">{{ editSuccess }}</div>
+            <textarea class="cv-edit-input cv-textarea-sm"
+              [(ngModel)]="publicacionEditar.contenido"
+              name="editContenido"
+              (ngModelChange)="limpiarFeedbackEdicion()">
+            </textarea>
+            <div class="cv-error" *ngIf="submittedEdit && !publicacionEditar.contenido?.trim()">
+              El contenido es obligatorio.
+            </div>
+            <div class="cv-edit-actions">
+              <button class="cv-edit-save" type="button"
+                [disabled]="updatingPost"
+                (click)="actualizarPublicacion(publicacionEditar)">
+                <i class="bi bi-check-lg me-1"></i>
+                {{ updatingPost ? 'Guardando...' : 'Guardar' }}
+              </button>
+              <button class="cv-edit-cancel" type="button" [disabled]="updatingPost" (click)="cerrarEditar()">
+                Cancelar
+              </button>
+            </div>
+          </div>
+ 
+          <!-- Confirmación eliminar -->
+          <div class="cv-confirm" *ngIf="confirmandoId === pub.id">
+            <span class="cv-confirm-text">⚠️ ¿Confirmas eliminar esta publicación? Esta acción no se puede deshacer.</span>
+            <button class="cv-confirm-yes" [disabled]="deletingPostId === pub.id" (click)="eliminarPublicacion(pub.id)">
+              {{ deletingPostId === pub.id ? 'Eliminando...' : 'Eliminar' }}
+            </button>
+            <button class="cv-confirm-no" [disabled]="deletingPostId === pub.id" (click)="toggleConfirmar(null)">
+              Cancelar
+            </button>
+          </div>
+ 
+        </div>
+ 
+        <!-- Empty feed -->
+        <div class="cv-empty" *ngIf="!loadingPosts && publicaciones.length === 0">
+          <div class="cv-empty-icon">📝</div>
+          <div class="cv-empty-title">Sin publicaciones aún</div>
+          <div class="cv-empty-text">¡Sé el primero en compartir algo con la comunidad!</div>
+        </div>
+ 
+      </section>
+    </div>
+ 
+    <!-- ── TAB: SERVICIOS ── -->
+    <div *ngIf="tabActivo === 'servicios'" class="cv-tab-content">
+ 
+      <div class="cv-section-header">
+        <div>
+          <h2 class="cv-section-title">Planes & Rutinas</h2>
+          <p class="cv-section-sub">Servicios ofrecidos por esta comunidad</p>
+        </div>
+        <button class="cv-btn cv-btn--primary" *ngIf="esAdmin()" (click)="openCrearServicio()">
+          <i class="bi bi-plus-lg"></i> Nuevo servicio
+        </button>
+      </div>
+ 
+      <!-- Loading servicios -->
+      <div *ngIf="loadingServicios" class="cv-status">Cargando servicios...</div>
+ 
+      <!-- Grid de servicios -->
+      <div class="cv-services-grid" *ngIf="!loadingServicios">
+ 
+        <div *ngFor="let srv of servicios; trackBy: trackById" class="cv-service-card"
+          [class.cv-service-card--featured]="srv.destacado">
+ 
+          <div class="cv-service-top">
+            <div class="cv-service-icon">{{ srv.icono || '⚡' }}</div>
+            <div class="cv-service-badge" *ngIf="srv.destacado">Destacado</div>
+          </div>
+ 
+          <div class="cv-service-body">
+            <h3 class="cv-service-name">{{ srv.nombre }}</h3>
+            <p class="cv-service-desc">{{ srv.descripcion }}</p>
+ 
+            <div class="cv-service-tags">
+              <span class="cv-service-tag" *ngFor="let tag of srv.tags">{{ tag }}</span>
+            </div>
+          </div>
+ 
+          <div class="cv-service-footer">
+            <div class="cv-service-price" *ngIf="srv.precio">
+              <span class="cv-price-currency">$</span>
+              <span class="cv-price-amount">{{ srv.precio }}</span>
+              <span class="cv-price-period" *ngIf="srv.periodo">/ {{ srv.periodo }}</span>
+            </div>
+            <div class="cv-service-price cv-price-free" *ngIf="!srv.precio">Gratis</div>
+ 
+            <button class="cv-btn cv-btn--primary cv-btn--sm">
+              <i class="bi bi-arrow-right-circle-fill"></i> Ver más
+            </button>
+          </div>
+ 
+          <!-- Admin actions -->
+          <div class="cv-service-admin" *ngIf="esAdmin()">
+            <button class="cv-icon-btn" title="Editar servicio"><i class="bi bi-pencil-fill"></i></button>
+            <button class="cv-icon-btn cv-icon-btn--danger" title="Eliminar servicio"><i class="bi bi-trash-fill"></i></button>
+          </div>
+        </div>
+ 
+      </div>
+ 
+      <!-- Empty servicios -->
+      <div class="cv-empty" *ngIf="!loadingServicios && servicios.length === 0">
+        <div class="cv-empty-icon">⚡</div>
+        <div class="cv-empty-title">Sin servicios aún</div>
+        <div class="cv-empty-text" *ngIf="!esAdmin()">Esta comunidad todavía no ha publicado planes ni rutinas.</div>
+        <div class="cv-empty-text" *ngIf="esAdmin()">Agrega el primer servicio para tus miembros.</div>
+        <button class="cv-btn cv-btn--primary cv-mt" *ngIf="esAdmin()" (click)="openCrearServicio()">
+          <i class="bi bi-plus-lg"></i> Agregar servicio
+        </button>
+      </div>
+ 
+    </div>
+ 
+    <!-- ── TAB: MIEMBROS ── -->
+    <div *ngIf="tabActivo === 'miembros'" class="cv-tab-content">
+ 
+      <div class="cv-section-header">
+        <div>
+          <h2 class="cv-section-title">Miembros</h2>
+          <p class="cv-section-sub">{{ totalMiembros }} personas en esta comunidad</p>
+        </div>
+        <input class="cv-search-members" type="text"
+          placeholder="Buscar miembro..."
+          [(ngModel)]="memberSearch"
+          (ngModelChange)="filtrarMiembros()">
+      </div>
+ 
+      <div *ngIf="loadingMiembros" class="cv-status">Cargando miembros...</div>
+ 
+      <div class="cv-members-grid" *ngIf="!loadingMiembros">
+ 
+        <div *ngFor="let m of miembrosFiltrados" class="cv-member-card">
+          <div class="cv-member-av">{{ m.username?.charAt(0)?.toUpperCase() }}</div>
+          <div class="cv-member-info">
+            <div class="cv-member-name">{{ m.username }}</div>
+            <div class="cv-member-email">{{ m.email }}</div>
+          </div>
+          <div class="cv-member-actions-row">
+            <span class="cv-member-role" [class.cv-role-admin]="m.role === 'ADMIN'">
+              {{ m.role === 'ADMIN' ? '🛡 Admin' : '👤 Miembro' }}
+            </span>
+            <button class="cv-icon-btn cv-icon-btn--danger"
+              *ngIf="esAdmin() && m.id !== usuario?.id"
+              title="Expulsar miembro"
+              (click)="expulsarMiembro(m)">
+              <i class="bi bi-person-x-fill"></i>
+            </button>
+          </div>
+        </div>
+ 
+      </div>
+ 
+      <div class="cv-empty" *ngIf="!loadingMiembros && miembrosFiltrados.length === 0">
+        <div class="cv-empty-icon">👥</div>
+        <div class="cv-empty-title">Sin resultados</div>
+        <div class="cv-empty-text">No se encontraron miembros con ese criterio.</div>
+      </div>
+ 
+    </div>
+ 
+    <!-- ── TAB: INFO ── -->
+    <div *ngIf="tabActivo === 'info'" class="cv-tab-content cv-info-layout">
+ 
+      <div class="cv-info-card">
+        <div class="cv-info-section-title">
+          <i class="bi bi-info-circle-fill"></i> Descripción
+        </div>
+        <p class="cv-info-text">{{ comunidad?.description || 'Sin descripción disponible.' }}</p>
+      </div>
+ 
+      <div class="cv-info-card">
+        <div class="cv-info-section-title">
+          <i class="bi bi-bar-chart-fill"></i> Estadísticas
+        </div>
+        <div class="cv-stats-row">
+          <div class="cv-stat-box">
+            <div class="cv-stat-num">{{ totalMiembros }}</div>
+            <div class="cv-stat-label">Miembros</div>
+          </div>
+          <div class="cv-stat-box">
+            <div class="cv-stat-num">{{ publicaciones.length }}</div>
+            <div class="cv-stat-label">Publicaciones</div>
+          </div>
+          <div class="cv-stat-box">
+            <div class="cv-stat-num">{{ servicios.length }}</div>
+            <div class="cv-stat-label">Servicios</div>
+          </div>
+        </div>
+      </div>
+ 
+      <div class="cv-info-card">
+        <div class="cv-info-section-title">
+          <i class="bi bi-gear-fill"></i> Detalles
+        </div>
+        <div class="cv-detail-row">
+          <span class="cv-detail-key">Categoría</span>
+          <span class="cv-detail-val">{{ traducirCategoria(comunidad?.category) }}</span>
+        </div>
+        <div class="cv-detail-row">
+          <span class="cv-detail-key">Tipo</span>
+          <span class="cv-detail-val">Pública</span>
+        </div>
+        <div class="cv-detail-row">
+          <span class="cv-detail-key">Estado</span>
+          <span class="cv-detail-val cv-detail-active">
+            <i class="bi bi-circle-fill"></i> Activa
+          </span>
+        </div>
+        <div class="cv-detail-row">
+          <span class="cv-detail-key">Creada</span>
+          <span class="cv-detail-val">{{ comunidad?.createdAt | date:'dd/MM/yyyy' }}</span>
+        </div>
+      </div>
+ 
+      <!-- Editar comunidad (solo admin) -->
+      <div class="cv-info-card" *ngIf="esAdmin()">
+        <div class="cv-info-section-title">
+          <i class="bi bi-shield-fill-check"></i> Administración
+        </div>
+ 
+        <div *ngIf="editComunidadError" class="cv-alert cv-alert--error cv-alert--compact">{{ editComunidadError }}</div>
+        <div *ngIf="editComunidadSuccess" class="cv-alert cv-alert--success cv-alert--compact">{{ editComunidadSuccess }}</div>
+ 
+        <div class="cv-admin-grid">
+          <div>
+            <label class="cv-admin-label">Nombre</label>
+            <input class="cv-admin-input" [(ngModel)]="comunidadEditar.name" maxlength="60">
+          </div>
+          <div>
+            <label class="cv-admin-label">Descripción</label>
+            <input class="cv-admin-input" [(ngModel)]="comunidadEditar.description" maxlength="160">
+          </div>
+          <div>
+            <label class="cv-admin-label">Categoría</label>
+            <select class="cv-admin-input" [(ngModel)]="comunidadEditar.category">
+              <option value="FITNESS">Fitness</option>
+              <option value="NUTRITION">Nutrición</option>
+              <option value="PERSONAL_DEVELOPMENT">Desarrollo personal</option>
+            </select>
+          </div>
+        </div>
+ 
+        <div class="cv-admin-actions">
+          <button class="cv-btn cv-btn--primary" [disabled]="savingComunidad" (click)="actualizarComunidad()">
+            <i class="bi bi-check-lg"></i>
+            {{ savingComunidad ? 'Guardando...' : 'Guardar cambios' }}
+          </button>
+          <button class="cv-btn cv-btn--danger-ghost" [disabled]="deletingComunidad" (click)="confirmarEliminarComunidad()">
+            <i class="bi bi-trash-fill"></i>
+            {{ deletingComunidad ? 'Eliminando...' : 'Eliminar comunidad' }}
+          </button>
+        </div>
+      </div>
+ 
+    </div>
+ 
+  </div>
+</main>
+ 
+<app-footer></app-footer>

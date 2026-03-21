@@ -10,6 +10,7 @@ import { Registro } from './componentes/registro/registro';
 import { ReporteStatico } from './componentes/reporte-statico/reporte-statico';
 import { AuthGuard } from './guards/auth-guard';
 import { EditarPerfilComponent } from './componentes/editar-perfil/editar-perfil.component'
+import { BlogComunidad } from './componentes/blog-comunidad/blog-comunidad';
 
 export const routes: Routes = [
     { path: 'login', loadComponent: () => import('./componentes/inicio-sesion/inicio-sesion').then(m => m.InicioSesion) },
@@ -22,6 +23,8 @@ export const routes: Routes = [
     { path: 'favoritos', component: FavoritosComponent, canActivate: [AuthGuard] },
     { path: 'registro', component: Registro },
     { path: 'BlogAdmin', component: ReporteStatico },
-    { path: 'editarPerfil', component: EditarPerfilComponent, canActivate: [AuthGuard] }
+    { path: 'editarPerfil', component: EditarPerfilComponent, canActivate: [AuthGuard] },
+    { path: 'comunidad/:id', component: BlogComunidad, canActivate: [AuthGuard] }
+    
 ];
 

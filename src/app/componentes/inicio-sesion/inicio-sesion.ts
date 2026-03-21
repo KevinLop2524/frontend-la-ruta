@@ -60,8 +60,12 @@ export class InicioSesion {
 
     this.peticion
       .post(url, payload)
-      .then((res: any) => this.handleLoginSuccess(res))
-      .catch((error: HttpErrorResponse) => this.handleLoginError(error))
+      .then((res: any) => {
+        console.log(res);
+        this.handleLoginSuccess(res)})
+      .catch((error: HttpErrorResponse) => {
+        console.log(error);
+        this.handleLoginError(error)})
       .finally(() => this.handleLoginFinally());
   }
 
@@ -71,7 +75,7 @@ export class InicioSesion {
     );
 
     this.serverError = firstInvalidControl
-      ? `El campo ${firstInvalidControl} es requerido o inválido.`
+      ? `Completa ambos campos antes de continuar.`
       : "Completa correctamente los campos antes de continuar.";
   }
 
@@ -107,7 +111,7 @@ export class InicioSesion {
 
   private handleLoginError(error: any): void {
     const errorMessages: Record<number, string> = {
-      400: "Solicitud inválida. Verifica tus datos.",
+      400: error.error?.message || "Error del servidor. Intenta más tarde.",
       401: "Usuario o contraseña incorrectos.",
       403: "Acceso denegado.",
       404: "Servicio no disponible.",

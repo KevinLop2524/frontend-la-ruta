@@ -1,10 +1,11 @@
-import { Header } from "../header/header";
-import { Peticion } from "../../servicios/peticion";
 import { ChangeDetectorRef, Component, OnInit } from "@angular/core";
+import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { RouterModule } from "@angular/router";
-import { CommonModule } from "@angular/common";
+
+import { Header } from "../header/header";
 import { Footer } from "../footer/footer";
+import { Peticion } from "../../servicios/peticion";
 
 @Component({
   selector: "app-perfil",
@@ -15,20 +16,21 @@ import { Footer } from "../footer/footer";
 })
 export class Perfil implements OnInit {
   usuario: any = {};
-  // fraseMoti: any = {};
-
-  loadingUsuario: boolean = false;
-  uploadingImage: boolean = false;
   userStorage: any = {};
 
-  generalError: string = "";
-  generalSuccess: string = "";
-  imageError: string = "";
+  loadingUsuario = false;
+  uploadingImage = false;
+
+  generalError = "";
+  generalSuccess = "";
+  imageError = "";
 
   selectedImageFile: File | null = null;
-  selectedImageName: string = "";
+  selectedImageName = "";
   previewImageUrl: string | null = null;
+
   apodo: string | null = null;
+  avatarVersion = Date.now();
 
   constructor(
     private peticion: Peticion,
@@ -38,7 +40,6 @@ export class Perfil implements OnInit {
 
   ngOnInit(): void {
     this.buscarUsuario();
-    // this.obtenerFraseMotivacional();
   }
 
   limpiarFeedbackGeneral(): void {
@@ -46,64 +47,47 @@ export class Perfil implements OnInit {
     this.generalSuccess = "";
   }
 
-  // obtenerFraseMotivacional(): void {
-  //   const token = localStorage.getItem("token") || undefined;
-  //   const url = `${this.peticion.urlReal}/api/frase`;
-
-  //   this.peticion
-  //     .get(url, token)
-  //     .then((res: any) => {
-  //       this.fraseMoti = Array.isArray(res) ? res[0] || {} : res || {};
-  //       this.cdr.detectChanges();
-  //     })
-  //     .catch((err: any) => {
-  //       console.error("Error al obtener frase motivacional", err);
-  //     });
-  // }
-
   buscarUsuario(): void {
     this.loadingUsuario = true;
     this.limpiarFeedbackGeneral();
 
-    const userStorage2 = JSON.parse(localStorage.getItem("user") || "");
-    console.log(userStorage2);
-    if (localStorage.getItem("user"))
-      this.userStorage = JSON.parse(localStorage.getItem("user") || "");
-
-    console.log(this.userStorage);
+    const userRaw = localStorage.getItem("user");
     const token = localStorage.getItem("token");
     this.apodo = localStorage.getItem("apodo");
 
-    if (!this.userStorage || !token) {
+    if (!userRaw || !token) {
       this.generalError = "No se pudo identificar la sesión actual.";
       this.loadingUsuario = false;
+      this.cdr.detectChanges();
       return;
     }
 
-    let user;
-
     try {
-      user = userStorage2;
+      this.userStorage = JSON.parse(userRaw);
     } catch (error) {
       console.error("Error parseando user del localStorage", error);
       this.generalError = "No se pudo leer la información del usuario actual.";
       this.loadingUsuario = false;
+      this.cdr.detectChanges();
       return;
     }
 
-    if (!user?.userId) {
+    if (!this.userStorage?.userId) {
       this.generalError = "El usuario actual no tiene un identificador válido.";
       this.loadingUsuario = false;
+      this.cdr.detectChanges();
       return;
     }
 
-    const url = `${this.peticion.urlReal}/api/users/get/${user.userId}`;
+    const url = `${this.peticion.urlReal}/api/users/get/${this.userStorage.userId}`;
 
     this.peticion
       .get(url, token)
       .then((res: any) => {
+        console.log(res)
         this.usuario = res?.data || res || {};
-        console.log(this.usuario);
+        console.log(this.usuario)
+        this.avatarVersion = Date.now();
         this.cdr.detectChanges();
       })
       .catch((err: any) => {
@@ -124,9 +108,7 @@ export class Perfil implements OnInit {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0] || null;
 
-    if (!file) {
-      return;
-    }
+    if (!file) return;
 
     const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
     const maxSizeBytes = 5 * 1024 * 1024;
@@ -134,12 +116,14 @@ export class Perfil implements OnInit {
     if (!allowedTypes.includes(file.type)) {
       this.imageError = "Formato no permitido. Usa JPG, PNG o WEBP.";
       this.resetImageSelection(input);
+      this.cdr.detectChanges();
       return;
     }
 
     if (file.size > maxSizeBytes) {
       this.imageError = "La imagen no puede superar 5 MB.";
       this.resetImageSelection(input);
+      this.cdr.detectChanges();
       return;
     }
 
@@ -160,12 +144,12 @@ export class Perfil implements OnInit {
     this.previewImageUrl = null;
     this.imageError = "";
 
-    const input = document.getElementById(
-      "pfImageInput",
-    ) as HTMLInputElement | null;
+    const input = document.getElementById("pfImageInput") as HTMLInputElement | null;
     if (input) {
       input.value = "";
     }
+
+    this.cdr.detectChanges();
   }
 
   resetImageSelection(input?: HTMLInputElement | null): void {
@@ -184,36 +168,46 @@ export class Perfil implements OnInit {
 
     if (!this.selectedImageFile) {
       this.imageError = "Primero selecciona una imagen.";
+      this.cdr.detectChanges();
       return;
     }
 
     if (!this.usuario?.id) {
       this.generalError = "No se pudo identificar el usuario actual.";
+      this.cdr.detectChanges();
       return;
     }
 
     this.uploadingImage = true;
 
     const url = `${this.peticion.urlReal}/api/users/${this.usuario.id}/images/avatar`;
-
+    console.log(url);
     this.uploadService.UploadFile(this.selectedImageFile, url).subscribe({
       next: (res: any) => {
         this.generalSuccess =
           res?.message || "Foto de perfil actualizada correctamente.";
-
+        console.log(res);
         const nuevaUrl =
-          res?.imageUrl || res?.data?.imageUrl || res?.profileImage || null;
+          res?.imageUrl ||
+          res?.data?.imageUrl ||
+          res?.profileImage ||
+          res?.data?.profileImageUrl ||
+          null;
 
         if (nuevaUrl) {
           this.usuario.profileImageUrl = nuevaUrl;
+          this.usuario.avatarUrl = nuevaUrl;
         }
+
+        this.previewImageUrl = null;
+        this.avatarVersion = Date.now();
 
         this.cancelarSeleccionImagen();
         this.uploadingImage = false;
         this.cdr.detectChanges();
       },
-
       error: (err: any) => {
+        
         console.error("Error al subir la imagen de perfil", err);
 
         this.generalError =
@@ -228,33 +222,57 @@ export class Perfil implements OnInit {
   }
 
   obtenerFotoPerfil(): string {
-    return (
-    `https://res.cloudinary.com/dwdapfmo6/image/upload/v1773894096/fitnessapp/users/${this.usuario?.id}/fitnessapp/users/${this.usuario?.id}/avatar.png`
-    );
+    
+    console.log(this.usuario.avatar_url);
+    console.log(this.usuario);
+
+    if (this.usuario?.avatar_url) {
+      return `${this.usuario.avatar_url}?t=${this.avatarVersion}`;
+    }
+
+
+    return "/imagenes/static/imgGymUno.jpg";
+
+  }
+
+  onImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    img.src = "/imagenes/static/imgGymUno.jpg";
   }
 
   obtenerNombreCompleto(): string {
-    return (
-      [this.usuario?.nombre, this.usuario?.apellido]
-        .filter((valor) => !!valor && String(valor).trim() !== "")
-        .join(" ") || "No disponible"
-    );
+    const nombres = [
+      this.usuario?.firstName ?? this.usuario?.nombre ?? "",
+      this.usuario?.secondName ?? "",
+      this.usuario?.lastName ?? this.usuario?.apellido ?? "",
+      this.usuario?.secondLastName ?? "",
+    ]
+      .map((valor) => String(valor).trim())
+      .filter((valor) => valor !== "");
+
+    return nombres.join(" ") || "No disponible";
   }
 
   obtenerNombres(): string {
-    return (
-      [this.usuario?.nombre, this.usuario?.apellido]
-        .filter((valor) => !!valor && String(valor).trim() !== "")
-        .join(" ") || "No disponible"
-    );
+    const nombres = [
+      this.usuario?.firstName ?? this.usuario?.nombre ?? "",
+      this.usuario?.secondName ?? "",
+    ]
+      .map((valor) => String(valor).trim())
+      .filter((valor) => valor !== "");
+
+    return nombres.join(" ") || "No disponible";
   }
 
   obtenerApellidos(): string {
-    return (
-      [this.usuario?.apellido]
-        .filter((valor) => !!valor && String(valor).trim() !== "")
-        .join(" ") || "No disponible"
-    );
+    const apellidos = [
+      this.usuario?.lastName ?? this.usuario?.apellido ?? "",
+      this.usuario?.secondLastName ?? "",
+    ]
+      .map((valor) => String(valor).trim())
+      .filter((valor) => valor !== "");
+
+    return apellidos.join(" ") || "No disponible";
   }
 
   formatearFecha(fecha: string | null | undefined): string {
