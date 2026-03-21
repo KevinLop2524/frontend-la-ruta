@@ -158,7 +158,15 @@ export class BlogPrincipal implements OnInit {
 
     this.peticion.get(url)
       .then((res: any) => {
-        this.publicaciones = Array.isArray(res) ? res : [];
+        this.peticion.get(url)
+  .then((res: any) => {
+    const data = Array.isArray(res) ? res : [];
+
+    this.publicaciones = data.slice(0, 10);
+
+    console.log(this.publicaciones);
+    this.cdr.detectChanges();
+  })
         console.log(this.publicaciones)
         this.cdr.detectChanges();
       })
