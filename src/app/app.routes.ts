@@ -25,6 +25,5 @@ export const routes: Routes = [
     { path: 'BlogAdmin', component: ReporteStatico },
     { path: 'editarPerfil', component: EditarPerfilComponent, canActivate: [AuthGuard] },
     { path: 'comunidad/:id', component: BlogComunidad, canActivate: [AuthGuard] }
-    
 ];
 

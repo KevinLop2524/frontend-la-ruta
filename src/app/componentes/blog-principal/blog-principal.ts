@@ -329,6 +329,12 @@ export class BlogPrincipal implements OnInit {
     this.createSuccess = 'Publicación creada correctamente.';
     this.generalSuccess = 'Tu publicación se agregó al feed.';
 
+    this.nuevaPublicacion.contenido = '';
+    this.selectedCreateImageFile = null;
+    this.selectedCreateImageName = '';
+    this.createImagePreview = null;
+
+    this.cdr.detectChanges(); 
     this.cargarPublicaciones();
     this.closeCreate();
 
@@ -463,6 +469,7 @@ export class BlogPrincipal implements OnInit {
       comunidadId: null,
       imageUrl: null
     };
+    this.cdr.detectChanges();
   }
 
   toggleEditar(pub: any): void {
@@ -534,4 +541,11 @@ export class BlogPrincipal implements OnInit {
         });
     });
   }
+
+  menuAbiertoId: number | null = null;
+
+  toggleMenu(id: number): void {
+    this.menuAbiertoId = this.menuAbiertoId === id ? null : id;
+  }
+  
 }

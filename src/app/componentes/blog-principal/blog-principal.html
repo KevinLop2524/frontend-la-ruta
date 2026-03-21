@@ -13,9 +13,7 @@
       </div>
 
       <!-- RECUADRO COLAPSADO -->
-      <div class="bp-create-collapsed"
-        *ngIf="!createOpen"
-        (click)="openCreate()">
+      <div class="bp-create-collapsed" *ngIf="!createOpen" (click)="openCreate()">
         <div class="bp-avatar">{{ usuario?.username?.charAt(0)?.toUpperCase() }}</div>
         <div class="bp-create-placeholder">Comparte con la comunidad...</div>
         <div class="bp-create-icon">📝</div>
@@ -39,13 +37,8 @@
         <div class="bp-create-form">
           <div>
             <label class="bp-label">Contenido</label>
-            <textarea class="bp-input bp-textarea"
-              id="contenido"
-              placeholder="¿Qué quieres compartir?"
-              [(ngModel)]="nuevaPublicacion.contenido"
-              name="contenido"
-              rows="3"
-              maxlength="500"
+            <textarea class="bp-input bp-textarea" id="contenido" placeholder="¿Qué quieres compartir?"
+              [(ngModel)]="nuevaPublicacion.contenido" name="contenido" rows="3" maxlength="500"
               (ngModelChange)="limpiarFeedbackCrear()"></textarea>
 
             <div class="bp-error" *ngIf="submittedCreate && !nuevaPublicacion.contenido?.trim()">
@@ -61,13 +54,8 @@
               <span *ngIf="selectedCreateImageName">{{ selectedCreateImageName }}</span>
             </label>
 
-            <input
-              id="crearImagenInput"
-              type="file"
-              accept="image/png,image/jpeg,image/jpg,image/webp"
-              hidden
-              (change)="onCreateImageSelected($event)"
-            >
+            <input id="crearImagenInput" type="file" accept="image/png,image/jpeg,image/jpg,image/webp" hidden
+              (change)="onCreateImageSelected($event)">
 
             <div class="bp-hint">JPG, PNG o WEBP. Máximo 5 MB.</div>
 
@@ -81,16 +69,11 @@
           </div>
 
           <div class="bp-create-actions">
-            <button class="bp-btn bp-btn--ghost"
-              type="button"
-              [disabled]="creatingPost"
-              (click)="closeCreate()">
+            <button class="bp-btn bp-btn--ghost" type="button" [disabled]="creatingPost" (click)="closeCreate()">
               Cancelar
             </button>
 
-            <button class="bp-btn bp-btn--primary"
-              type="button"
-              [disabled]="creatingPost || loadingUsuario"
+            <button class="bp-btn bp-btn--primary" type="button" [disabled]="creatingPost || loadingUsuario"
               (click)="crearPublicacion()">
               <i class="bi bi-send-fill me-1"></i>
               {{ creatingPost ? 'Publicando...' : 'Publicar' }}
@@ -107,8 +90,7 @@
         </div>
 
         <div *ngFor="let pub of publicaciones; trackBy: trackByPublicacionId" class="bp-post"
-          [class.editing]="publicacionEditar?.id === pub.id && editMode"
-          [class.confirming]="confirmandoId === pub.id">
+          [class.editing]="publicacionEditar?.id === pub.id && editMode" [class.confirming]="confirmandoId === pub.id">
 
           <div class="bp-post-header">
             <div class="bp-post-avatar bp-av-o">
@@ -127,18 +109,25 @@
             </div>
 
             <div class="bp-owner-actions" *ngIf="pub.authorId === usuario.id">
-              <button class="bp-btn bp-btn--sm"
-                type="button"
-                (click)="toggleEditar(pub)">
-                <i class="bi bi-pencil-fill"></i>
+
+              <!-- BOTÓN MENÚ -->
+              <button class="bp-btn bp-btn--sm" type="button" (click)="toggleMenu(pub.id)">
+                ⋮
               </button>
 
-              <button class="bp-btn bp-btn--sm bp-btn--danger"
-                type="button"
-                [disabled]="deletingPostId === pub.id"
-                (click)="toggleConfirmar(pub.id)">
-                <i class="bi bi-trash-fill"></i>
-              </button>
+              <!-- MENÚ DESPLEGABLE -->
+              <div class="bp-dropdown" *ngIf="menuAbiertoId === pub.id">
+
+                <button class="bp-dropdown-item" (click)="toggleEditar(pub); toggleMenu(pub.id)">
+                  ✏️ Editar
+                </button>
+
+                <button class="bp-dropdown-item bp-danger" (click)="toggleConfirmar(pub.id); toggleMenu(pub.id)">
+                  🗑️ Eliminar
+                </button>
+
+              </div>
+
             </div>
           </div>
 
@@ -146,8 +135,7 @@
             <div class="bp-post-content">{{ pub.contenido }}</div>
           </div>
 
-          <img *ngIf="pub.imageUrl" [src]="pub.imageUrl"
-            class="bp-post-img" alt="imagen publicación">
+          <img *ngIf="pub.imageUrl" [src]="pub.imageUrl" class="bp-post-img" alt="imagen publicación">
 
           <div class="bp-post-stats">
             <span class="bp-stat-text">❤️ {{ pub.likes || 0 }} likes</span>
@@ -156,23 +144,17 @@
           </div>
 
           <div class="bp-post-footer">
-            <button class="bp-react-btn"
-              [class.liked]="pub.likeado"
-              type="button"
-              (click)="darLike(pub)">
+            <button class="bp-react-btn" [class.liked]="pub.likeado" type="button" (click)="darLike(pub)">
               ❤️ Me gusta
             </button>
 
-            <button class="bp-react-btn bp-react-btn--c"
-              type="button"
-              (click)="mostrarMensajeComentarios()">
+            <button class="bp-react-btn bp-react-btn--c" type="button" (click)="mostrarMensajeComentarios()">
               💬 Comentar
             </button>
           </div>
 
           <!-- Edición inline -->
-          <div class="bp-edit-panel"
-            *ngIf="publicacionEditar?.id === pub.id && editMode">
+          <div class="bp-edit-panel" *ngIf="publicacionEditar?.id === pub.id && editMode">
 
             <div class="bp-edit-label-s">Editar publicación</div>
 
@@ -187,10 +169,8 @@
             <div class="bp-edit-grid">
               <div class="bp-edit-full">
                 <label class="bp-edit-label">Contenido</label>
-                <textarea class="bp-edit-input"
-                  style="min-height:80px;resize:vertical;"
-                  [(ngModel)]="publicacionEditar.contenido"
-                  name="editContenido"
+                <textarea class="bp-edit-input" style="min-height:80px;resize:vertical;"
+                  [(ngModel)]="publicacionEditar.contenido" name="editContenido"
                   (ngModelChange)="limpiarFeedbackEdicion()"></textarea>
 
                 <div class="bp-error" *ngIf="submittedEdit && !publicacionEditar.contenido?.trim()">
@@ -200,9 +180,7 @@
 
               <div>
                 <label class="bp-edit-label">Comunidad</label>
-                <input class="bp-edit-input"
-                  [(ngModel)]="publicacionEditar.comunidadId"
-                  name="editComunidadId"
+                <input class="bp-edit-input" [(ngModel)]="publicacionEditar.comunidadId" name="editComunidadId"
                   (ngModelChange)="limpiarFeedbackEdicion()">
 
                 <div class="bp-error" *ngIf="submittedEdit && !publicacionEditar.comunidadId">
@@ -218,13 +196,8 @@
                   <span *ngIf="editImageTargetId === pub.id && selectedEditImageName">{{ selectedEditImageName }}</span>
                 </label>
 
-                <input
-                  [id]="'editImagenInput-' + pub.id"
-                  type="file"
-                  accept="image/png,image/jpeg,image/jpg,image/webp"
-                  hidden
-                  (change)="onEditImageSelected($event, pub.id)"
-                >
+                <input [id]="'editImagenInput-' + pub.id" type="file" accept="image/png,image/jpeg,image/jpg,image/webp"
+                  hidden (change)="onEditImageSelected($event, pub.id)">
 
                 <div class="bp-error" *ngIf="editImageError && editImageTargetId === pub.id">
                   {{ editImageError }}
@@ -237,16 +210,13 @@
             </div>
 
             <div class="bp-edit-actions">
-              <button class="bp-edit-save" type="button"
-                [disabled]="updatingPost"
+              <button class="bp-edit-save" type="button" [disabled]="updatingPost"
                 (click)="actualizarPublicacion(publicacionEditar)">
                 <i class="bi bi-check-lg me-1"></i>
                 {{ updatingPost ? 'Guardando...' : 'Guardar' }}
               </button>
 
-              <button class="bp-edit-cancel" type="button"
-                [disabled]="updatingPost"
-                (click)="cerrarEditar()">
+              <button class="bp-edit-cancel" type="button" [disabled]="updatingPost" (click)="cerrarEditar()">
                 Cancelar
               </button>
             </div>
@@ -258,14 +228,12 @@
               ¿Confirmas eliminar esta publicación? Esta acción no se puede deshacer.
             </span>
 
-            <button class="bp-confirm-yes" type="button"
-              [disabled]="deletingPostId === pub.id"
+            <button class="bp-confirm-yes" type="button" [disabled]="deletingPostId === pub.id"
               (click)="eliminarPublicacion(pub.id)">
               {{ deletingPostId === pub.id ? 'Eliminando...' : 'Eliminar' }}
             </button>
 
-            <button class="bp-confirm-no" type="button"
-              [disabled]="deletingPostId === pub.id"
+            <button class="bp-confirm-no" type="button" [disabled]="deletingPostId === pub.id"
               (click)="toggleConfirmar(null)">
               Cancelar
             </button>
