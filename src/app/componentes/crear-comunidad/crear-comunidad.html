@@ -1,0 +1,167 @@
+<app-header></app-header>
+
+<main class="cc-page">
+  <div class="container">
+
+    <!-- Encabezado -->
+    <div class="cc-header">
+      <button class="cc-back" type="button" routerLink="/comunidades">
+        <i class="bi bi-arrow-left"></i>
+      </button>
+      <div>
+        <h1 class="cc-title">Crear comunidad</h1>
+        <p class="cc-subtitle">Reúne personas con tu misma pasión</p>
+      </div>
+    </div>
+
+    <!-- Alertas -->
+    <div *ngIf="serverError" class="cc-alert cc-alert--error">{{ serverError }}</div>
+    <div *ngIf="serverSuccess" class="cc-alert cc-alert--success">{{ serverSuccess }}</div>
+
+    <form #crearForm="ngForm" novalidate (ngSubmit)="crear(crearForm)" class="cc-layout">
+
+      <!-- ── Panel principal ── -->
+      <div class="cc-card">
+
+        <!-- Nombre -->
+        <div class="cc-field">
+          <label class="cc-label" for="cc-nombre">Nombre de la comunidad</label>
+          <input
+            id="cc-nombre"
+            class="cc-input"
+            type="text"
+            placeholder="Ej. FitLife Medellín"
+            [(ngModel)]="form.name"
+            name="name"
+            #nameModel="ngModel"
+            required
+            minlength="3"
+            maxlength="60"
+            (ngModelChange)="limpiarFeedback()">
+          <div class="cc-char-count">{{ form.name?.length || 0 }}/60</div>
+          <div class="cc-error" *ngIf="nameModel.invalid && (nameModel.touched || submitted)">
+            <span *ngIf="nameModel.errors?.['required']">El nombre es obligatorio.</span>
+            <span *ngIf="nameModel.errors?.['minlength']">Debe tener al menos 3 caracteres.</span>
+          </div>
+        </div>
+
+        <!-- Descripción -->
+        <div class="cc-field">
+          <label class="cc-label" for="cc-descripcion">Descripción</label>
+          <textarea
+            id="cc-descripcion"
+            class="cc-input cc-textarea"
+            placeholder="¿De qué trata tu comunidad? Cuéntale a los futuros miembros..."
+            [(ngModel)]="form.description"
+            name="description"
+            #descModel="ngModel"
+            required
+            minlength="10"
+            maxlength="300"
+            rows="4"
+            (ngModelChange)="limpiarFeedback()">
+          </textarea>
+          <div class="cc-char-count">{{ form.description?.length || 0 }}/300</div>
+          <div class="cc-error" *ngIf="descModel.invalid && (descModel.touched || submitted)">
+            <span *ngIf="descModel.errors?.['required']">La descripción es obligatoria.</span>
+            <span *ngIf="descModel.errors?.['minlength']">Debe tener al menos 10 caracteres.</span>
+          </div>
+        </div>
+
+        <!-- Categoría -->
+        <div class="cc-field">
+          <label class="cc-label" for="cc-categoria">Categoría</label>
+          <div class="cc-select-wrap">
+            <select
+              id="cc-categoria"
+              class="cc-input cc-select"
+              [(ngModel)]="form.category"
+              name="category"
+              #catModel="ngModel"
+              required
+              (ngModelChange)="limpiarFeedback()">
+              <option value="" disabled>Selecciona una categoría</option>
+              <option value="FITNESS">Fitness</option>
+              <option value="NUTRITION">Nutrición</option>
+              <option value="PERSONAL_DEVELOPMENT">Desarrollo personal</option>
+            </select>
+            <i class="bi bi-chevron-down cc-select-icon"></i>
+          </div>
+          <div class="cc-error" *ngIf="catModel.invalid && (catModel.touched || submitted)">
+            La categoría es obligatoria.
+          </div>
+        </div>
+
+        <!-- Preview de categoría seleccionada -->
+        <div class="cc-category-preview" *ngIf="form.category">
+          <span class="cc-badge"
+            [ngClass]="{
+              'cc-badge--fitness':     form.category === 'FITNESS',
+              'cc-badge--nutrition':   form.category === 'NUTRITION',
+              'cc-badge--development': form.category === 'PERSONAL_DEVELOPMENT'
+            }">
+            {{ traducirCategoria(form.category) }}
+          </span>
+          <span class="cc-category-hint">Esta será la etiqueta visible de tu comunidad</span>
+        </div>
+
+      </div>
+
+      <!-- ── Panel lateral (preview + acción) ── -->
+      <aside class="cc-aside">
+
+        <!-- Preview de la tarjeta -->
+        <div class="cc-preview-card">
+          <div class="cc-preview-label">Vista previa</div>
+
+          <div class="cc-preview-item">
+            <div class="cc-preview-av">
+              {{ form.name?.charAt(0)?.toUpperCase() || '?' }}
+            </div>
+            <div class="cc-preview-info">
+              <div class="cc-preview-name">{{ form.name || 'Nombre de la comunidad' }}</div>
+              <div class="cc-preview-meta">
+                <span class="cc-badge cc-badge--sm"
+                  [ngClass]="{
+                    'cc-badge--fitness':     form.category === 'FITNESS',
+                    'cc-badge--nutrition':   form.category === 'NUTRITION',
+                    'cc-badge--development': form.category === 'PERSONAL_DEVELOPMENT',
+                    'cc-badge--empty':       !form.category
+                  }">
+                  {{ form.category ? traducirCategoria(form.category) : 'Categoría' }}
+                </span>
+                <span class="cc-preview-dot">·</span>
+                <span class="cc-preview-public">🌐 Pública</span>
+              </div>
+              <p class="cc-preview-desc">
+                {{ form.description || 'Tu descripción aparecerá aquí...' }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botón crear -->
+        <button
+          type="submit"
+          class="cc-btn-submit"
+          [disabled]="loading">
+          <i class="bi bi-plus-circle-fill" *ngIf="!loading"></i>
+          <span class="cc-spinner" *ngIf="loading"></span>
+          {{ loading ? 'Creando...' : 'Crear comunidad' }}
+        </button>
+
+        <button
+          type="button"
+          class="cc-btn-cancel"
+          [disabled]="loading"
+          routerLink="/comunidades">
+          Cancelar
+        </button>
+
+      </aside>
+
+    </form>
+  </div>
+</main>
+
+<app-footer></app-footer>

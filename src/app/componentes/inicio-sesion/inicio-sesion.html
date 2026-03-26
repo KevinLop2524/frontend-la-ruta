@@ -21,17 +21,17 @@
     <h1 class="lr-title">Bienvenido</h1>
     <p class="lr-subtitle">Inicia sesión para continuar</p>
 
-    <form
-      #loginForm="ngForm"
-      id="IS-FV-datos"
-      class="lr-form"
-      novalidate
-      (ngSubmit)="iniciar(loginForm)"
-    >
+    <form #loginForm="ngForm" id="IS-FV-datos" class="lr-form" novalidate (ngSubmit)="iniciar(loginForm)">
 
       <div *ngIf="serverError" class="lr-alert lr-alert-error">
         {{ serverError }}
       </div>
+
+      <!-- Botón de reenvío: visible solo cuando el error corresponde a correo sin verificar -->
+      <button *ngIf="showResendButton" type="button" class="lr-btn lr-btn-secondary" [disabled]="loadingResend"
+        (click)="reenviarVerificacion()">
+        {{ loadingResend ? 'Enviando...' : 'Reenviar correo de verificación' }}
+      </button>
 
       <div *ngIf="serverSuccess" class="lr-alert lr-alert-success">
         {{ serverSuccess }}
@@ -39,19 +39,9 @@
 
       <div class="lr-field">
         <label class="lr-label" for="IS-FV-usuario">Apodo o correo</label>
-        <input
-          type="text"
-          id="IS-FV-usuario"
-          class="lr-input"
-          placeholder="Tu apodo o correo"
-          [(ngModel)]="identifier"
-          name="identifier"
-          #identifierModel="ngModel"
-          required
-          minlength="3"
-          maxlength="120"
-          (ngModelChange)="limpiarErroresDeCampo()"
-        >
+        <input type="text" id="IS-FV-usuario" class="lr-input" placeholder="Tu apodo o correo" [(ngModel)]="identifier"
+          name="identifier" #identifierModel="ngModel" required minlength="3" maxlength="120"
+          (ngModelChange)="limpiarErroresDeCampo()">
 
         <div class="lr-error" *ngIf="identifierModel.invalid && (identifierModel.touched || submitted)">
           <span *ngIf="identifierModel.errors?.['required']">Ingresa tu apodo o correo.</span>
@@ -62,19 +52,9 @@
 
       <div class="lr-field">
         <label class="lr-label" for="IS-FV-contrasena">Contraseña</label>
-        <input
-          type="password"
-          id="IS-FV-contrasena"
-          class="lr-input"
-          placeholder="••••••••"
-          [(ngModel)]="contrasena"
-          name="contrasena"
-          #contrasenaModel="ngModel"
-          required
-          minlength="8"
-          maxlength="50"
-          (ngModelChange)="limpiarErroresDeCampo()"
-        >
+        <input type="password" id="IS-FV-contrasena" class="lr-input" placeholder="••••••••" [(ngModel)]="contrasena"
+          name="contrasena" #contrasenaModel="ngModel" required minlength="8" maxlength="50"
+          (ngModelChange)="limpiarErroresDeCampo()">
 
         <div class="lr-error" *ngIf="contrasenaModel.invalid && (contrasenaModel.touched || submitted)">
           <span *ngIf="contrasenaModel.errors?.['required']">Ingresa tu contraseña.</span>
@@ -83,11 +63,7 @@
         </div>
       </div>
 
-      <button
-        type="submit"
-        class="lr-btn"
-        [disabled]="loading"
-      >
+      <button type="submit" class="lr-btn" [disabled]="loading">
         {{ loading ? 'Ingresando...' : 'Iniciar sesión' }}
       </button>
 

@@ -353,6 +353,7 @@ export class ComunidadComponent implements OnInit {
         this.generalSuccess = "La comunidad fue eliminada correctamente.";
         this.cerrarEditar();
         this.cargarComunidades();
+        this.cdr.detectChanges();
       })
       .catch((err: any) => {
         this.editError = err?.error?.message || "No fue posible eliminar la comunidad.";

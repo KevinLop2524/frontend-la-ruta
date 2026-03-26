@@ -4,94 +4,95 @@
   <div class="container">
     <div class="bp-feed-wrap">
 
-      <div *ngIf="generalError" class="bp-alert bp-alert--error">
-        {{ generalError }}
-      </div>
+      <!-- Alerts globales -->
+      <div *ngIf="generalError" class="bp-alert bp-alert--error">{{ generalError }}</div>
+      <div *ngIf="generalSuccess" class="bp-alert bp-alert--success">{{ generalSuccess }}</div>
 
-      <div *ngIf="generalSuccess" class="bp-alert bp-alert--success">
-        {{ generalSuccess }}
-      </div>
-
-      <!-- RECUADRO COLAPSADO -->
+      <!-- ── Recuadro colapsado ── -->
       <div class="bp-create-collapsed" *ngIf="!createOpen" (click)="openCreate()">
         <div class="bp-avatar">{{ usuario?.username?.charAt(0)?.toUpperCase() }}</div>
         <div class="bp-create-placeholder">Comparte con la comunidad...</div>
         <div class="bp-create-icon">📝</div>
       </div>
 
-      <!-- FORMULARIO EXPANDIDO -->
+      <!-- ── Formulario expandido ── -->
       <div class="bp-create-expanded" *ngIf="createOpen">
         <div class="bp-create-top">
           <div class="bp-avatar">{{ usuario?.username?.charAt(0)?.toUpperCase() }}</div>
           <div class="bp-create-title">Publicar</div>
         </div>
 
-        <div *ngIf="createError" class="bp-alert bp-alert--error bp-alert--compact">
-          {{ createError }}
-        </div>
-
-        <div *ngIf="createSuccess" class="bp-alert bp-alert--success bp-alert--compact">
-          {{ createSuccess }}
-        </div>
+        <div *ngIf="createError"   class="bp-alert bp-alert--error   bp-alert--compact">{{ createError }}</div>
+        <div *ngIf="createSuccess" class="bp-alert bp-alert--success bp-alert--compact">{{ createSuccess }}</div>
 
         <div class="bp-create-form">
-          <div>
-            <label class="bp-label">Contenido</label>
-            <textarea class="bp-input bp-textarea" id="contenido" placeholder="¿Qué quieres compartir?"
-              [(ngModel)]="nuevaPublicacion.contenido" name="contenido" rows="3" maxlength="500"
-              (ngModelChange)="limpiarFeedbackCrear()"></textarea>
 
+          <!-- Contenido -->
+          <div>
+            <label class="bp-label" for="contenido">Contenido</label>
+            <textarea
+              class="bp-input bp-textarea"
+              id="contenido"
+              placeholder="¿Qué quieres compartir?"
+              [(ngModel)]="nuevaPublicacion.contenido"
+              name="contenido"
+              rows="3"
+              maxlength="500"
+              (ngModelChange)="limpiarFeedbackCrear()">
+            </textarea>
+            <div class="bp-char-count">{{ nuevaPublicacion.contenido?.length || 0 }}/500</div>
             <div class="bp-error" *ngIf="submittedCreate && !nuevaPublicacion.contenido?.trim()">
               El contenido es obligatorio.
             </div>
           </div>
 
+          <!-- Imagen -->
           <div>
             <label class="bp-label">Imagen (opcional)</label>
-
             <label class="bp-img-zone" for="crearImagenInput">
               <span *ngIf="!selectedCreateImageName">📷 Añadir imagen</span>
               <span *ngIf="selectedCreateImageName">{{ selectedCreateImageName }}</span>
             </label>
-
-            <input id="crearImagenInput" type="file" accept="image/png,image/jpeg,image/jpg,image/webp" hidden
-              (change)="onCreateImageSelected($event)">
-
-            <div class="bp-hint">JPG, PNG o WEBP. Máximo 5 MB.</div>
-
-            <div class="bp-error" *ngIf="createImageError">
-              {{ createImageError }}
-            </div>
+            <input id="crearImagenInput" type="file" accept="image/png,image/jpeg,image/jpg,image/webp"
+              hidden (change)="onCreateImageSelected($event)">
+            <div class="bp-hint">JPG, PNG o WEBP · Máx. 5 MB</div>
+            <div class="bp-error" *ngIf="createImageError">{{ createImageError }}</div>
           </div>
 
+          <!-- Preview imagen -->
           <div class="bp-image-preview" *ngIf="createImagePreview">
             <img [src]="createImagePreview" alt="Vista previa" class="bp-preview-img">
           </div>
 
+          <!-- Acciones -->
           <div class="bp-create-actions">
-            <button class="bp-btn bp-btn--ghost" type="button" [disabled]="creatingPost" (click)="closeCreate()">
+            <button class="bp-btn bp-btn--ghost" type="button"
+              [disabled]="creatingPost"
+              (click)="closeCreate()">
               Cancelar
             </button>
-
-            <button class="bp-btn bp-btn--primary" type="button" [disabled]="creatingPost || loadingUsuario"
+            <button class="bp-btn bp-btn--primary" type="button"
+              [disabled]="creatingPost || loadingUsuario"
               (click)="crearPublicacion()">
-              <i class="bi bi-send-fill me-1"></i>
+              <i class="bi bi-send-fill"></i>
               {{ creatingPost ? 'Publicando...' : 'Publicar' }}
             </button>
           </div>
+
         </div>
       </div>
 
-      <!-- FEED -->
+      <!-- ── Feed ── -->
       <div class="bp-feed">
 
-        <div *ngIf="loadingPosts" class="bp-status">
-          Cargando publicaciones...
-        </div>
+        <div *ngIf="loadingPosts" class="bp-status">Cargando publicaciones...</div>
 
-        <div *ngFor="let pub of publicaciones; trackBy: trackByPublicacionId" class="bp-post"
-          [class.editing]="publicacionEditar?.id === pub.id && editMode" [class.confirming]="confirmandoId === pub.id">
+        <div *ngFor="let pub of publicaciones; trackBy: trackByPublicacionId"
+          class="bp-post"
+          [class.editing]="publicacionEditar?.id === pub.id && editMode"
+          [class.confirming]="confirmandoId === pub.id">
 
+          <!-- Header del post -->
           <div class="bp-post-header">
             <div class="bp-post-avatar bp-av-o">
               {{ pub.authorName?.charAt(0)?.toUpperCase() }}
@@ -102,103 +103,92 @@
               <div class="bp-post-info">
                 <span class="bp-post-cat">{{ pub.tipo }}</span>
                 <span>·</span>
-                <span>{{ pub.comunidadNombre || 'Sin comunidad' }}</span>
+                <span>{{ pub.comunidadNombre || 'Feed global' }}</span>
                 <span>·</span>
                 <span>{{ pub.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</span>
               </div>
             </div>
 
-            <div class="bp-owner-actions" *ngIf="pub.authorId === usuario.id">
-
-              <!-- BOTÓN MENÚ -->
-              <button class="bp-btn bp-btn--sm" type="button" (click)="toggleMenu(pub.id)">
-                ⋮
+            <!-- Menú de acciones — solo el autor -->
+            <div class="bp-owner-actions" *ngIf="pub.authorId === usuario?.id">
+              <button class="bp-menu-btn" type="button" (click)="toggleMenu(pub.id)">
+                <i class="bi bi-three-dots-vertical"></i>
               </button>
-
-              <!-- MENÚ DESPLEGABLE -->
               <div class="bp-dropdown" *ngIf="menuAbiertoId === pub.id">
-
-                <button class="bp-dropdown-item" (click)="toggleEditar(pub); toggleMenu(pub.id)">
-                  ✏️ Editar
+                <button class="bp-dropdown-item"
+                  (click)="toggleEditar(pub); toggleMenu(pub.id)">
+                  <i class="bi bi-pencil-fill"></i> Editar
                 </button>
-
-                <button class="bp-dropdown-item bp-danger" (click)="toggleConfirmar(pub.id); toggleMenu(pub.id)">
-                  🗑️ Eliminar
+                <button class="bp-dropdown-item bp-dropdown-item--danger"
+                  (click)="toggleConfirmar(pub.id); toggleMenu(pub.id)">
+                  <i class="bi bi-trash-fill"></i> Eliminar
                 </button>
-
               </div>
-
             </div>
           </div>
 
+          <!-- Cuerpo -->
           <div class="bp-post-body">
             <div class="bp-post-content">{{ pub.contenido }}</div>
           </div>
 
-          <img *ngIf="pub.imageUrl" [src]="pub.imageUrl" class="bp-post-img" alt="imagen publicación">
+          <!-- Imagen del post — usa mediaUrl (campo real del backend) -->
+          <img *ngIf="pub.mediaUrl" [src]="pub.mediaUrl" class="bp-post-img" alt="imagen publicación"
+            (error)="$any($event.target).style.display='none'">
 
+          <!-- Contadores -->
           <div class="bp-post-stats">
-            <span class="bp-stat-text">❤️ {{ pub.likes || 0 }} likes</span>
-            <span class="bp-stat-text">💬 {{ pub.comentarios || 0 }} comentarios</span>
-            <span class="bp-stat-text">🔁 {{ pub.compartidos || 0 }} compartidos</span>
+            <span class="bp-stat-text">❤️ {{ pub.likes || 0 }}</span>
+            <span class="bp-stat-text">💬 {{ pub.comentarios || 0 }}</span>
+            <span class="bp-stat-text">🔁 {{ pub.compartidos || 0 }}</span>
           </div>
 
+          <!-- Reacciones -->
           <div class="bp-post-footer">
-            <button class="bp-react-btn" [class.liked]="pub.likeado" type="button" (click)="darLike(pub)">
+            <button class="bp-react-btn"
+              [class.liked]="likedPostIds.has(pub.id)"
+              [disabled]="likingPostId === pub.id"
+              type="button"
+              (click)="darLike(pub)">
               ❤️ Me gusta
             </button>
-
-            <button class="bp-react-btn bp-react-btn--c" type="button" (click)="mostrarMensajeComentarios()">
+            <button class="bp-react-btn bp-react-btn--c" type="button">
               💬 Comentar
             </button>
           </div>
 
-          <!-- Edición inline -->
+          <!-- ── Edición inline ── -->
           <div class="bp-edit-panel" *ngIf="publicacionEditar?.id === pub.id && editMode">
 
             <div class="bp-edit-label-s">Editar publicación</div>
 
-            <div *ngIf="editError" class="bp-alert bp-alert--error bp-alert--compact">
-              {{ editError }}
+            <div *ngIf="editError"   class="bp-alert bp-alert--error   bp-alert--compact">{{ editError }}</div>
+            <div *ngIf="editSuccess" class="bp-alert bp-alert--success bp-alert--compact">{{ editSuccess }}</div>
+
+            <div class="bp-edit-full">
+              <label class="bp-edit-label">Contenido</label>
+              <textarea class="bp-edit-input bp-edit-textarea"
+                [(ngModel)]="publicacionEditar.contenido"
+                name="editContenido"
+                maxlength="500"
+                (ngModelChange)="limpiarFeedbackEdicion()">
+              </textarea>
+              <div class="bp-error" *ngIf="submittedEdit && !publicacionEditar.contenido?.trim()">
+                El contenido es obligatorio.
+              </div>
             </div>
 
-            <div *ngIf="editSuccess" class="bp-alert bp-alert--success bp-alert--compact">
-              {{ editSuccess }}
-            </div>
-
-            <div class="bp-edit-grid">
-              <div class="bp-edit-full">
-                <label class="bp-edit-label">Contenido</label>
-                <textarea class="bp-edit-input" style="min-height:80px;resize:vertical;"
-                  [(ngModel)]="publicacionEditar.contenido" name="editContenido"
-                  (ngModelChange)="limpiarFeedbackEdicion()"></textarea>
-
-                <div class="bp-error" *ngIf="submittedEdit && !publicacionEditar.contenido?.trim()">
-                  El contenido es obligatorio.
-                </div>
-              </div>
-
-              <div>
-                <label class="bp-edit-label">Comunidad</label>
-                <input class="bp-edit-input" [(ngModel)]="publicacionEditar.comunidadId" name="editComunidadId"
-                  (ngModelChange)="limpiarFeedbackEdicion()">
-
-                <div class="bp-error" *ngIf="submittedEdit && !publicacionEditar.comunidadId">
-                  La comunidad es obligatoria.
-                </div>
-              </div>
-
+            <!-- Imagen edición -->
+            <div class="bp-edit-img-row">
               <div>
                 <label class="bp-edit-label">Imagen</label>
-
                 <label class="bp-img-zone bp-img-zone--sm" [for]="'editImagenInput-' + pub.id">
                   <span *ngIf="editImageTargetId !== pub.id || !selectedEditImageName">📷 Cambiar imagen</span>
                   <span *ngIf="editImageTargetId === pub.id && selectedEditImageName">{{ selectedEditImageName }}</span>
                 </label>
-
-                <input [id]="'editImagenInput-' + pub.id" type="file" accept="image/png,image/jpeg,image/jpg,image/webp"
-                  hidden (change)="onEditImageSelected($event, pub.id)">
-
+                <input [id]="'editImagenInput-' + pub.id" type="file"
+                  accept="image/png,image/jpeg,image/jpg,image/webp" hidden
+                  (change)="onEditImageSelected($event, pub.id)">
                 <div class="bp-error" *ngIf="editImageError && editImageTargetId === pub.id">
                   {{ editImageError }}
                 </div>
@@ -210,37 +200,41 @@
             </div>
 
             <div class="bp-edit-actions">
-              <button class="bp-edit-save" type="button" [disabled]="updatingPost"
+              <button class="bp-edit-save" type="button"
+                [disabled]="updatingPost"
                 (click)="actualizarPublicacion(publicacionEditar)">
-                <i class="bi bi-check-lg me-1"></i>
+                <i class="bi bi-check-lg"></i>
                 {{ updatingPost ? 'Guardando...' : 'Guardar' }}
               </button>
-
-              <button class="bp-edit-cancel" type="button" [disabled]="updatingPost" (click)="cerrarEditar()">
+              <button class="bp-edit-cancel" type="button"
+                [disabled]="updatingPost"
+                (click)="cerrarEditar()">
                 Cancelar
               </button>
             </div>
           </div>
 
-          <!-- Confirmación eliminar -->
+          <!-- ── Confirmación eliminar ── -->
           <div class="bp-confirm" *ngIf="confirmandoId === pub.id">
             <span class="bp-confirm-text">
               ¿Confirmas eliminar esta publicación? Esta acción no se puede deshacer.
             </span>
-
-            <button class="bp-confirm-yes" type="button" [disabled]="deletingPostId === pub.id"
+            <button class="bp-confirm-yes" type="button"
+              [disabled]="deletingPostId === pub.id"
               (click)="eliminarPublicacion(pub.id)">
               {{ deletingPostId === pub.id ? 'Eliminando...' : 'Eliminar' }}
             </button>
-
-            <button class="bp-confirm-no" type="button" [disabled]="deletingPostId === pub.id"
+            <button class="bp-confirm-no" type="button"
+              [disabled]="deletingPostId === pub.id"
               (click)="toggleConfirmar(null)">
               Cancelar
             </button>
           </div>
 
         </div>
+        <!-- /fin ngFor -->
 
+        <!-- Empty state -->
         <div class="bp-empty" *ngIf="!loadingPosts && publicaciones.length === 0">
           <div class="bp-empty-icon">📝</div>
           <div class="bp-empty-text">Aún no hay publicaciones. ¡Sé el primero!</div>

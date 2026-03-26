@@ -3,55 +3,53 @@
 <main class="fv-page">
   <div class="container">
 
+    <!-- ── Header ── -->
     <div class="fv-header">
-      <h2 class="fv-title">Mis favoritos</h2>
-      <p class="fv-subtitle">Comunidades y servicios que guardaste</p>
+      <div>
+        <h2 class="fv-title">Mis comunidades</h2>
+        <p class="fv-subtitle">Comunidades a las que perteneces y las que has creado</p>
+      </div>
 
       <div class="fv-search-wrap">
         <input
           type="text"
           class="fv-search"
-          placeholder="Buscar comunidades o servicios favoritos"
-          aria-label="Buscar"
+          placeholder="Buscar comunidades..."
           [(ngModel)]="searchTerm"
           (input)="aplicarBusqueda()"
-          (keyup.enter)="buscar()"
-        />
-        <input
-          class="fv-search-btn"
-          type="button"
-          value="Buscar"
-          (click)="buscar()"
-        />
+          (keyup.enter)="buscar()">
+        <button class="fv-search-btn" type="button" (click)="buscar()">
+          <i class="bi bi-search"></i> Buscar
+        </button>
       </div>
     </div>
 
-    <div *ngIf="errorMessage" class="fv-alert fv-alert--error">
-      {{ errorMessage }}
-    </div>
+    <!-- Alerts -->
+    <div *ngIf="errorMessage"   class="fv-alert fv-alert--error">{{ errorMessage }}</div>
+    <div *ngIf="generalSuccess" class="fv-alert fv-alert--success">{{ generalSuccess }}</div>
 
-    <div *ngIf="generalSuccess" class="fv-alert fv-alert--success">
-      {{ generalSuccess }}
-    </div>
-
+    <!-- Loading -->
     <div *ngIf="cargando" class="fv-empty">
       <div class="fv-empty-icon">⏳</div>
-      <div class="fv-empty-text">Cargando favoritos...</div>
+      <div class="fv-empty-text">Cargando comunidades...</div>
     </div>
 
     <ng-container *ngIf="!cargando">
 
-      <!-- ── COMUNIDADES ── -->
+      <!-- ══════════════════════════════════════
+           SECCIÓN 1: COMUNIDADES A LAS QUE PERTENEZCO
+      ══════════════════════════════════════ -->
       <div class="fv-section">
-        <div class="fv-section-title">Comunidades</div>
+        <div class="fv-section-icon"><i class="bi bi-people-fill"></i></div>
+        <div class="fv-section-title">Comunidades unidas</div>
         <div class="fv-section-line"></div>
+        <span class="fv-section-count">{{ comunidadesFiltradas.length }}</span>
       </div>
 
-      <div class="fv-list" id="seccion-comunidades">
+      <div class="fv-list">
 
-        <div
+        <div *ngFor="let item of comunidadesFiltradas; let i = index; trackBy: trackById"
           class="fv-comm-item"
-          *ngFor="let item of comunidadesFiltradas; let i = index; trackBy: trackById"
           [class.fv-comm-item--leaving]="confirmandoSalidaId === item.id">
 
           <div class="fv-comm-avatar" [ngClass]="obtenerClaseAvatar(i)">
@@ -61,13 +59,18 @@
           <div class="fv-comm-info">
             <div class="fv-comm-name">{{ item.nombre }}</div>
             <div class="fv-comm-meta">
-              <span>{{ item.descripcion }}</span>
+              <span class="fv-badge" [ngClass]="obtenerClaseBadge(item.categoria)">
+                {{ traducirCategoria(item.categoria) }}
+              </span>
+              <span class="fv-meta-sep">·</span>
+              <span class="fv-comm-desc-short">{{ item.descripcion }}</span>
             </div>
           </div>
 
-          <!-- Confirmación inline de salida -->
-          <div class="fv-leave-confirm" *ngIf="confirmandoSalidaId === item.id">
-            <span class="fv-leave-text">¿Salir de esta comunidad?</span>
+          <!-- Confirmación salida inline -->
+          <div class="fv-inline-confirm fv-inline-confirm--danger"
+            *ngIf="confirmandoSalidaId === item.id">
+            <span class="fv-confirm-text">¿Salir de esta comunidad?</span>
             <button class="fv-confirm-yes" type="button"
               [disabled]="saliedoDeId === item.id"
               (click)="salirDeComunidad(item)">
@@ -82,25 +85,116 @@
 
           <!-- Botones normales -->
           <div class="fv-comm-actions" *ngIf="confirmandoSalidaId !== item.id">
-
-            <!-- Botón IR -->
-            <button type="button" class="fv-comm-btn" (click)="irAComunidad(item)">
+            <button type="button" class="fv-btn-ir" (click)="irAComunidad(item)">
               <i class="bi bi-arrow-right-circle-fill"></i> Ir
             </button>
 
-            <!-- Menú desplegable -->
             <div class="fv-dropdown" [class.open]="menuAbiertoPara === item.id">
               <button type="button" class="fv-dropdown-trigger"
-                (click)="toggleMenu(item.id)"
+                (click)="$event.stopPropagation(); toggleMenu(item.id)"
                 title="Más opciones">
                 <i class="bi bi-three-dots-vertical"></i>
               </button>
-
               <div class="fv-dropdown-menu">
                 <button type="button" class="fv-dropdown-item fv-dropdown-item--danger"
                   (click)="pedirConfirmacionSalida(item)">
-                  <i class="bi bi-box-arrow-right"></i>
-                  Salir de la comunidad
+                  <i class="bi bi-box-arrow-right"></i> Salir de la comunidad
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div *ngIf="comunidadesFiltradas.length === 0" class="fv-empty">
+          <div class="fv-empty-icon">👥</div>
+          <div class="fv-empty-text">
+            {{ searchTerm ? 'Sin resultados para tu búsqueda.' : 'Aún no te has unido a ninguna comunidad.' }}
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ══════════════════════════════════════
+           SECCIÓN 2: COMUNIDADES QUE CREÉ
+      ══════════════════════════════════════ -->
+      <div class="fv-section">
+        <div class="fv-section-icon"><i class="bi bi-shield-fill-check"></i></div>
+        <div class="fv-section-title">Comunidades creadas por mí</div>
+        <div class="fv-section-line"></div>
+        <span class="fv-section-count">{{ comunidadesCreadasFiltradas.length }}</span>
+      </div>
+
+      <div class="fv-list">
+
+        <div *ngFor="let item of comunidadesCreadasFiltradas; let i = index; trackBy: trackById"
+          class="fv-comm-item fv-comm-item--created"
+          [class.fv-comm-item--deleting]="confirmandoEliminacionId === item.id">
+
+          <!-- Avatar con inicial -->
+          <div class="fv-comm-avatar fv-comm-avatar--creator">
+            {{ obtenerIniciales(item.nombre) }}
+          </div>
+
+          <div class="fv-comm-info">
+            <div class="fv-comm-name">
+              {{ item.nombre }}
+              <span class="fv-creator-badge">
+                <i class="bi bi-shield-fill-check"></i> Admin
+              </span>
+            </div>
+            <div class="fv-comm-meta">
+              <span class="fv-badge" [ngClass]="obtenerClaseBadge(item.categoria)">
+                {{ traducirCategoria(item.categoria) }}
+              </span>
+              <span class="fv-meta-sep" *ngIf="item.totalMiembros !== null && item.totalMiembros !== undefined">·</span>
+              <span class="fv-comm-members"
+                *ngIf="item.totalMiembros !== null && item.totalMiembros !== undefined">
+                👥 {{ item.totalMiembros }} miembros
+              </span>
+              <span class="fv-meta-sep">·</span>
+              <span class="fv-comm-desc-short">{{ item.descripcion }}</span>
+            </div>
+          </div>
+
+          <!-- Confirmación eliminación inline -->
+          <div class="fv-inline-confirm fv-inline-confirm--danger"
+            *ngIf="confirmandoEliminacionId === item.id">
+            <span class="fv-confirm-text">¿Eliminar esta comunidad? Esta acción no se puede deshacer.</span>
+            <button class="fv-confirm-yes" type="button"
+              [disabled]="eliminandoId === item.id"
+              (click)="eliminarComunidad(item)">
+              {{ eliminandoId === item.id ? 'Eliminando...' : 'Eliminar' }}
+            </button>
+            <button class="fv-confirm-no" type="button"
+              [disabled]="eliminandoId === item.id"
+              (click)="cancelarEliminacion()">
+              Cancelar
+            </button>
+          </div>
+
+          <!-- Botones normales -->
+          <div class="fv-comm-actions" *ngIf="confirmandoEliminacionId !== item.id">
+
+            <button type="button" class="fv-btn-ir" (click)="irAComunidad(item)">
+              <i class="bi bi-arrow-right-circle-fill"></i> Ir
+            </button>
+
+            <div class="fv-dropdown" [class.open]="menuAbiertoParaCreada === item.id">
+              <button type="button" class="fv-dropdown-trigger"
+                (click)="$event.stopPropagation(); toggleMenuCreada(item.id)"
+                title="Más opciones">
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
+              <div class="fv-dropdown-menu">
+                <button type="button" class="fv-dropdown-item"
+                  (click)="editarComunidad(item)">
+                  <i class="bi bi-pencil-fill"></i> Editar comunidad
+                </button>
+                <div class="fv-dropdown-divider"></div>
+                <button type="button" class="fv-dropdown-item fv-dropdown-item--danger"
+                  (click)="pedirConfirmacionEliminacion(item)">
+                  <i class="bi bi-trash-fill"></i> Eliminar comunidad
                 </button>
               </div>
             </div>
@@ -108,43 +202,16 @@
           </div>
         </div>
 
-        <div *ngIf="comunidadesFiltradas.length === 0" class="fv-empty">
-          <div class="fv-empty-icon">👥</div>
-          <div class="fv-empty-text">No tienes comunidades favoritas para mostrar.</div>
-        </div>
-      </div>
-
-      <!-- ── SERVICIOS ── -->
-      <div class="fv-section">
-        <div class="fv-section-title">Servicios</div>
-        <div class="fv-section-line"></div>
-      </div>
-
-      <div class="row g-3 justify-content-center" id="seccion-servicios">
-        <div
-          class="col-12 col-sm-6 col-md-4"
-          *ngFor="let item of serviciosFiltrados; trackBy: trackById"
-        >
-          <div class="fv-serv-card">
-            <img
-              [src]="item.imagenUrl || imagenPorDefectoServicio()"
-              class="fv-serv-img"
-              [alt]="item.nombre"
-            />
-            <div class="fv-serv-body">
-              <div class="fv-serv-title">{{ item.nombre }}</div>
-              <p class="fv-serv-desc">{{ item.descripcion }}</p>
-              <button type="button" class="fv-serv-btn" (click)="irAServicio(item)">
-                <i class="bi bi-arrow-right-circle-fill me-1"></i>Ir
-              </button>
-            </div>
+        <div *ngIf="comunidadesCreadasFiltradas.length === 0" class="fv-empty">
+          <div class="fv-empty-icon">🏗️</div>
+          <div class="fv-empty-text">
+            {{ searchTerm ? 'Sin resultados para tu búsqueda.' : 'Aún no has creado ninguna comunidad.' }}
           </div>
+          <a routerLink="/crear-comunidad" class="fv-btn-create-link" *ngIf="!searchTerm">
+            <i class="bi bi-plus-circle-fill"></i> Crear comunidad
+          </a>
         </div>
 
-        <div *ngIf="serviciosFiltrados.length === 0" class="fv-empty">
-          <div class="fv-empty-icon">🏷️</div>
-          <div class="fv-empty-text">No tienes servicios favoritos para mostrar.</div>
-        </div>
       </div>
 
     </ng-container>

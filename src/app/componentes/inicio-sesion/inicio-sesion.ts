@@ -17,9 +17,19 @@ export class InicioSesion {
 
   submitted: boolean = false;
   loading: boolean = false;
+  loadingResend: boolean = false; // ← nuevo
 
   serverError: string = "";
   serverSuccess: string = "";
+  showResendButton: boolean = false; // ← nuevo
+
+  // Mensaje exacto que dispara el botón de reenvío
+  private readonly UNVERIFIED_MSG =
+    "Por favor verifica tu correo antes de iniciar sesión. ¿Necesitas que reenviemos el email de verificación?";
+
+  // ── Likes ──────────────────────────────────────
+  likedPostIds: Set<number> = new Set();
+  likingPostId: number | null = null;
 
   constructor(
     private peticion: Peticion,
@@ -29,11 +39,13 @@ export class InicioSesion {
 
   limpiarErroresDeCampo(): void {
     this.serverError = "";
+    this.showResendButton = false; // ← limpiar junto al error
   }
 
   limpiarFeedback(): void {
     this.serverError = "";
     this.serverSuccess = "";
+    this.showResendButton = false; // ← limpiar junto al feedback
   }
 
   formularioValido(form: NgForm): boolean {
@@ -60,13 +72,39 @@ export class InicioSesion {
 
     this.peticion
       .post(url, payload)
-      .then((res: any) => {
-        console.log(res);
-        this.handleLoginSuccess(res)})
-      .catch((error: HttpErrorResponse) => {
-        console.log(error);
-        this.handleLoginError(error)})
+      .then((res: any) => this.handleLoginSuccess(res))
+      .catch((error: HttpErrorResponse) => this.handleLoginError(error))
       .finally(() => this.handleLoginFinally());
+  }
+
+  reenviarVerificacion(): void {
+    if (!this.identifier.trim()) {
+      this.serverError = "Ingresa tu correo para reenviar la verificación.";
+      return;
+    }
+
+    this.loadingResend = true;
+
+    // El backend espera el email como query param, payload vacío
+    const email = encodeURIComponent(this.identifier.trim());
+    const url = `${this.peticion.urlReal}/api/auth/resend-verification?email=${email}`;
+
+    this.peticion
+      .post(url, {})
+      .then(() => {
+        this.showResendButton = false;
+        this.serverError = "";
+        this.serverSuccess =
+          "Correo de verificación reenviado. Revisa tu bandeja de entrada.";
+      })
+      .catch(() => {
+        this.serverError = "No pudimos reenviar el correo. Intenta más tarde.";
+        this.showResendButton = true;
+      })
+      .finally(() => {
+        this.loadingResend = false;
+        this.cdr.detectChanges();
+      });
   }
 
   private handleFormErrors(form: NgForm): void {
@@ -94,7 +132,6 @@ export class InicioSesion {
   }
 
   private storeUserData(res: any): void {
-    // Considerar usar un servicio de almacenamiento seguro
     localStorage.setItem("token", res.token);
     localStorage.setItem("apodo", res.username);
     localStorage.setItem("role", res.role);
@@ -106,26 +143,31 @@ export class InicioSesion {
       const role = localStorage.getItem("role");
       const route = role === "ADMIN" ? ["BlogAdmin"] : ["comunidades"];
       this.router.navigate(route);
-    }, 500); // 500ms es suficiente para feedback visual
+    }, 500);
   }
 
   private handleLoginError(error: any): void {
+    const backendMsg: string = error.error?.message ?? "";
+
     const errorMessages: Record<number, string> = {
-      400: error.error?.message || "Error del servidor. Intenta más tarde.",
+      400: backendMsg || "Error del servidor. Intenta más tarde.",
       401: "Usuario o contraseña incorrectos.",
-      403: "Acceso denegado.",
+      403: backendMsg || "Acceso denegado.",
       404: "Servicio no disponible.",
       500: "Error del servidor. Intenta más tarde.",
     };
 
     this.serverError =
-      errorMessages[error.status] ||
-      error.error?.message ||
-      "No fue posible iniciar sesión. Intenta nuevamente.";
+      errorMessages[error.status] ??
+      (backendMsg || "No fue posible iniciar sesión. Intenta nuevamente.");
+
+    // Mostrar botón de reenvío solo cuando el backend indica correo sin verificar
+    this.showResendButton = this.serverError === this.UNVERIFIED_MSG;
   }
 
   private handleLoginFinally(): void {
     this.loading = false;
     this.cdr.detectChanges();
   }
+
 }

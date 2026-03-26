@@ -305,3 +305,24 @@
   cursor: not-allowed;
   transform: none;
 }
+
+/* ── Botón secundario (reenvío de verificación) ── */
+.lr-btn-secondary {
+  margin-top: 10px;
+  background: transparent;
+  color: #FF5A00;
+  border: 1px solid #FF5A00;
+  font-size: 14px;
+  letter-spacing: 1px;
+  padding: 11px 15px;
+  margin-bottom: 20px;
+}
+
+.lr-btn-secondary:hover:not(:disabled) {
+  background: rgba(255, 90, 0, 0.08);
+}
+
+.lr-btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
